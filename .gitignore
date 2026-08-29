@@ -1,0 +1,3 @@
+result
+*.o
+repro[0-9]*
