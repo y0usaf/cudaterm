@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "uploads": 19,
+  "pixel_checks": 18,
+  "checks": [
+    "real browser beside shell",
+    "compressed frame pixel oracle",
+    "GPU mouse to DOM click"
+  ],
+  "cuda_binary": "/nix/store/fv9gqwbv3sj4jb8kqphbxnjf0rz2c3px-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "ekko_binary": "/nix/store/akpgwa1vfjw989cyfipzc6arm9p2bbbw-ekko-0.1.0/bin/ekko",
+  "browser_binary": "/nix/store/1m1zizx7572f0r2lpn81ygm5ma8c0c1z-terminal-slack-browser/bin/terminal-slack-browser",
+  "ekko_status": {
+    "wire_version": 3,
+    "session": "browser-test",
+    "daemon_pid": 28268,
+    "extension_pid": 28273,
+    "allocated_bytes": 61984208,
+    "gc_seconds": 0.0,
+    "snapshot_bytes": 0,
+    "attached": true,
+    "focus": 2,
+    "panes": [
+      {
+        "id": 1,
+        "pid": 28279,
+        "label": "bash",
+        "exit_code": null,
+        "cols": 59,
+        "rows": 38,
+        "x": 0,
+        "y": 1,
+        "history_rows": 0,
+        "copy_mode": false,
+        "images": 0,
+        "frames": 0,
+        "graphics_errors": 0,
+        "image_bytes": 0,
+        "pty_output_bytes": 10,
+        "local_images": 0
+      },
+      {
+        "id": 2,
+        "pid": 28280,
+        "label": "terminal-browser",
+        "exit_code": null,
+        "cols": 60,
+        "rows": 38,
+        "x": 60,
+        "y": 1,
+        "history_rows": 0,
+        "copy_mode": false,
+        "images": 1,
+        "frames": 21,
+        "graphics_errors": 0,
+        "image_bytes": 38837,
+        "pty_output_bytes": 491304,
+        "local_images": 0
+      }
+    ]
+  },
+  "scope": "headless browser and CUDA raster; no desktop display"
+}

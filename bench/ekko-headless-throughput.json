@@ -1,0 +1,6125 @@
+{
+  "scope": "serial CUDA feed/reply, shared desktop GPU, no desktop windows",
+  "records": [
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4066,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 66920,
+            "ns_per_byte": 16.4584
+          },
+          {
+            "duration_ns": 58289,
+            "ns_per_byte": 14.3357
+          },
+          {
+            "duration_ns": 66690,
+            "ns_per_byte": 16.4019
+          },
+          {
+            "duration_ns": 59690,
+            "ns_per_byte": 14.6803
+          },
+          {
+            "duration_ns": 58660,
+            "ns_per_byte": 14.427
+          },
+          {
+            "duration_ns": 66970,
+            "ns_per_byte": 16.4707
+          },
+          {
+            "duration_ns": 66940,
+            "ns_per_byte": 16.4634
+          },
+          {
+            "duration_ns": 58860,
+            "ns_per_byte": 14.4761
+          },
+          {
+            "duration_ns": 74010,
+            "ns_per_byte": 18.2022
+          },
+          {
+            "duration_ns": 66840,
+            "ns_per_byte": 16.4388
+          },
+          {
+            "duration_ns": 58970,
+            "ns_per_byte": 14.5032
+          },
+          {
+            "duration_ns": 58749,
+            "ns_per_byte": 14.4488
+          },
+          {
+            "duration_ns": 58740,
+            "ns_per_byte": 14.4466
+          },
+          {
+            "duration_ns": 58860,
+            "ns_per_byte": 14.4761
+          },
+          {
+            "duration_ns": 58770,
+            "ns_per_byte": 14.454
+          },
+          {
+            "duration_ns": 58930,
+            "ns_per_byte": 14.4934
+          },
+          {
+            "duration_ns": 74040,
+            "ns_per_byte": 18.2095
+          },
+          {
+            "duration_ns": 58810,
+            "ns_per_byte": 14.4638
+          },
+          {
+            "duration_ns": 58860,
+            "ns_per_byte": 14.4761
+          },
+          {
+            "duration_ns": 62860,
+            "ns_per_byte": 15.4599
+          },
+          {
+            "duration_ns": 66840,
+            "ns_per_byte": 16.4388
+          },
+          {
+            "duration_ns": 67070,
+            "ns_per_byte": 16.4953
+          },
+          {
+            "duration_ns": 58639,
+            "ns_per_byte": 14.4218
+          },
+          {
+            "duration_ns": 59770,
+            "ns_per_byte": 14.7
+          },
+          {
+            "duration_ns": 59860,
+            "ns_per_byte": 14.7221
+          },
+          {
+            "duration_ns": 58710,
+            "ns_per_byte": 14.4393
+          },
+          {
+            "duration_ns": 67200,
+            "ns_per_byte": 16.5273
+          },
+          {
+            "duration_ns": 66940,
+            "ns_per_byte": 16.4634
+          },
+          {
+            "duration_ns": 58770,
+            "ns_per_byte": 14.454
+          },
+          {
+            "duration_ns": 58720,
+            "ns_per_byte": 14.4417
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4066,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 70260,
+            "ns_per_byte": 17.2799
+          },
+          {
+            "duration_ns": 62570,
+            "ns_per_byte": 15.3886
+          },
+          {
+            "duration_ns": 70780,
+            "ns_per_byte": 17.4078
+          },
+          {
+            "duration_ns": 62070,
+            "ns_per_byte": 15.2656
+          },
+          {
+            "duration_ns": 70800,
+            "ns_per_byte": 17.4127
+          },
+          {
+            "duration_ns": 64430,
+            "ns_per_byte": 15.846
+          },
+          {
+            "duration_ns": 70559,
+            "ns_per_byte": 17.3534
+          },
+          {
+            "duration_ns": 61840,
+            "ns_per_byte": 15.2091
+          },
+          {
+            "duration_ns": 61980,
+            "ns_per_byte": 15.2435
+          },
+          {
+            "duration_ns": 62300,
+            "ns_per_byte": 15.3222
+          },
+          {
+            "duration_ns": 70640,
+            "ns_per_byte": 17.3733
+          },
+          {
+            "duration_ns": 61980,
+            "ns_per_byte": 15.2435
+          },
+          {
+            "duration_ns": 62140,
+            "ns_per_byte": 15.2828
+          },
+          {
+            "duration_ns": 61980,
+            "ns_per_byte": 15.2435
+          },
+          {
+            "duration_ns": 71290,
+            "ns_per_byte": 17.5332
+          },
+          {
+            "duration_ns": 62720,
+            "ns_per_byte": 15.4255
+          },
+          {
+            "duration_ns": 70050,
+            "ns_per_byte": 17.2282
+          },
+          {
+            "duration_ns": 62950,
+            "ns_per_byte": 15.482
+          },
+          {
+            "duration_ns": 61740,
+            "ns_per_byte": 15.1845
+          },
+          {
+            "duration_ns": 70570,
+            "ns_per_byte": 17.3561
+          },
+          {
+            "duration_ns": 63600,
+            "ns_per_byte": 15.6419
+          },
+          {
+            "duration_ns": 62180,
+            "ns_per_byte": 15.2927
+          },
+          {
+            "duration_ns": 61650,
+            "ns_per_byte": 15.1623
+          },
+          {
+            "duration_ns": 63230,
+            "ns_per_byte": 15.5509
+          },
+          {
+            "duration_ns": 62530,
+            "ns_per_byte": 15.3788
+          },
+          {
+            "duration_ns": 61860,
+            "ns_per_byte": 15.214
+          },
+          {
+            "duration_ns": 61990,
+            "ns_per_byte": 15.2459
+          },
+          {
+            "duration_ns": 70859,
+            "ns_per_byte": 17.4272
+          },
+          {
+            "duration_ns": 62020,
+            "ns_per_byte": 15.2533
+          },
+          {
+            "duration_ns": 71180,
+            "ns_per_byte": 17.5061
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4059,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 99820,
+            "ns_per_byte": 24.5923
+          },
+          {
+            "duration_ns": 98430,
+            "ns_per_byte": 24.2498
+          },
+          {
+            "duration_ns": 91280,
+            "ns_per_byte": 22.4883
+          },
+          {
+            "duration_ns": 98200,
+            "ns_per_byte": 24.1932
+          },
+          {
+            "duration_ns": 90620,
+            "ns_per_byte": 22.3257
+          },
+          {
+            "duration_ns": 99940,
+            "ns_per_byte": 24.6218
+          },
+          {
+            "duration_ns": 91569,
+            "ns_per_byte": 22.5595
+          },
+          {
+            "duration_ns": 91570,
+            "ns_per_byte": 22.5597
+          },
+          {
+            "duration_ns": 91270,
+            "ns_per_byte": 22.4858
+          },
+          {
+            "duration_ns": 91600,
+            "ns_per_byte": 22.5671
+          },
+          {
+            "duration_ns": 99750,
+            "ns_per_byte": 24.575
+          },
+          {
+            "duration_ns": 99780,
+            "ns_per_byte": 24.5824
+          },
+          {
+            "duration_ns": 99760,
+            "ns_per_byte": 24.5775
+          },
+          {
+            "duration_ns": 99449,
+            "ns_per_byte": 24.5009
+          },
+          {
+            "duration_ns": 90640,
+            "ns_per_byte": 22.3306
+          },
+          {
+            "duration_ns": 99750,
+            "ns_per_byte": 24.575
+          },
+          {
+            "duration_ns": 98650,
+            "ns_per_byte": 24.304
+          },
+          {
+            "duration_ns": 91620,
+            "ns_per_byte": 22.5721
+          },
+          {
+            "duration_ns": 91500,
+            "ns_per_byte": 22.5425
+          },
+          {
+            "duration_ns": 97719,
+            "ns_per_byte": 24.0746
+          },
+          {
+            "duration_ns": 90630,
+            "ns_per_byte": 22.3282
+          },
+          {
+            "duration_ns": 90390,
+            "ns_per_byte": 22.269
+          },
+          {
+            "duration_ns": 98820,
+            "ns_per_byte": 24.3459
+          },
+          {
+            "duration_ns": 100040,
+            "ns_per_byte": 24.6465
+          },
+          {
+            "duration_ns": 99460,
+            "ns_per_byte": 24.5036
+          },
+          {
+            "duration_ns": 98790,
+            "ns_per_byte": 24.3385
+          },
+          {
+            "duration_ns": 91639,
+            "ns_per_byte": 22.5767
+          },
+          {
+            "duration_ns": 99530,
+            "ns_per_byte": 24.5208
+          },
+          {
+            "duration_ns": 91760,
+            "ns_per_byte": 22.6066
+          },
+          {
+            "duration_ns": 98880,
+            "ns_per_byte": 24.3607
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4059,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 98860,
+            "ns_per_byte": 24.3558
+          },
+          {
+            "duration_ns": 103559,
+            "ns_per_byte": 25.5134
+          },
+          {
+            "duration_ns": 102770,
+            "ns_per_byte": 25.319
+          },
+          {
+            "duration_ns": 94470,
+            "ns_per_byte": 23.2742
+          },
+          {
+            "duration_ns": 104110,
+            "ns_per_byte": 25.6492
+          },
+          {
+            "duration_ns": 102550,
+            "ns_per_byte": 25.2648
+          },
+          {
+            "duration_ns": 94600,
+            "ns_per_byte": 23.3062
+          },
+          {
+            "duration_ns": 102850,
+            "ns_per_byte": 25.3388
+          },
+          {
+            "duration_ns": 103859,
+            "ns_per_byte": 25.5873
+          },
+          {
+            "duration_ns": 103150,
+            "ns_per_byte": 25.4127
+          },
+          {
+            "duration_ns": 98850,
+            "ns_per_byte": 24.3533
+          },
+          {
+            "duration_ns": 95570,
+            "ns_per_byte": 23.5452
+          },
+          {
+            "duration_ns": 103640,
+            "ns_per_byte": 25.5334
+          },
+          {
+            "duration_ns": 103880,
+            "ns_per_byte": 25.5925
+          },
+          {
+            "duration_ns": 102889,
+            "ns_per_byte": 25.3484
+          },
+          {
+            "duration_ns": 94520,
+            "ns_per_byte": 23.2865
+          },
+          {
+            "duration_ns": 104090,
+            "ns_per_byte": 25.6442
+          },
+          {
+            "duration_ns": 95150,
+            "ns_per_byte": 23.4417
+          },
+          {
+            "duration_ns": 104130,
+            "ns_per_byte": 25.6541
+          },
+          {
+            "duration_ns": 103970,
+            "ns_per_byte": 25.6147
+          },
+          {
+            "duration_ns": 103509,
+            "ns_per_byte": 25.5011
+          },
+          {
+            "duration_ns": 103880,
+            "ns_per_byte": 25.5925
+          },
+          {
+            "duration_ns": 104040,
+            "ns_per_byte": 25.6319
+          },
+          {
+            "duration_ns": 103810,
+            "ns_per_byte": 25.5753
+          },
+          {
+            "duration_ns": 103830,
+            "ns_per_byte": 25.5802
+          },
+          {
+            "duration_ns": 95400,
+            "ns_per_byte": 23.5033
+          },
+          {
+            "duration_ns": 103930,
+            "ns_per_byte": 25.6048
+          },
+          {
+            "duration_ns": 95639,
+            "ns_per_byte": 23.5622
+          },
+          {
+            "duration_ns": 103830,
+            "ns_per_byte": 25.5802
+          },
+          {
+            "duration_ns": 103590,
+            "ns_per_byte": 25.5211
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4074,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 107979,
+            "ns_per_byte": 26.5044
+          },
+          {
+            "duration_ns": 107370,
+            "ns_per_byte": 26.3549
+          },
+          {
+            "duration_ns": 99550,
+            "ns_per_byte": 24.4354
+          },
+          {
+            "duration_ns": 99860,
+            "ns_per_byte": 24.5115
+          },
+          {
+            "duration_ns": 100580,
+            "ns_per_byte": 24.6883
+          },
+          {
+            "duration_ns": 107740,
+            "ns_per_byte": 26.4458
+          },
+          {
+            "duration_ns": 108069,
+            "ns_per_byte": 26.5265
+          },
+          {
+            "duration_ns": 108090,
+            "ns_per_byte": 26.5317
+          },
+          {
+            "duration_ns": 107770,
+            "ns_per_byte": 26.4531
+          },
+          {
+            "duration_ns": 98700,
+            "ns_per_byte": 24.2268
+          },
+          {
+            "duration_ns": 107220,
+            "ns_per_byte": 26.3181
+          },
+          {
+            "duration_ns": 107760,
+            "ns_per_byte": 26.4507
+          },
+          {
+            "duration_ns": 108140,
+            "ns_per_byte": 26.5439
+          },
+          {
+            "duration_ns": 107859,
+            "ns_per_byte": 26.475
+          },
+          {
+            "duration_ns": 107880,
+            "ns_per_byte": 26.4801
+          },
+          {
+            "duration_ns": 106010,
+            "ns_per_byte": 26.0211
+          },
+          {
+            "duration_ns": 107780,
+            "ns_per_byte": 26.4556
+          },
+          {
+            "duration_ns": 107000,
+            "ns_per_byte": 26.2641
+          },
+          {
+            "duration_ns": 107840,
+            "ns_per_byte": 26.4703
+          },
+          {
+            "duration_ns": 107959,
+            "ns_per_byte": 26.4995
+          },
+          {
+            "duration_ns": 108080,
+            "ns_per_byte": 26.5292
+          },
+          {
+            "duration_ns": 107940,
+            "ns_per_byte": 26.4948
+          },
+          {
+            "duration_ns": 108940,
+            "ns_per_byte": 26.7403
+          },
+          {
+            "duration_ns": 107910,
+            "ns_per_byte": 26.4875
+          },
+          {
+            "duration_ns": 99650,
+            "ns_per_byte": 24.46
+          },
+          {
+            "duration_ns": 99699,
+            "ns_per_byte": 24.472
+          },
+          {
+            "duration_ns": 99740,
+            "ns_per_byte": 24.4821
+          },
+          {
+            "duration_ns": 107890,
+            "ns_per_byte": 26.4826
+          },
+          {
+            "duration_ns": 106870,
+            "ns_per_byte": 26.2322
+          },
+          {
+            "duration_ns": 99740,
+            "ns_per_byte": 24.4821
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4074,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 112070,
+            "ns_per_byte": 27.5086
+          },
+          {
+            "duration_ns": 103629,
+            "ns_per_byte": 25.4367
+          },
+          {
+            "duration_ns": 104270,
+            "ns_per_byte": 25.594
+          },
+          {
+            "duration_ns": 111880,
+            "ns_per_byte": 27.462
+          },
+          {
+            "duration_ns": 111940,
+            "ns_per_byte": 27.4767
+          },
+          {
+            "duration_ns": 112180,
+            "ns_per_byte": 27.5356
+          },
+          {
+            "duration_ns": 111930,
+            "ns_per_byte": 27.4742
+          },
+          {
+            "duration_ns": 110879,
+            "ns_per_byte": 27.2162
+          },
+          {
+            "duration_ns": 104290,
+            "ns_per_byte": 25.5989
+          },
+          {
+            "duration_ns": 111790,
+            "ns_per_byte": 27.4399
+          },
+          {
+            "duration_ns": 103990,
+            "ns_per_byte": 25.5253
+          },
+          {
+            "duration_ns": 111840,
+            "ns_per_byte": 27.4521
+          },
+          {
+            "duration_ns": 112100,
+            "ns_per_byte": 27.516
+          },
+          {
+            "duration_ns": 103899,
+            "ns_per_byte": 25.5029
+          },
+          {
+            "duration_ns": 113580,
+            "ns_per_byte": 27.8792
+          },
+          {
+            "duration_ns": 103300,
+            "ns_per_byte": 25.3559
+          },
+          {
+            "duration_ns": 111380,
+            "ns_per_byte": 27.3392
+          },
+          {
+            "duration_ns": 103610,
+            "ns_per_byte": 25.432
+          },
+          {
+            "duration_ns": 102950,
+            "ns_per_byte": 25.27
+          },
+          {
+            "duration_ns": 104889,
+            "ns_per_byte": 25.7459
+          },
+          {
+            "duration_ns": 110950,
+            "ns_per_byte": 27.2337
+          },
+          {
+            "duration_ns": 102870,
+            "ns_per_byte": 25.2504
+          },
+          {
+            "duration_ns": 103980,
+            "ns_per_byte": 25.5228
+          },
+          {
+            "duration_ns": 103820,
+            "ns_per_byte": 25.4836
+          },
+          {
+            "duration_ns": 104140,
+            "ns_per_byte": 25.5621
+          },
+          {
+            "duration_ns": 103589,
+            "ns_per_byte": 25.4269
+          },
+          {
+            "duration_ns": 112120,
+            "ns_per_byte": 27.5209
+          },
+          {
+            "duration_ns": 103830,
+            "ns_per_byte": 25.486
+          },
+          {
+            "duration_ns": 103940,
+            "ns_per_byte": 25.513
+          },
+          {
+            "duration_ns": 103830,
+            "ns_per_byte": 25.486
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4091,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 136450,
+            "ns_per_byte": 33.3537
+          },
+          {
+            "duration_ns": 137619,
+            "ns_per_byte": 33.6395
+          },
+          {
+            "duration_ns": 135230,
+            "ns_per_byte": 33.0555
+          },
+          {
+            "duration_ns": 137550,
+            "ns_per_byte": 33.6226
+          },
+          {
+            "duration_ns": 129350,
+            "ns_per_byte": 31.6182
+          },
+          {
+            "duration_ns": 137680,
+            "ns_per_byte": 33.6544
+          },
+          {
+            "duration_ns": 137569,
+            "ns_per_byte": 33.6272
+          },
+          {
+            "duration_ns": 137730,
+            "ns_per_byte": 33.6666
+          },
+          {
+            "duration_ns": 129430,
+            "ns_per_byte": 31.6377
+          },
+          {
+            "duration_ns": 135630,
+            "ns_per_byte": 33.1533
+          },
+          {
+            "duration_ns": 137629,
+            "ns_per_byte": 33.6419
+          },
+          {
+            "duration_ns": 129310,
+            "ns_per_byte": 31.6084
+          },
+          {
+            "duration_ns": 137640,
+            "ns_per_byte": 33.6446
+          },
+          {
+            "duration_ns": 137460,
+            "ns_per_byte": 33.6006
+          },
+          {
+            "duration_ns": 138630,
+            "ns_per_byte": 33.8866
+          },
+          {
+            "duration_ns": 136629,
+            "ns_per_byte": 33.3975
+          },
+          {
+            "duration_ns": 137560,
+            "ns_per_byte": 33.625
+          },
+          {
+            "duration_ns": 132760,
+            "ns_per_byte": 32.4517
+          },
+          {
+            "duration_ns": 137490,
+            "ns_per_byte": 33.6079
+          },
+          {
+            "duration_ns": 137640,
+            "ns_per_byte": 33.6446
+          },
+          {
+            "duration_ns": 136519,
+            "ns_per_byte": 33.3706
+          },
+          {
+            "duration_ns": 137500,
+            "ns_per_byte": 33.6104
+          },
+          {
+            "duration_ns": 137610,
+            "ns_per_byte": 33.6373
+          },
+          {
+            "duration_ns": 135650,
+            "ns_per_byte": 33.1582
+          },
+          {
+            "duration_ns": 128410,
+            "ns_per_byte": 31.3884
+          },
+          {
+            "duration_ns": 137629,
+            "ns_per_byte": 33.6419
+          },
+          {
+            "duration_ns": 135770,
+            "ns_per_byte": 33.1875
+          },
+          {
+            "duration_ns": 130230,
+            "ns_per_byte": 31.8333
+          },
+          {
+            "duration_ns": 138630,
+            "ns_per_byte": 33.8866
+          },
+          {
+            "duration_ns": 136810,
+            "ns_per_byte": 33.4417
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4091,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 140410,
+            "ns_per_byte": 34.3217
+          },
+          {
+            "duration_ns": 132210,
+            "ns_per_byte": 32.3173
+          },
+          {
+            "duration_ns": 133760,
+            "ns_per_byte": 32.6962
+          },
+          {
+            "duration_ns": 141399,
+            "ns_per_byte": 34.5634
+          },
+          {
+            "duration_ns": 139910,
+            "ns_per_byte": 34.1995
+          },
+          {
+            "duration_ns": 142190,
+            "ns_per_byte": 34.7568
+          },
+          {
+            "duration_ns": 142270,
+            "ns_per_byte": 34.7763
+          },
+          {
+            "duration_ns": 132480,
+            "ns_per_byte": 32.3833
+          },
+          {
+            "duration_ns": 139649,
+            "ns_per_byte": 34.1357
+          },
+          {
+            "duration_ns": 140690,
+            "ns_per_byte": 34.3901
+          },
+          {
+            "duration_ns": 132690,
+            "ns_per_byte": 32.4346
+          },
+          {
+            "duration_ns": 136520,
+            "ns_per_byte": 33.3708
+          },
+          {
+            "duration_ns": 140810,
+            "ns_per_byte": 34.4195
+          },
+          {
+            "duration_ns": 140379,
+            "ns_per_byte": 34.3141
+          },
+          {
+            "duration_ns": 132460,
+            "ns_per_byte": 32.3784
+          },
+          {
+            "duration_ns": 134160,
+            "ns_per_byte": 32.7939
+          },
+          {
+            "duration_ns": 140600,
+            "ns_per_byte": 34.3681
+          },
+          {
+            "duration_ns": 139509,
+            "ns_per_byte": 34.1014
+          },
+          {
+            "duration_ns": 133580,
+            "ns_per_byte": 32.6522
+          },
+          {
+            "duration_ns": 135690,
+            "ns_per_byte": 33.1679
+          },
+          {
+            "duration_ns": 135510,
+            "ns_per_byte": 33.1239
+          },
+          {
+            "duration_ns": 141610,
+            "ns_per_byte": 34.615
+          },
+          {
+            "duration_ns": 133329,
+            "ns_per_byte": 32.5908
+          },
+          {
+            "duration_ns": 139880,
+            "ns_per_byte": 34.1921
+          },
+          {
+            "duration_ns": 140570,
+            "ns_per_byte": 34.3608
+          },
+          {
+            "duration_ns": 140840,
+            "ns_per_byte": 34.4268
+          },
+          {
+            "duration_ns": 133590,
+            "ns_per_byte": 32.6546
+          },
+          {
+            "duration_ns": 140529,
+            "ns_per_byte": 34.3508
+          },
+          {
+            "duration_ns": 139820,
+            "ns_per_byte": 34.1775
+          },
+          {
+            "duration_ns": 141830,
+            "ns_per_byte": 34.6688
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4088,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 99480,
+            "ns_per_byte": 24.3346
+          },
+          {
+            "duration_ns": 100050,
+            "ns_per_byte": 24.4741
+          },
+          {
+            "duration_ns": 101429,
+            "ns_per_byte": 24.8114
+          },
+          {
+            "duration_ns": 99540,
+            "ns_per_byte": 24.3493
+          },
+          {
+            "duration_ns": 99730,
+            "ns_per_byte": 24.3958
+          },
+          {
+            "duration_ns": 99840,
+            "ns_per_byte": 24.4227
+          },
+          {
+            "duration_ns": 99720,
+            "ns_per_byte": 24.3933
+          },
+          {
+            "duration_ns": 99780,
+            "ns_per_byte": 24.408
+          },
+          {
+            "duration_ns": 98540,
+            "ns_per_byte": 24.1047
+          },
+          {
+            "duration_ns": 99819,
+            "ns_per_byte": 24.4176
+          },
+          {
+            "duration_ns": 99560,
+            "ns_per_byte": 24.3542
+          },
+          {
+            "duration_ns": 99860,
+            "ns_per_byte": 24.4276
+          },
+          {
+            "duration_ns": 99610,
+            "ns_per_byte": 24.3664
+          },
+          {
+            "duration_ns": 99140,
+            "ns_per_byte": 24.2515
+          },
+          {
+            "duration_ns": 94820,
+            "ns_per_byte": 23.1947
+          },
+          {
+            "duration_ns": 102519,
+            "ns_per_byte": 25.078
+          },
+          {
+            "duration_ns": 100590,
+            "ns_per_byte": 24.6062
+          },
+          {
+            "duration_ns": 93380,
+            "ns_per_byte": 22.8425
+          },
+          {
+            "duration_ns": 99890,
+            "ns_per_byte": 24.4349
+          },
+          {
+            "duration_ns": 99930,
+            "ns_per_byte": 24.4447
+          },
+          {
+            "duration_ns": 99710,
+            "ns_per_byte": 24.3909
+          },
+          {
+            "duration_ns": 99520,
+            "ns_per_byte": 24.3444
+          },
+          {
+            "duration_ns": 101709,
+            "ns_per_byte": 24.8799
+          },
+          {
+            "duration_ns": 99920,
+            "ns_per_byte": 24.4423
+          },
+          {
+            "duration_ns": 99580,
+            "ns_per_byte": 24.3591
+          },
+          {
+            "duration_ns": 99710,
+            "ns_per_byte": 24.3909
+          },
+          {
+            "duration_ns": 99750,
+            "ns_per_byte": 24.4007
+          },
+          {
+            "duration_ns": 99810,
+            "ns_per_byte": 24.4154
+          },
+          {
+            "duration_ns": 100609,
+            "ns_per_byte": 24.6108
+          },
+          {
+            "duration_ns": 98900,
+            "ns_per_byte": 24.1928
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4088,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 104260,
+            "ns_per_byte": 25.5039
+          },
+          {
+            "duration_ns": 112619,
+            "ns_per_byte": 27.5487
+          },
+          {
+            "duration_ns": 104980,
+            "ns_per_byte": 25.68
+          },
+          {
+            "duration_ns": 111730,
+            "ns_per_byte": 27.3312
+          },
+          {
+            "duration_ns": 103520,
+            "ns_per_byte": 25.3229
+          },
+          {
+            "duration_ns": 112120,
+            "ns_per_byte": 27.4266
+          },
+          {
+            "duration_ns": 103260,
+            "ns_per_byte": 25.2593
+          },
+          {
+            "duration_ns": 111689,
+            "ns_per_byte": 27.3212
+          },
+          {
+            "duration_ns": 105420,
+            "ns_per_byte": 25.7877
+          },
+          {
+            "duration_ns": 111300,
+            "ns_per_byte": 27.226
+          },
+          {
+            "duration_ns": 110140,
+            "ns_per_byte": 26.9423
+          },
+          {
+            "duration_ns": 112060,
+            "ns_per_byte": 27.4119
+          },
+          {
+            "duration_ns": 102750,
+            "ns_per_byte": 25.1345
+          },
+          {
+            "duration_ns": 111799,
+            "ns_per_byte": 27.3481
+          },
+          {
+            "duration_ns": 102860,
+            "ns_per_byte": 25.1614
+          },
+          {
+            "duration_ns": 112370,
+            "ns_per_byte": 27.4878
+          },
+          {
+            "duration_ns": 112140,
+            "ns_per_byte": 27.4315
+          },
+          {
+            "duration_ns": 104440,
+            "ns_per_byte": 25.5479
+          },
+          {
+            "duration_ns": 112300,
+            "ns_per_byte": 27.4706
+          },
+          {
+            "duration_ns": 111919,
+            "ns_per_byte": 27.3774
+          },
+          {
+            "duration_ns": 95510,
+            "ns_per_byte": 23.3635
+          },
+          {
+            "duration_ns": 111310,
+            "ns_per_byte": 27.2285
+          },
+          {
+            "duration_ns": 111810,
+            "ns_per_byte": 27.3508
+          },
+          {
+            "duration_ns": 111520,
+            "ns_per_byte": 27.2798
+          },
+          {
+            "duration_ns": 103410,
+            "ns_per_byte": 25.296
+          },
+          {
+            "duration_ns": 103239,
+            "ns_per_byte": 25.2542
+          },
+          {
+            "duration_ns": 103670,
+            "ns_per_byte": 25.3596
+          },
+          {
+            "duration_ns": 112300,
+            "ns_per_byte": 27.4706
+          },
+          {
+            "duration_ns": 111930,
+            "ns_per_byte": 27.3801
+          },
+          {
+            "duration_ns": 103800,
+            "ns_per_byte": 25.3914
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65512,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 96130,
+            "ns_per_byte": 1.46736
+          },
+          {
+            "duration_ns": 104560,
+            "ns_per_byte": 1.59604
+          },
+          {
+            "duration_ns": 102760,
+            "ns_per_byte": 1.56857
+          },
+          {
+            "duration_ns": 102889,
+            "ns_per_byte": 1.57054
+          },
+          {
+            "duration_ns": 102830,
+            "ns_per_byte": 1.56964
+          },
+          {
+            "duration_ns": 102940,
+            "ns_per_byte": 1.57132
+          },
+          {
+            "duration_ns": 95680,
+            "ns_per_byte": 1.4605
+          },
+          {
+            "duration_ns": 102910,
+            "ns_per_byte": 1.57086
+          },
+          {
+            "duration_ns": 102970,
+            "ns_per_byte": 1.57177
+          },
+          {
+            "duration_ns": 110969,
+            "ns_per_byte": 1.69387
+          },
+          {
+            "duration_ns": 103170,
+            "ns_per_byte": 1.57483
+          },
+          {
+            "duration_ns": 102710,
+            "ns_per_byte": 1.5678
+          },
+          {
+            "duration_ns": 94810,
+            "ns_per_byte": 1.44722
+          },
+          {
+            "duration_ns": 102860,
+            "ns_per_byte": 1.57009
+          },
+          {
+            "duration_ns": 101920,
+            "ns_per_byte": 1.55575
+          },
+          {
+            "duration_ns": 103930,
+            "ns_per_byte": 1.58643
+          },
+          {
+            "duration_ns": 94749,
+            "ns_per_byte": 1.44628
+          },
+          {
+            "duration_ns": 112130,
+            "ns_per_byte": 1.71159
+          },
+          {
+            "duration_ns": 95830,
+            "ns_per_byte": 1.46279
+          },
+          {
+            "duration_ns": 110980,
+            "ns_per_byte": 1.69404
+          },
+          {
+            "duration_ns": 94900,
+            "ns_per_byte": 1.44859
+          },
+          {
+            "duration_ns": 111080,
+            "ns_per_byte": 1.69557
+          },
+          {
+            "duration_ns": 102819,
+            "ns_per_byte": 1.56947
+          },
+          {
+            "duration_ns": 111360,
+            "ns_per_byte": 1.69984
+          },
+          {
+            "duration_ns": 98710,
+            "ns_per_byte": 1.50675
+          },
+          {
+            "duration_ns": 103000,
+            "ns_per_byte": 1.57223
+          },
+          {
+            "duration_ns": 94700,
+            "ns_per_byte": 1.44554
+          },
+          {
+            "duration_ns": 103000,
+            "ns_per_byte": 1.57223
+          },
+          {
+            "duration_ns": 94849,
+            "ns_per_byte": 1.44781
+          },
+          {
+            "duration_ns": 110950,
+            "ns_per_byte": 1.69358
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65512,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 116440,
+            "ns_per_byte": 1.77738
+          },
+          {
+            "duration_ns": 106810,
+            "ns_per_byte": 1.63039
+          },
+          {
+            "duration_ns": 114210,
+            "ns_per_byte": 1.74334
+          },
+          {
+            "duration_ns": 106729,
+            "ns_per_byte": 1.62915
+          },
+          {
+            "duration_ns": 105720,
+            "ns_per_byte": 1.61375
+          },
+          {
+            "duration_ns": 115440,
+            "ns_per_byte": 1.76212
+          },
+          {
+            "duration_ns": 106140,
+            "ns_per_byte": 1.62016
+          },
+          {
+            "duration_ns": 107110,
+            "ns_per_byte": 1.63497
+          },
+          {
+            "duration_ns": 103640,
+            "ns_per_byte": 1.582
+          },
+          {
+            "duration_ns": 107149,
+            "ns_per_byte": 1.63556
+          },
+          {
+            "duration_ns": 107180,
+            "ns_per_byte": 1.63604
+          },
+          {
+            "duration_ns": 106730,
+            "ns_per_byte": 1.62917
+          },
+          {
+            "duration_ns": 105140,
+            "ns_per_byte": 1.6049
+          },
+          {
+            "duration_ns": 106670,
+            "ns_per_byte": 1.62825
+          },
+          {
+            "duration_ns": 113600,
+            "ns_per_byte": 1.73403
+          },
+          {
+            "duration_ns": 119299,
+            "ns_per_byte": 1.82103
+          },
+          {
+            "duration_ns": 120130,
+            "ns_per_byte": 1.83371
+          },
+          {
+            "duration_ns": 113410,
+            "ns_per_byte": 1.73113
+          },
+          {
+            "duration_ns": 99980,
+            "ns_per_byte": 1.52613
+          },
+          {
+            "duration_ns": 115110,
+            "ns_per_byte": 1.75708
+          },
+          {
+            "duration_ns": 98880,
+            "ns_per_byte": 1.50934
+          },
+          {
+            "duration_ns": 115159,
+            "ns_per_byte": 1.75783
+          },
+          {
+            "duration_ns": 97750,
+            "ns_per_byte": 1.49209
+          },
+          {
+            "duration_ns": 107140,
+            "ns_per_byte": 1.63543
+          },
+          {
+            "duration_ns": 97750,
+            "ns_per_byte": 1.49209
+          },
+          {
+            "duration_ns": 113150,
+            "ns_per_byte": 1.72716
+          },
+          {
+            "duration_ns": 99160,
+            "ns_per_byte": 1.51362
+          },
+          {
+            "duration_ns": 106879,
+            "ns_per_byte": 1.63144
+          },
+          {
+            "duration_ns": 106010,
+            "ns_per_byte": 1.61818
+          },
+          {
+            "duration_ns": 115290,
+            "ns_per_byte": 1.75983
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 151939,
+            "ns_per_byte": 2.31904
+          },
+          {
+            "duration_ns": 163010,
+            "ns_per_byte": 2.48802
+          },
+          {
+            "duration_ns": 158930,
+            "ns_per_byte": 2.42575
+          },
+          {
+            "duration_ns": 159110,
+            "ns_per_byte": 2.42849
+          },
+          {
+            "duration_ns": 151279,
+            "ns_per_byte": 2.30897
+          },
+          {
+            "duration_ns": 159060,
+            "ns_per_byte": 2.42773
+          },
+          {
+            "duration_ns": 158370,
+            "ns_per_byte": 2.4172
+          },
+          {
+            "duration_ns": 158980,
+            "ns_per_byte": 2.42651
+          },
+          {
+            "duration_ns": 153039,
+            "ns_per_byte": 2.33583
+          },
+          {
+            "duration_ns": 160140,
+            "ns_per_byte": 2.44421
+          },
+          {
+            "duration_ns": 159530,
+            "ns_per_byte": 2.4349
+          },
+          {
+            "duration_ns": 158080,
+            "ns_per_byte": 2.41277
+          },
+          {
+            "duration_ns": 157739,
+            "ns_per_byte": 2.40757
+          },
+          {
+            "duration_ns": 158720,
+            "ns_per_byte": 2.42254
+          },
+          {
+            "duration_ns": 159410,
+            "ns_per_byte": 2.43307
+          },
+          {
+            "duration_ns": 159170,
+            "ns_per_byte": 2.42941
+          },
+          {
+            "duration_ns": 151379,
+            "ns_per_byte": 2.31049
+          },
+          {
+            "duration_ns": 159040,
+            "ns_per_byte": 2.42742
+          },
+          {
+            "duration_ns": 159030,
+            "ns_per_byte": 2.42727
+          },
+          {
+            "duration_ns": 160170,
+            "ns_per_byte": 2.44467
+          },
+          {
+            "duration_ns": 158369,
+            "ns_per_byte": 2.41718
+          },
+          {
+            "duration_ns": 158320,
+            "ns_per_byte": 2.41644
+          },
+          {
+            "duration_ns": 160150,
+            "ns_per_byte": 2.44437
+          },
+          {
+            "duration_ns": 158290,
+            "ns_per_byte": 2.41598
+          },
+          {
+            "duration_ns": 158789,
+            "ns_per_byte": 2.42359
+          },
+          {
+            "duration_ns": 160820,
+            "ns_per_byte": 2.45459
+          },
+          {
+            "duration_ns": 162470,
+            "ns_per_byte": 2.47978
+          },
+          {
+            "duration_ns": 161280,
+            "ns_per_byte": 2.46161
+          },
+          {
+            "duration_ns": 155080,
+            "ns_per_byte": 2.36698
+          },
+          {
+            "duration_ns": 159529,
+            "ns_per_byte": 2.43489
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 163339,
+            "ns_per_byte": 2.49304
+          },
+          {
+            "duration_ns": 163020,
+            "ns_per_byte": 2.48817
+          },
+          {
+            "duration_ns": 163160,
+            "ns_per_byte": 2.49031
+          },
+          {
+            "duration_ns": 163400,
+            "ns_per_byte": 2.49397
+          },
+          {
+            "duration_ns": 163669,
+            "ns_per_byte": 2.49808
+          },
+          {
+            "duration_ns": 164160,
+            "ns_per_byte": 2.50557
+          },
+          {
+            "duration_ns": 163300,
+            "ns_per_byte": 2.49244
+          },
+          {
+            "duration_ns": 163460,
+            "ns_per_byte": 2.49489
+          },
+          {
+            "duration_ns": 164219,
+            "ns_per_byte": 2.50647
+          },
+          {
+            "duration_ns": 163350,
+            "ns_per_byte": 2.49321
+          },
+          {
+            "duration_ns": 167510,
+            "ns_per_byte": 2.5567
+          },
+          {
+            "duration_ns": 164340,
+            "ns_per_byte": 2.50832
+          },
+          {
+            "duration_ns": 163359,
+            "ns_per_byte": 2.49335
+          },
+          {
+            "duration_ns": 169820,
+            "ns_per_byte": 2.59196
+          },
+          {
+            "duration_ns": 163720,
+            "ns_per_byte": 2.49886
+          },
+          {
+            "duration_ns": 163979,
+            "ns_per_byte": 2.50281
+          },
+          {
+            "duration_ns": 162130,
+            "ns_per_byte": 2.47459
+          },
+          {
+            "duration_ns": 163280,
+            "ns_per_byte": 2.49214
+          },
+          {
+            "duration_ns": 163600,
+            "ns_per_byte": 2.49702
+          },
+          {
+            "duration_ns": 163439,
+            "ns_per_byte": 2.49457
+          },
+          {
+            "duration_ns": 163350,
+            "ns_per_byte": 2.49321
+          },
+          {
+            "duration_ns": 155920,
+            "ns_per_byte": 2.3798
+          },
+          {
+            "duration_ns": 163860,
+            "ns_per_byte": 2.50099
+          },
+          {
+            "duration_ns": 163990,
+            "ns_per_byte": 2.50298
+          },
+          {
+            "duration_ns": 163299,
+            "ns_per_byte": 2.49243
+          },
+          {
+            "duration_ns": 163150,
+            "ns_per_byte": 2.49016
+          },
+          {
+            "duration_ns": 162600,
+            "ns_per_byte": 2.48176
+          },
+          {
+            "duration_ns": 164300,
+            "ns_per_byte": 2.50771
+          },
+          {
+            "duration_ns": 163159,
+            "ns_per_byte": 2.49029
+          },
+          {
+            "duration_ns": 163490,
+            "ns_per_byte": 2.49534
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65520,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 161210,
+            "ns_per_byte": 2.46047
+          },
+          {
+            "duration_ns": 167929,
+            "ns_per_byte": 2.56302
+          },
+          {
+            "duration_ns": 163260,
+            "ns_per_byte": 2.49176
+          },
+          {
+            "duration_ns": 160190,
+            "ns_per_byte": 2.4449
+          },
+          {
+            "duration_ns": 159190,
+            "ns_per_byte": 2.42964
+          },
+          {
+            "duration_ns": 160269,
+            "ns_per_byte": 2.44611
+          },
+          {
+            "duration_ns": 159480,
+            "ns_per_byte": 2.43407
+          },
+          {
+            "duration_ns": 159160,
+            "ns_per_byte": 2.42918
+          },
+          {
+            "duration_ns": 161120,
+            "ns_per_byte": 2.4591
+          },
+          {
+            "duration_ns": 164449,
+            "ns_per_byte": 2.50991
+          },
+          {
+            "duration_ns": 161080,
+            "ns_per_byte": 2.45849
+          },
+          {
+            "duration_ns": 167410,
+            "ns_per_byte": 2.5551
+          },
+          {
+            "duration_ns": 160540,
+            "ns_per_byte": 2.45024
+          },
+          {
+            "duration_ns": 168409,
+            "ns_per_byte": 2.57034
+          },
+          {
+            "duration_ns": 161140,
+            "ns_per_byte": 2.4594
+          },
+          {
+            "duration_ns": 160110,
+            "ns_per_byte": 2.44368
+          },
+          {
+            "duration_ns": 160400,
+            "ns_per_byte": 2.44811
+          },
+          {
+            "duration_ns": 160069,
+            "ns_per_byte": 2.44306
+          },
+          {
+            "duration_ns": 158710,
+            "ns_per_byte": 2.42231
+          },
+          {
+            "duration_ns": 164540,
+            "ns_per_byte": 2.51129
+          },
+          {
+            "duration_ns": 158670,
+            "ns_per_byte": 2.4217
+          },
+          {
+            "duration_ns": 160720,
+            "ns_per_byte": 2.45299
+          },
+          {
+            "duration_ns": 159599,
+            "ns_per_byte": 2.43588
+          },
+          {
+            "duration_ns": 167000,
+            "ns_per_byte": 2.54884
+          },
+          {
+            "duration_ns": 159760,
+            "ns_per_byte": 2.43834
+          },
+          {
+            "duration_ns": 160260,
+            "ns_per_byte": 2.44597
+          },
+          {
+            "duration_ns": 160319,
+            "ns_per_byte": 2.44687
+          },
+          {
+            "duration_ns": 160930,
+            "ns_per_byte": 2.4562
+          },
+          {
+            "duration_ns": 160320,
+            "ns_per_byte": 2.44689
+          },
+          {
+            "duration_ns": 162080,
+            "ns_per_byte": 2.47375
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65520,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 163440,
+            "ns_per_byte": 2.49451
+          },
+          {
+            "duration_ns": 171260,
+            "ns_per_byte": 2.61386
+          },
+          {
+            "duration_ns": 163879,
+            "ns_per_byte": 2.50121
+          },
+          {
+            "duration_ns": 171880,
+            "ns_per_byte": 2.62332
+          },
+          {
+            "duration_ns": 164170,
+            "ns_per_byte": 2.50565
+          },
+          {
+            "duration_ns": 174370,
+            "ns_per_byte": 2.66132
+          },
+          {
+            "duration_ns": 163449,
+            "ns_per_byte": 2.49464
+          },
+          {
+            "duration_ns": 163090,
+            "ns_per_byte": 2.48916
+          },
+          {
+            "duration_ns": 163340,
+            "ns_per_byte": 2.49298
+          },
+          {
+            "duration_ns": 163240,
+            "ns_per_byte": 2.49145
+          },
+          {
+            "duration_ns": 163459,
+            "ns_per_byte": 2.4948
+          },
+          {
+            "duration_ns": 165480,
+            "ns_per_byte": 2.52564
+          },
+          {
+            "duration_ns": 163260,
+            "ns_per_byte": 2.49176
+          },
+          {
+            "duration_ns": 163530,
+            "ns_per_byte": 2.49588
+          },
+          {
+            "duration_ns": 163079,
+            "ns_per_byte": 2.489
+          },
+          {
+            "duration_ns": 163940,
+            "ns_per_byte": 2.50214
+          },
+          {
+            "duration_ns": 164020,
+            "ns_per_byte": 2.50336
+          },
+          {
+            "duration_ns": 172470,
+            "ns_per_byte": 2.63233
+          },
+          {
+            "duration_ns": 163909,
+            "ns_per_byte": 2.50166
+          },
+          {
+            "duration_ns": 163230,
+            "ns_per_byte": 2.4913
+          },
+          {
+            "duration_ns": 167060,
+            "ns_per_byte": 2.54976
+          },
+          {
+            "duration_ns": 163780,
+            "ns_per_byte": 2.49969
+          },
+          {
+            "duration_ns": 171489,
+            "ns_per_byte": 2.61735
+          },
+          {
+            "duration_ns": 165970,
+            "ns_per_byte": 2.53312
+          },
+          {
+            "duration_ns": 162840,
+            "ns_per_byte": 2.48535
+          },
+          {
+            "duration_ns": 163450,
+            "ns_per_byte": 2.49466
+          },
+          {
+            "duration_ns": 167489,
+            "ns_per_byte": 2.5563
+          },
+          {
+            "duration_ns": 172520,
+            "ns_per_byte": 2.63309
+          },
+          {
+            "duration_ns": 164250,
+            "ns_per_byte": 2.50687
+          },
+          {
+            "duration_ns": 164460,
+            "ns_per_byte": 2.51007
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 206709,
+            "ns_per_byte": 3.155
+          },
+          {
+            "duration_ns": 205370,
+            "ns_per_byte": 3.13456
+          },
+          {
+            "duration_ns": 204900,
+            "ns_per_byte": 3.12738
+          },
+          {
+            "duration_ns": 205539,
+            "ns_per_byte": 3.13714
+          },
+          {
+            "duration_ns": 205020,
+            "ns_per_byte": 3.12922
+          },
+          {
+            "duration_ns": 205450,
+            "ns_per_byte": 3.13578
+          },
+          {
+            "duration_ns": 203410,
+            "ns_per_byte": 3.10464
+          },
+          {
+            "duration_ns": 206359,
+            "ns_per_byte": 3.14965
+          },
+          {
+            "duration_ns": 205330,
+            "ns_per_byte": 3.13395
+          },
+          {
+            "duration_ns": 205130,
+            "ns_per_byte": 3.1309
+          },
+          {
+            "duration_ns": 204349,
+            "ns_per_byte": 3.11897
+          },
+          {
+            "duration_ns": 213540,
+            "ns_per_byte": 3.25926
+          },
+          {
+            "duration_ns": 205440,
+            "ns_per_byte": 3.13563
+          },
+          {
+            "duration_ns": 206859,
+            "ns_per_byte": 3.15729
+          },
+          {
+            "duration_ns": 205920,
+            "ns_per_byte": 3.14295
+          },
+          {
+            "duration_ns": 205390,
+            "ns_per_byte": 3.13486
+          },
+          {
+            "duration_ns": 205229,
+            "ns_per_byte": 3.13241
+          },
+          {
+            "duration_ns": 206230,
+            "ns_per_byte": 3.14768
+          },
+          {
+            "duration_ns": 204370,
+            "ns_per_byte": 3.1193
+          },
+          {
+            "duration_ns": 206259,
+            "ns_per_byte": 3.14813
+          },
+          {
+            "duration_ns": 204470,
+            "ns_per_byte": 3.12082
+          },
+          {
+            "duration_ns": 205330,
+            "ns_per_byte": 3.13395
+          },
+          {
+            "duration_ns": 205189,
+            "ns_per_byte": 3.1318
+          },
+          {
+            "duration_ns": 206570,
+            "ns_per_byte": 3.15287
+          },
+          {
+            "duration_ns": 206430,
+            "ns_per_byte": 3.15074
+          },
+          {
+            "duration_ns": 205170,
+            "ns_per_byte": 3.13151
+          },
+          {
+            "duration_ns": 207169,
+            "ns_per_byte": 3.16202
+          },
+          {
+            "duration_ns": 197500,
+            "ns_per_byte": 3.01444
+          },
+          {
+            "duration_ns": 208160,
+            "ns_per_byte": 3.17714
+          },
+          {
+            "duration_ns": 205369,
+            "ns_per_byte": 3.13454
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 208320,
+            "ns_per_byte": 3.17958
+          },
+          {
+            "duration_ns": 215930,
+            "ns_per_byte": 3.29574
+          },
+          {
+            "duration_ns": 217039,
+            "ns_per_byte": 3.31266
+          },
+          {
+            "duration_ns": 216660,
+            "ns_per_byte": 3.30688
+          },
+          {
+            "duration_ns": 217130,
+            "ns_per_byte": 3.31405
+          },
+          {
+            "duration_ns": 215729,
+            "ns_per_byte": 3.29267
+          },
+          {
+            "duration_ns": 209420,
+            "ns_per_byte": 3.19637
+          },
+          {
+            "duration_ns": 217420,
+            "ns_per_byte": 3.31848
+          },
+          {
+            "duration_ns": 215470,
+            "ns_per_byte": 3.28871
+          },
+          {
+            "duration_ns": 216029,
+            "ns_per_byte": 3.29725
+          },
+          {
+            "duration_ns": 216530,
+            "ns_per_byte": 3.30489
+          },
+          {
+            "duration_ns": 216810,
+            "ns_per_byte": 3.30917
+          },
+          {
+            "duration_ns": 216299,
+            "ns_per_byte": 3.30137
+          },
+          {
+            "duration_ns": 216680,
+            "ns_per_byte": 3.30718
+          },
+          {
+            "duration_ns": 218980,
+            "ns_per_byte": 3.34229
+          },
+          {
+            "duration_ns": 217059,
+            "ns_per_byte": 3.31297
+          },
+          {
+            "duration_ns": 207670,
+            "ns_per_byte": 3.16966
+          },
+          {
+            "duration_ns": 215400,
+            "ns_per_byte": 3.28765
+          },
+          {
+            "duration_ns": 215649,
+            "ns_per_byte": 3.29145
+          },
+          {
+            "duration_ns": 216650,
+            "ns_per_byte": 3.30672
+          },
+          {
+            "duration_ns": 215570,
+            "ns_per_byte": 3.29024
+          },
+          {
+            "duration_ns": 215459,
+            "ns_per_byte": 3.28855
+          },
+          {
+            "duration_ns": 216740,
+            "ns_per_byte": 3.3081
+          },
+          {
+            "duration_ns": 217700,
+            "ns_per_byte": 3.32275
+          },
+          {
+            "duration_ns": 210139,
+            "ns_per_byte": 3.20735
+          },
+          {
+            "duration_ns": 216670,
+            "ns_per_byte": 3.30703
+          },
+          {
+            "duration_ns": 215760,
+            "ns_per_byte": 3.29314
+          },
+          {
+            "duration_ns": 215479,
+            "ns_per_byte": 3.28885
+          },
+          {
+            "duration_ns": 217100,
+            "ns_per_byte": 3.31359
+          },
+          {
+            "duration_ns": 216260,
+            "ns_per_byte": 3.30077
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65534,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 193219,
+            "ns_per_byte": 2.94838
+          },
+          {
+            "duration_ns": 198030,
+            "ns_per_byte": 3.02179
+          },
+          {
+            "duration_ns": 210200,
+            "ns_per_byte": 3.2075
+          },
+          {
+            "duration_ns": 200169,
+            "ns_per_byte": 3.05443
+          },
+          {
+            "duration_ns": 208560,
+            "ns_per_byte": 3.18247
+          },
+          {
+            "duration_ns": 191890,
+            "ns_per_byte": 2.9281
+          },
+          {
+            "duration_ns": 193900,
+            "ns_per_byte": 2.95877
+          },
+          {
+            "duration_ns": 184879,
+            "ns_per_byte": 2.82112
+          },
+          {
+            "duration_ns": 193930,
+            "ns_per_byte": 2.95923
+          },
+          {
+            "duration_ns": 192080,
+            "ns_per_byte": 2.931
+          },
+          {
+            "duration_ns": 208439,
+            "ns_per_byte": 3.18062
+          },
+          {
+            "duration_ns": 192830,
+            "ns_per_byte": 2.94244
+          },
+          {
+            "duration_ns": 208500,
+            "ns_per_byte": 3.18155
+          },
+          {
+            "duration_ns": 192159,
+            "ns_per_byte": 2.9322
+          },
+          {
+            "duration_ns": 201140,
+            "ns_per_byte": 3.06925
+          },
+          {
+            "duration_ns": 183810,
+            "ns_per_byte": 2.8048
+          },
+          {
+            "duration_ns": 192010,
+            "ns_per_byte": 2.92993
+          },
+          {
+            "duration_ns": 195119,
+            "ns_per_byte": 2.97737
+          },
+          {
+            "duration_ns": 208370,
+            "ns_per_byte": 3.17957
+          },
+          {
+            "duration_ns": 199220,
+            "ns_per_byte": 3.03995
+          },
+          {
+            "duration_ns": 206579,
+            "ns_per_byte": 3.15224
+          },
+          {
+            "duration_ns": 192690,
+            "ns_per_byte": 2.94031
+          },
+          {
+            "duration_ns": 196220,
+            "ns_per_byte": 2.99417
+          },
+          {
+            "duration_ns": 182839,
+            "ns_per_byte": 2.78999
+          },
+          {
+            "duration_ns": 191170,
+            "ns_per_byte": 2.91711
+          },
+          {
+            "duration_ns": 191880,
+            "ns_per_byte": 2.92795
+          },
+          {
+            "duration_ns": 209450,
+            "ns_per_byte": 3.19605
+          },
+          {
+            "duration_ns": 194119,
+            "ns_per_byte": 2.96211
+          },
+          {
+            "duration_ns": 210390,
+            "ns_per_byte": 3.21039
+          },
+          {
+            "duration_ns": 193040,
+            "ns_per_byte": 2.94565
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65534,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 196890,
+            "ns_per_byte": 3.00439
+          },
+          {
+            "duration_ns": 200180,
+            "ns_per_byte": 3.0546
+          },
+          {
+            "duration_ns": 213559,
+            "ns_per_byte": 3.25875
+          },
+          {
+            "duration_ns": 197770,
+            "ns_per_byte": 3.01782
+          },
+          {
+            "duration_ns": 212190,
+            "ns_per_byte": 3.23786
+          },
+          {
+            "duration_ns": 195209,
+            "ns_per_byte": 2.97874
+          },
+          {
+            "duration_ns": 196250,
+            "ns_per_byte": 2.99463
+          },
+          {
+            "duration_ns": 187840,
+            "ns_per_byte": 2.8663
+          },
+          {
+            "duration_ns": 196000,
+            "ns_per_byte": 2.99081
+          },
+          {
+            "duration_ns": 196229,
+            "ns_per_byte": 2.99431
+          },
+          {
+            "duration_ns": 213560,
+            "ns_per_byte": 3.25877
+          },
+          {
+            "duration_ns": 196200,
+            "ns_per_byte": 2.99387
+          },
+          {
+            "duration_ns": 212419,
+            "ns_per_byte": 3.24136
+          },
+          {
+            "duration_ns": 195010,
+            "ns_per_byte": 2.97571
+          },
+          {
+            "duration_ns": 203230,
+            "ns_per_byte": 3.10114
+          },
+          {
+            "duration_ns": 187879,
+            "ns_per_byte": 2.86689
+          },
+          {
+            "duration_ns": 205050,
+            "ns_per_byte": 3.12891
+          },
+          {
+            "duration_ns": 195670,
+            "ns_per_byte": 2.98578
+          },
+          {
+            "duration_ns": 212629,
+            "ns_per_byte": 3.24456
+          },
+          {
+            "duration_ns": 209410,
+            "ns_per_byte": 3.19544
+          },
+          {
+            "duration_ns": 212440,
+            "ns_per_byte": 3.24168
+          },
+          {
+            "duration_ns": 197250,
+            "ns_per_byte": 3.00989
+          },
+          {
+            "duration_ns": 203309,
+            "ns_per_byte": 3.10234
+          },
+          {
+            "duration_ns": 188150,
+            "ns_per_byte": 2.87103
+          },
+          {
+            "duration_ns": 196130,
+            "ns_per_byte": 2.9928
+          },
+          {
+            "duration_ns": 195759,
+            "ns_per_byte": 2.98714
+          },
+          {
+            "duration_ns": 213660,
+            "ns_per_byte": 3.26029
+          },
+          {
+            "duration_ns": 204320,
+            "ns_per_byte": 3.11777
+          },
+          {
+            "duration_ns": 212259,
+            "ns_per_byte": 3.23891
+          },
+          {
+            "duration_ns": 195790,
+            "ns_per_byte": 2.98761
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4066,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 62080,
+            "ns_per_byte": 15.2681
+          },
+          {
+            "duration_ns": 62810,
+            "ns_per_byte": 15.4476
+          },
+          {
+            "duration_ns": 70729,
+            "ns_per_byte": 17.3952
+          },
+          {
+            "duration_ns": 63790,
+            "ns_per_byte": 15.6886
+          },
+          {
+            "duration_ns": 62110,
+            "ns_per_byte": 15.2755
+          },
+          {
+            "duration_ns": 61930,
+            "ns_per_byte": 15.2312
+          },
+          {
+            "duration_ns": 70890,
+            "ns_per_byte": 17.4348
+          },
+          {
+            "duration_ns": 70980,
+            "ns_per_byte": 17.457
+          },
+          {
+            "duration_ns": 70210,
+            "ns_per_byte": 17.2676
+          },
+          {
+            "duration_ns": 71210,
+            "ns_per_byte": 17.5135
+          },
+          {
+            "duration_ns": 70960,
+            "ns_per_byte": 17.452
+          },
+          {
+            "duration_ns": 71319,
+            "ns_per_byte": 17.5403
+          },
+          {
+            "duration_ns": 70910,
+            "ns_per_byte": 17.4397
+          },
+          {
+            "duration_ns": 69910,
+            "ns_per_byte": 17.1938
+          },
+          {
+            "duration_ns": 63610,
+            "ns_per_byte": 15.6444
+          },
+          {
+            "duration_ns": 63380,
+            "ns_per_byte": 15.5878
+          },
+          {
+            "duration_ns": 70970,
+            "ns_per_byte": 17.4545
+          },
+          {
+            "duration_ns": 71350,
+            "ns_per_byte": 17.548
+          },
+          {
+            "duration_ns": 63490,
+            "ns_per_byte": 15.6149
+          },
+          {
+            "duration_ns": 70900,
+            "ns_per_byte": 17.4373
+          },
+          {
+            "duration_ns": 70470,
+            "ns_per_byte": 17.3315
+          },
+          {
+            "duration_ns": 62439,
+            "ns_per_byte": 15.3564
+          },
+          {
+            "duration_ns": 61910,
+            "ns_per_byte": 15.2263
+          },
+          {
+            "duration_ns": 62050,
+            "ns_per_byte": 15.2607
+          },
+          {
+            "duration_ns": 61770,
+            "ns_per_byte": 15.1918
+          },
+          {
+            "duration_ns": 62140,
+            "ns_per_byte": 15.2828
+          },
+          {
+            "duration_ns": 61660,
+            "ns_per_byte": 15.1648
+          },
+          {
+            "duration_ns": 70180,
+            "ns_per_byte": 17.2602
+          },
+          {
+            "duration_ns": 61940,
+            "ns_per_byte": 15.2336
+          },
+          {
+            "duration_ns": 71080,
+            "ns_per_byte": 17.4816
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4066,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 58190,
+            "ns_per_byte": 14.3114
+          },
+          {
+            "duration_ns": 49930,
+            "ns_per_byte": 12.2799
+          },
+          {
+            "duration_ns": 50540,
+            "ns_per_byte": 12.4299
+          },
+          {
+            "duration_ns": 50480,
+            "ns_per_byte": 12.4152
+          },
+          {
+            "duration_ns": 69060,
+            "ns_per_byte": 16.9848
+          },
+          {
+            "duration_ns": 50570,
+            "ns_per_byte": 12.4373
+          },
+          {
+            "duration_ns": 50429,
+            "ns_per_byte": 12.4026
+          },
+          {
+            "duration_ns": 51740,
+            "ns_per_byte": 12.725
+          },
+          {
+            "duration_ns": 50440,
+            "ns_per_byte": 12.4053
+          },
+          {
+            "duration_ns": 50440,
+            "ns_per_byte": 12.4053
+          },
+          {
+            "duration_ns": 50750,
+            "ns_per_byte": 12.4816
+          },
+          {
+            "duration_ns": 50400,
+            "ns_per_byte": 12.3955
+          },
+          {
+            "duration_ns": 59010,
+            "ns_per_byte": 14.513
+          },
+          {
+            "duration_ns": 50100,
+            "ns_per_byte": 12.3217
+          },
+          {
+            "duration_ns": 58920,
+            "ns_per_byte": 14.4909
+          },
+          {
+            "duration_ns": 50680,
+            "ns_per_byte": 12.4643
+          },
+          {
+            "duration_ns": 50440,
+            "ns_per_byte": 12.4053
+          },
+          {
+            "duration_ns": 50570,
+            "ns_per_byte": 12.4373
+          },
+          {
+            "duration_ns": 58849,
+            "ns_per_byte": 14.4734
+          },
+          {
+            "duration_ns": 60950,
+            "ns_per_byte": 14.9902
+          },
+          {
+            "duration_ns": 50550,
+            "ns_per_byte": 12.4324
+          },
+          {
+            "duration_ns": 58700,
+            "ns_per_byte": 14.4368
+          },
+          {
+            "duration_ns": 58750,
+            "ns_per_byte": 14.4491
+          },
+          {
+            "duration_ns": 58760,
+            "ns_per_byte": 14.4515
+          },
+          {
+            "duration_ns": 50700,
+            "ns_per_byte": 12.4693
+          },
+          {
+            "duration_ns": 58650,
+            "ns_per_byte": 14.4245
+          },
+          {
+            "duration_ns": 59870,
+            "ns_per_byte": 14.7245
+          },
+          {
+            "duration_ns": 50720,
+            "ns_per_byte": 12.4742
+          },
+          {
+            "duration_ns": 58640,
+            "ns_per_byte": 14.422
+          },
+          {
+            "duration_ns": 58599,
+            "ns_per_byte": 14.412
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4059,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 95210,
+            "ns_per_byte": 23.4565
+          },
+          {
+            "duration_ns": 103530,
+            "ns_per_byte": 25.5063
+          },
+          {
+            "duration_ns": 103510,
+            "ns_per_byte": 25.5014
+          },
+          {
+            "duration_ns": 102630,
+            "ns_per_byte": 25.2846
+          },
+          {
+            "duration_ns": 102820,
+            "ns_per_byte": 25.3314
+          },
+          {
+            "duration_ns": 103740,
+            "ns_per_byte": 25.558
+          },
+          {
+            "duration_ns": 103659,
+            "ns_per_byte": 25.5381
+          },
+          {
+            "duration_ns": 105430,
+            "ns_per_byte": 25.9744
+          },
+          {
+            "duration_ns": 94470,
+            "ns_per_byte": 23.2742
+          },
+          {
+            "duration_ns": 102680,
+            "ns_per_byte": 25.2969
+          },
+          {
+            "duration_ns": 102910,
+            "ns_per_byte": 25.3535
+          },
+          {
+            "duration_ns": 102900,
+            "ns_per_byte": 25.3511
+          },
+          {
+            "duration_ns": 103569,
+            "ns_per_byte": 25.5159
+          },
+          {
+            "duration_ns": 103040,
+            "ns_per_byte": 25.3856
+          },
+          {
+            "duration_ns": 103720,
+            "ns_per_byte": 25.5531
+          },
+          {
+            "duration_ns": 103880,
+            "ns_per_byte": 25.5925
+          },
+          {
+            "duration_ns": 95000,
+            "ns_per_byte": 23.4048
+          },
+          {
+            "duration_ns": 103950,
+            "ns_per_byte": 25.6098
+          },
+          {
+            "duration_ns": 104769,
+            "ns_per_byte": 25.8115
+          },
+          {
+            "duration_ns": 103890,
+            "ns_per_byte": 25.595
+          },
+          {
+            "duration_ns": 101840,
+            "ns_per_byte": 25.0899
+          },
+          {
+            "duration_ns": 101830,
+            "ns_per_byte": 25.0875
+          },
+          {
+            "duration_ns": 102730,
+            "ns_per_byte": 25.3092
+          },
+          {
+            "duration_ns": 104030,
+            "ns_per_byte": 25.6295
+          },
+          {
+            "duration_ns": 95310,
+            "ns_per_byte": 23.4812
+          },
+          {
+            "duration_ns": 104129,
+            "ns_per_byte": 25.6539
+          },
+          {
+            "duration_ns": 102650,
+            "ns_per_byte": 25.2895
+          },
+          {
+            "duration_ns": 104660,
+            "ns_per_byte": 25.7847
+          },
+          {
+            "duration_ns": 104190,
+            "ns_per_byte": 25.6689
+          },
+          {
+            "duration_ns": 102710,
+            "ns_per_byte": 25.3043
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4059,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 100860,
+            "ns_per_byte": 24.8485
+          },
+          {
+            "duration_ns": 99260,
+            "ns_per_byte": 24.4543
+          },
+          {
+            "duration_ns": 99490,
+            "ns_per_byte": 24.511
+          },
+          {
+            "duration_ns": 102789,
+            "ns_per_byte": 25.3237
+          },
+          {
+            "duration_ns": 91340,
+            "ns_per_byte": 22.5031
+          },
+          {
+            "duration_ns": 99740,
+            "ns_per_byte": 24.5726
+          },
+          {
+            "duration_ns": 100340,
+            "ns_per_byte": 24.7204
+          },
+          {
+            "duration_ns": 99670,
+            "ns_per_byte": 24.5553
+          },
+          {
+            "duration_ns": 92540,
+            "ns_per_byte": 22.7987
+          },
+          {
+            "duration_ns": 99850,
+            "ns_per_byte": 24.5997
+          },
+          {
+            "duration_ns": 99509,
+            "ns_per_byte": 24.5156
+          },
+          {
+            "duration_ns": 98860,
+            "ns_per_byte": 24.3558
+          },
+          {
+            "duration_ns": 99670,
+            "ns_per_byte": 24.5553
+          },
+          {
+            "duration_ns": 99840,
+            "ns_per_byte": 24.5972
+          },
+          {
+            "duration_ns": 99480,
+            "ns_per_byte": 24.5085
+          },
+          {
+            "duration_ns": 99720,
+            "ns_per_byte": 24.5676
+          },
+          {
+            "duration_ns": 99749,
+            "ns_per_byte": 24.5748
+          },
+          {
+            "duration_ns": 99680,
+            "ns_per_byte": 24.5578
+          },
+          {
+            "duration_ns": 99780,
+            "ns_per_byte": 24.5824
+          },
+          {
+            "duration_ns": 100010,
+            "ns_per_byte": 24.6391
+          },
+          {
+            "duration_ns": 92040,
+            "ns_per_byte": 22.6755
+          },
+          {
+            "duration_ns": 108020,
+            "ns_per_byte": 26.6125
+          },
+          {
+            "duration_ns": 91650,
+            "ns_per_byte": 22.5795
+          },
+          {
+            "duration_ns": 101749,
+            "ns_per_byte": 25.0675
+          },
+          {
+            "duration_ns": 91540,
+            "ns_per_byte": 22.5524
+          },
+          {
+            "duration_ns": 106800,
+            "ns_per_byte": 26.3119
+          },
+          {
+            "duration_ns": 99720,
+            "ns_per_byte": 24.5676
+          },
+          {
+            "duration_ns": 98940,
+            "ns_per_byte": 24.3755
+          },
+          {
+            "duration_ns": 91570,
+            "ns_per_byte": 22.5597
+          },
+          {
+            "duration_ns": 98759,
+            "ns_per_byte": 24.3309
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4074,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 112690,
+            "ns_per_byte": 27.6608
+          },
+          {
+            "duration_ns": 111540,
+            "ns_per_byte": 27.3785
+          },
+          {
+            "duration_ns": 103830,
+            "ns_per_byte": 25.486
+          },
+          {
+            "duration_ns": 103380,
+            "ns_per_byte": 25.3756
+          },
+          {
+            "duration_ns": 103829,
+            "ns_per_byte": 25.4858
+          },
+          {
+            "duration_ns": 112300,
+            "ns_per_byte": 27.565
+          },
+          {
+            "duration_ns": 112050,
+            "ns_per_byte": 27.5037
+          },
+          {
+            "duration_ns": 102710,
+            "ns_per_byte": 25.2111
+          },
+          {
+            "duration_ns": 103860,
+            "ns_per_byte": 25.4934
+          },
+          {
+            "duration_ns": 102840,
+            "ns_per_byte": 25.243
+          },
+          {
+            "duration_ns": 102689,
+            "ns_per_byte": 25.2059
+          },
+          {
+            "duration_ns": 110970,
+            "ns_per_byte": 27.2386
+          },
+          {
+            "duration_ns": 105020,
+            "ns_per_byte": 25.7781
+          },
+          {
+            "duration_ns": 112210,
+            "ns_per_byte": 27.543
+          },
+          {
+            "duration_ns": 111610,
+            "ns_per_byte": 27.3957
+          },
+          {
+            "duration_ns": 103110,
+            "ns_per_byte": 25.3093
+          },
+          {
+            "duration_ns": 103659,
+            "ns_per_byte": 25.444
+          },
+          {
+            "duration_ns": 112130,
+            "ns_per_byte": 27.5233
+          },
+          {
+            "duration_ns": 110200,
+            "ns_per_byte": 27.0496
+          },
+          {
+            "duration_ns": 103860,
+            "ns_per_byte": 25.4934
+          },
+          {
+            "duration_ns": 112120,
+            "ns_per_byte": 27.5209
+          },
+          {
+            "duration_ns": 112330,
+            "ns_per_byte": 27.5724
+          },
+          {
+            "duration_ns": 103419,
+            "ns_per_byte": 25.3851
+          },
+          {
+            "duration_ns": 103020,
+            "ns_per_byte": 25.2872
+          },
+          {
+            "duration_ns": 111250,
+            "ns_per_byte": 27.3073
+          },
+          {
+            "duration_ns": 111960,
+            "ns_per_byte": 27.4816
+          },
+          {
+            "duration_ns": 112100,
+            "ns_per_byte": 27.516
+          },
+          {
+            "duration_ns": 111800,
+            "ns_per_byte": 27.4423
+          },
+          {
+            "duration_ns": 111379,
+            "ns_per_byte": 27.339
+          },
+          {
+            "duration_ns": 111940,
+            "ns_per_byte": 27.4767
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4074,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 99419,
+            "ns_per_byte": 24.4033
+          },
+          {
+            "duration_ns": 107250,
+            "ns_per_byte": 26.3255
+          },
+          {
+            "duration_ns": 99600,
+            "ns_per_byte": 24.4477
+          },
+          {
+            "duration_ns": 107780,
+            "ns_per_byte": 26.4556
+          },
+          {
+            "duration_ns": 108150,
+            "ns_per_byte": 26.5464
+          },
+          {
+            "duration_ns": 107800,
+            "ns_per_byte": 26.4605
+          },
+          {
+            "duration_ns": 107869,
+            "ns_per_byte": 26.4774
+          },
+          {
+            "duration_ns": 99800,
+            "ns_per_byte": 24.4968
+          },
+          {
+            "duration_ns": 110100,
+            "ns_per_byte": 27.025
+          },
+          {
+            "duration_ns": 107700,
+            "ns_per_byte": 26.4359
+          },
+          {
+            "duration_ns": 99600,
+            "ns_per_byte": 24.4477
+          },
+          {
+            "duration_ns": 108100,
+            "ns_per_byte": 26.5341
+          },
+          {
+            "duration_ns": 107869,
+            "ns_per_byte": 26.4774
+          },
+          {
+            "duration_ns": 107950,
+            "ns_per_byte": 26.4973
+          },
+          {
+            "duration_ns": 107930,
+            "ns_per_byte": 26.4924
+          },
+          {
+            "duration_ns": 107750,
+            "ns_per_byte": 26.4482
+          },
+          {
+            "duration_ns": 107900,
+            "ns_per_byte": 26.485
+          },
+          {
+            "duration_ns": 99830,
+            "ns_per_byte": 24.5042
+          },
+          {
+            "duration_ns": 107769,
+            "ns_per_byte": 26.4529
+          },
+          {
+            "duration_ns": 107970,
+            "ns_per_byte": 26.5022
+          },
+          {
+            "duration_ns": 108030,
+            "ns_per_byte": 26.5169
+          },
+          {
+            "duration_ns": 99740,
+            "ns_per_byte": 24.4821
+          },
+          {
+            "duration_ns": 107810,
+            "ns_per_byte": 26.4629
+          },
+          {
+            "duration_ns": 107930,
+            "ns_per_byte": 26.4924
+          },
+          {
+            "duration_ns": 107939,
+            "ns_per_byte": 26.4946
+          },
+          {
+            "duration_ns": 99820,
+            "ns_per_byte": 24.5017
+          },
+          {
+            "duration_ns": 108540,
+            "ns_per_byte": 26.6421
+          },
+          {
+            "duration_ns": 101870,
+            "ns_per_byte": 25.0049
+          },
+          {
+            "duration_ns": 107790,
+            "ns_per_byte": 26.458
+          },
+          {
+            "duration_ns": 107790,
+            "ns_per_byte": 26.458
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4091,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 132780,
+            "ns_per_byte": 32.4566
+          },
+          {
+            "duration_ns": 140389,
+            "ns_per_byte": 34.3165
+          },
+          {
+            "duration_ns": 140630,
+            "ns_per_byte": 34.3755
+          },
+          {
+            "duration_ns": 140430,
+            "ns_per_byte": 34.3266
+          },
+          {
+            "duration_ns": 134930,
+            "ns_per_byte": 32.9822
+          },
+          {
+            "duration_ns": 132080,
+            "ns_per_byte": 32.2855
+          },
+          {
+            "duration_ns": 131649,
+            "ns_per_byte": 32.1802
+          },
+          {
+            "duration_ns": 140410,
+            "ns_per_byte": 34.3217
+          },
+          {
+            "duration_ns": 139720,
+            "ns_per_byte": 34.153
+          },
+          {
+            "duration_ns": 132610,
+            "ns_per_byte": 32.4151
+          },
+          {
+            "duration_ns": 141730,
+            "ns_per_byte": 34.6443
+          },
+          {
+            "duration_ns": 140579,
+            "ns_per_byte": 34.363
+          },
+          {
+            "duration_ns": 142790,
+            "ns_per_byte": 34.9034
+          },
+          {
+            "duration_ns": 133560,
+            "ns_per_byte": 32.6473
+          },
+          {
+            "duration_ns": 130550,
+            "ns_per_byte": 31.9115
+          },
+          {
+            "duration_ns": 141809,
+            "ns_per_byte": 34.6637
+          },
+          {
+            "duration_ns": 133430,
+            "ns_per_byte": 32.6155
+          },
+          {
+            "duration_ns": 141670,
+            "ns_per_byte": 34.6297
+          },
+          {
+            "duration_ns": 140940,
+            "ns_per_byte": 34.4512
+          },
+          {
+            "duration_ns": 140580,
+            "ns_per_byte": 34.3632
+          },
+          {
+            "duration_ns": 140779,
+            "ns_per_byte": 34.4119
+          },
+          {
+            "duration_ns": 126370,
+            "ns_per_byte": 30.8898
+          },
+          {
+            "duration_ns": 132590,
+            "ns_per_byte": 32.4102
+          },
+          {
+            "duration_ns": 140940,
+            "ns_per_byte": 34.4512
+          },
+          {
+            "duration_ns": 133230,
+            "ns_per_byte": 32.5666
+          },
+          {
+            "duration_ns": 131399,
+            "ns_per_byte": 32.119
+          },
+          {
+            "duration_ns": 131670,
+            "ns_per_byte": 32.1853
+          },
+          {
+            "duration_ns": 139420,
+            "ns_per_byte": 34.0797
+          },
+          {
+            "duration_ns": 140790,
+            "ns_per_byte": 34.4146
+          },
+          {
+            "duration_ns": 142110,
+            "ns_per_byte": 34.7372
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4091,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 129800,
+            "ns_per_byte": 31.7282
+          },
+          {
+            "duration_ns": 137610,
+            "ns_per_byte": 33.6373
+          },
+          {
+            "duration_ns": 137519,
+            "ns_per_byte": 33.615
+          },
+          {
+            "duration_ns": 137400,
+            "ns_per_byte": 33.5859
+          },
+          {
+            "duration_ns": 136470,
+            "ns_per_byte": 33.3586
+          },
+          {
+            "duration_ns": 139660,
+            "ns_per_byte": 34.1384
+          },
+          {
+            "duration_ns": 128360,
+            "ns_per_byte": 31.3762
+          },
+          {
+            "duration_ns": 135859,
+            "ns_per_byte": 33.2092
+          },
+          {
+            "duration_ns": 127820,
+            "ns_per_byte": 31.2442
+          },
+          {
+            "duration_ns": 152470,
+            "ns_per_byte": 37.2696
+          },
+          {
+            "duration_ns": 138220,
+            "ns_per_byte": 33.7864
+          },
+          {
+            "duration_ns": 137470,
+            "ns_per_byte": 33.603
+          },
+          {
+            "duration_ns": 129429,
+            "ns_per_byte": 31.6375
+          },
+          {
+            "duration_ns": 129240,
+            "ns_per_byte": 31.5913
+          },
+          {
+            "duration_ns": 137500,
+            "ns_per_byte": 33.6104
+          },
+          {
+            "duration_ns": 128410,
+            "ns_per_byte": 31.3884
+          },
+          {
+            "duration_ns": 131410,
+            "ns_per_byte": 32.1217
+          },
+          {
+            "duration_ns": 129589,
+            "ns_per_byte": 31.6766
+          },
+          {
+            "duration_ns": 129310,
+            "ns_per_byte": 31.6084
+          },
+          {
+            "duration_ns": 128570,
+            "ns_per_byte": 31.4275
+          },
+          {
+            "duration_ns": 129360,
+            "ns_per_byte": 31.6206
+          },
+          {
+            "duration_ns": 129530,
+            "ns_per_byte": 31.6622
+          },
+          {
+            "duration_ns": 137339,
+            "ns_per_byte": 33.571
+          },
+          {
+            "duration_ns": 137660,
+            "ns_per_byte": 33.6495
+          },
+          {
+            "duration_ns": 137570,
+            "ns_per_byte": 33.6275
+          },
+          {
+            "duration_ns": 128430,
+            "ns_per_byte": 31.3933
+          },
+          {
+            "duration_ns": 129350,
+            "ns_per_byte": 31.6182
+          },
+          {
+            "duration_ns": 129549,
+            "ns_per_byte": 31.6668
+          },
+          {
+            "duration_ns": 136660,
+            "ns_per_byte": 33.405
+          },
+          {
+            "duration_ns": 129290,
+            "ns_per_byte": 31.6035
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4088,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 111320,
+            "ns_per_byte": 27.2309
+          },
+          {
+            "duration_ns": 111500,
+            "ns_per_byte": 27.275
+          },
+          {
+            "duration_ns": 110930,
+            "ns_per_byte": 27.1355
+          },
+          {
+            "duration_ns": 111990,
+            "ns_per_byte": 27.3948
+          },
+          {
+            "duration_ns": 102619,
+            "ns_per_byte": 25.1025
+          },
+          {
+            "duration_ns": 102400,
+            "ns_per_byte": 25.0489
+          },
+          {
+            "duration_ns": 101990,
+            "ns_per_byte": 24.9486
+          },
+          {
+            "duration_ns": 112560,
+            "ns_per_byte": 27.5342
+          },
+          {
+            "duration_ns": 103140,
+            "ns_per_byte": 25.2299
+          },
+          {
+            "duration_ns": 111890,
+            "ns_per_byte": 27.3704
+          },
+          {
+            "duration_ns": 110939,
+            "ns_per_byte": 27.1377
+          },
+          {
+            "duration_ns": 105930,
+            "ns_per_byte": 25.9124
+          },
+          {
+            "duration_ns": 102850,
+            "ns_per_byte": 25.159
+          },
+          {
+            "duration_ns": 112170,
+            "ns_per_byte": 27.4388
+          },
+          {
+            "duration_ns": 111200,
+            "ns_per_byte": 27.2016
+          },
+          {
+            "duration_ns": 112750,
+            "ns_per_byte": 27.5807
+          },
+          {
+            "duration_ns": 110439,
+            "ns_per_byte": 27.0154
+          },
+          {
+            "duration_ns": 111730,
+            "ns_per_byte": 27.3312
+          },
+          {
+            "duration_ns": 109950,
+            "ns_per_byte": 26.8958
+          },
+          {
+            "duration_ns": 113090,
+            "ns_per_byte": 27.6639
+          },
+          {
+            "duration_ns": 111060,
+            "ns_per_byte": 27.1673
+          },
+          {
+            "duration_ns": 110010,
+            "ns_per_byte": 26.9105
+          },
+          {
+            "duration_ns": 104119,
+            "ns_per_byte": 25.4694
+          },
+          {
+            "duration_ns": 111010,
+            "ns_per_byte": 27.1551
+          },
+          {
+            "duration_ns": 103530,
+            "ns_per_byte": 25.3253
+          },
+          {
+            "duration_ns": 111400,
+            "ns_per_byte": 27.2505
+          },
+          {
+            "duration_ns": 111740,
+            "ns_per_byte": 27.3337
+          },
+          {
+            "duration_ns": 111950,
+            "ns_per_byte": 27.385
+          },
+          {
+            "duration_ns": 103599,
+            "ns_per_byte": 25.3422
+          },
+          {
+            "duration_ns": 111630,
+            "ns_per_byte": 27.3068
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "4096",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 4096,
+        "bytes": 4088,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 91480,
+            "ns_per_byte": 22.3777
+          },
+          {
+            "duration_ns": 100080,
+            "ns_per_byte": 24.4814
+          },
+          {
+            "duration_ns": 92230,
+            "ns_per_byte": 22.5612
+          },
+          {
+            "duration_ns": 99710,
+            "ns_per_byte": 24.3909
+          },
+          {
+            "duration_ns": 99620,
+            "ns_per_byte": 24.3689
+          },
+          {
+            "duration_ns": 100790,
+            "ns_per_byte": 24.6551
+          },
+          {
+            "duration_ns": 99879,
+            "ns_per_byte": 24.4322
+          },
+          {
+            "duration_ns": 99490,
+            "ns_per_byte": 24.3371
+          },
+          {
+            "duration_ns": 99840,
+            "ns_per_byte": 24.4227
+          },
+          {
+            "duration_ns": 99710,
+            "ns_per_byte": 24.3909
+          },
+          {
+            "duration_ns": 100710,
+            "ns_per_byte": 24.6355
+          },
+          {
+            "duration_ns": 99890,
+            "ns_per_byte": 24.4349
+          },
+          {
+            "duration_ns": 91549,
+            "ns_per_byte": 22.3946
+          },
+          {
+            "duration_ns": 98740,
+            "ns_per_byte": 24.1536
+          },
+          {
+            "duration_ns": 99690,
+            "ns_per_byte": 24.386
+          },
+          {
+            "duration_ns": 99730,
+            "ns_per_byte": 24.3958
+          },
+          {
+            "duration_ns": 99660,
+            "ns_per_byte": 24.3787
+          },
+          {
+            "duration_ns": 99600,
+            "ns_per_byte": 24.364
+          },
+          {
+            "duration_ns": 107030,
+            "ns_per_byte": 26.1815
+          },
+          {
+            "duration_ns": 99799,
+            "ns_per_byte": 24.4127
+          },
+          {
+            "duration_ns": 99710,
+            "ns_per_byte": 24.3909
+          },
+          {
+            "duration_ns": 92360,
+            "ns_per_byte": 22.593
+          },
+          {
+            "duration_ns": 91540,
+            "ns_per_byte": 22.3924
+          },
+          {
+            "duration_ns": 91660,
+            "ns_per_byte": 22.4217
+          },
+          {
+            "duration_ns": 99850,
+            "ns_per_byte": 24.4251
+          },
+          {
+            "duration_ns": 99689,
+            "ns_per_byte": 24.3858
+          },
+          {
+            "duration_ns": 91490,
+            "ns_per_byte": 22.3801
+          },
+          {
+            "duration_ns": 99760,
+            "ns_per_byte": 24.4031
+          },
+          {
+            "duration_ns": 102850,
+            "ns_per_byte": 25.159
+          },
+          {
+            "duration_ns": 99670,
+            "ns_per_byte": 24.3811
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65512,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 107149,
+            "ns_per_byte": 1.63556
+          },
+          {
+            "duration_ns": 106970,
+            "ns_per_byte": 1.63283
+          },
+          {
+            "duration_ns": 113160,
+            "ns_per_byte": 1.72732
+          },
+          {
+            "duration_ns": 106760,
+            "ns_per_byte": 1.62963
+          },
+          {
+            "duration_ns": 107530,
+            "ns_per_byte": 1.64138
+          },
+          {
+            "duration_ns": 106880,
+            "ns_per_byte": 1.63146
+          },
+          {
+            "duration_ns": 105939,
+            "ns_per_byte": 1.61709
+          },
+          {
+            "duration_ns": 115370,
+            "ns_per_byte": 1.76105
+          },
+          {
+            "duration_ns": 103770,
+            "ns_per_byte": 1.58398
+          },
+          {
+            "duration_ns": 116840,
+            "ns_per_byte": 1.78349
+          },
+          {
+            "duration_ns": 108250,
+            "ns_per_byte": 1.65237
+          },
+          {
+            "duration_ns": 106690,
+            "ns_per_byte": 1.62856
+          },
+          {
+            "duration_ns": 114509,
+            "ns_per_byte": 1.74791
+          },
+          {
+            "duration_ns": 115530,
+            "ns_per_byte": 1.76349
+          },
+          {
+            "duration_ns": 99630,
+            "ns_per_byte": 1.52079
+          },
+          {
+            "duration_ns": 114880,
+            "ns_per_byte": 1.75357
+          },
+          {
+            "duration_ns": 107240,
+            "ns_per_byte": 1.63695
+          },
+          {
+            "duration_ns": 115050,
+            "ns_per_byte": 1.75617
+          },
+          {
+            "duration_ns": 106449,
+            "ns_per_byte": 1.62488
+          },
+          {
+            "duration_ns": 121040,
+            "ns_per_byte": 1.8476
+          },
+          {
+            "duration_ns": 98900,
+            "ns_per_byte": 1.50965
+          },
+          {
+            "duration_ns": 106070,
+            "ns_per_byte": 1.61909
+          },
+          {
+            "duration_ns": 106040,
+            "ns_per_byte": 1.61863
+          },
+          {
+            "duration_ns": 107330,
+            "ns_per_byte": 1.63833
+          },
+          {
+            "duration_ns": 98429,
+            "ns_per_byte": 1.50246
+          },
+          {
+            "duration_ns": 105930,
+            "ns_per_byte": 1.61696
+          },
+          {
+            "duration_ns": 114310,
+            "ns_per_byte": 1.74487
+          },
+          {
+            "duration_ns": 115200,
+            "ns_per_byte": 1.75846
+          },
+          {
+            "duration_ns": 97840,
+            "ns_per_byte": 1.49347
+          },
+          {
+            "duration_ns": 118210,
+            "ns_per_byte": 1.8044
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "text",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "text",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65512,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 103890,
+            "ns_per_byte": 1.58582
+          },
+          {
+            "duration_ns": 103509,
+            "ns_per_byte": 1.58
+          },
+          {
+            "duration_ns": 102610,
+            "ns_per_byte": 1.56628
+          },
+          {
+            "duration_ns": 111080,
+            "ns_per_byte": 1.69557
+          },
+          {
+            "duration_ns": 94630,
+            "ns_per_byte": 1.44447
+          },
+          {
+            "duration_ns": 108050,
+            "ns_per_byte": 1.64932
+          },
+          {
+            "duration_ns": 102840,
+            "ns_per_byte": 1.56979
+          },
+          {
+            "duration_ns": 111239,
+            "ns_per_byte": 1.69799
+          },
+          {
+            "duration_ns": 102920,
+            "ns_per_byte": 1.57101
+          },
+          {
+            "duration_ns": 111090,
+            "ns_per_byte": 1.69572
+          },
+          {
+            "duration_ns": 94600,
+            "ns_per_byte": 1.44401
+          },
+          {
+            "duration_ns": 103970,
+            "ns_per_byte": 1.58704
+          },
+          {
+            "duration_ns": 102910,
+            "ns_per_byte": 1.57086
+          },
+          {
+            "duration_ns": 102970,
+            "ns_per_byte": 1.57177
+          },
+          {
+            "duration_ns": 94859,
+            "ns_per_byte": 1.44796
+          },
+          {
+            "duration_ns": 102960,
+            "ns_per_byte": 1.57162
+          },
+          {
+            "duration_ns": 94700,
+            "ns_per_byte": 1.44554
+          },
+          {
+            "duration_ns": 102990,
+            "ns_per_byte": 1.57208
+          },
+          {
+            "duration_ns": 94840,
+            "ns_per_byte": 1.44767
+          },
+          {
+            "duration_ns": 102640,
+            "ns_per_byte": 1.56674
+          },
+          {
+            "duration_ns": 102939,
+            "ns_per_byte": 1.5713
+          },
+          {
+            "duration_ns": 102980,
+            "ns_per_byte": 1.57193
+          },
+          {
+            "duration_ns": 98670,
+            "ns_per_byte": 1.50614
+          },
+          {
+            "duration_ns": 103050,
+            "ns_per_byte": 1.57299
+          },
+          {
+            "duration_ns": 94690,
+            "ns_per_byte": 1.44538
+          },
+          {
+            "duration_ns": 111140,
+            "ns_per_byte": 1.69648
+          },
+          {
+            "duration_ns": 102950,
+            "ns_per_byte": 1.57147
+          },
+          {
+            "duration_ns": 103389,
+            "ns_per_byte": 1.57817
+          },
+          {
+            "duration_ns": 95060,
+            "ns_per_byte": 1.45103
+          },
+          {
+            "duration_ns": 102710,
+            "ns_per_byte": 1.5678
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 163620,
+            "ns_per_byte": 2.49733
+          },
+          {
+            "duration_ns": 162680,
+            "ns_per_byte": 2.48298
+          },
+          {
+            "duration_ns": 163219,
+            "ns_per_byte": 2.49121
+          },
+          {
+            "duration_ns": 163150,
+            "ns_per_byte": 2.49016
+          },
+          {
+            "duration_ns": 163550,
+            "ns_per_byte": 2.49626
+          },
+          {
+            "duration_ns": 163240,
+            "ns_per_byte": 2.49153
+          },
+          {
+            "duration_ns": 162209,
+            "ns_per_byte": 2.47579
+          },
+          {
+            "duration_ns": 163560,
+            "ns_per_byte": 2.49641
+          },
+          {
+            "duration_ns": 163390,
+            "ns_per_byte": 2.49382
+          },
+          {
+            "duration_ns": 168330,
+            "ns_per_byte": 2.56922
+          },
+          {
+            "duration_ns": 168749,
+            "ns_per_byte": 2.57561
+          },
+          {
+            "duration_ns": 163210,
+            "ns_per_byte": 2.49107
+          },
+          {
+            "duration_ns": 167600,
+            "ns_per_byte": 2.55808
+          },
+          {
+            "duration_ns": 163230,
+            "ns_per_byte": 2.49138
+          },
+          {
+            "duration_ns": 163459,
+            "ns_per_byte": 2.49487
+          },
+          {
+            "duration_ns": 163320,
+            "ns_per_byte": 2.49275
+          },
+          {
+            "duration_ns": 163420,
+            "ns_per_byte": 2.49428
+          },
+          {
+            "duration_ns": 163900,
+            "ns_per_byte": 2.5016
+          },
+          {
+            "duration_ns": 162749,
+            "ns_per_byte": 2.48403
+          },
+          {
+            "duration_ns": 163670,
+            "ns_per_byte": 2.49809
+          },
+          {
+            "duration_ns": 164280,
+            "ns_per_byte": 2.5074
+          },
+          {
+            "duration_ns": 163470,
+            "ns_per_byte": 2.49504
+          },
+          {
+            "duration_ns": 168369,
+            "ns_per_byte": 2.56981
+          },
+          {
+            "duration_ns": 163890,
+            "ns_per_byte": 2.50145
+          },
+          {
+            "duration_ns": 162840,
+            "ns_per_byte": 2.48542
+          },
+          {
+            "duration_ns": 163569,
+            "ns_per_byte": 2.49655
+          },
+          {
+            "duration_ns": 163550,
+            "ns_per_byte": 2.49626
+          },
+          {
+            "duration_ns": 164280,
+            "ns_per_byte": 2.5074
+          },
+          {
+            "duration_ns": 164370,
+            "ns_per_byte": 2.50878
+          },
+          {
+            "duration_ns": 163649,
+            "ns_per_byte": 2.49777
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "ansi",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "ansi",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 150520,
+            "ns_per_byte": 2.29738
+          },
+          {
+            "duration_ns": 159010,
+            "ns_per_byte": 2.42697
+          },
+          {
+            "duration_ns": 159009,
+            "ns_per_byte": 2.42695
+          },
+          {
+            "duration_ns": 159180,
+            "ns_per_byte": 2.42956
+          },
+          {
+            "duration_ns": 159210,
+            "ns_per_byte": 2.43002
+          },
+          {
+            "duration_ns": 160240,
+            "ns_per_byte": 2.44574
+          },
+          {
+            "duration_ns": 159229,
+            "ns_per_byte": 2.43031
+          },
+          {
+            "duration_ns": 159160,
+            "ns_per_byte": 2.42926
+          },
+          {
+            "duration_ns": 151250,
+            "ns_per_byte": 2.30853
+          },
+          {
+            "duration_ns": 161140,
+            "ns_per_byte": 2.45948
+          },
+          {
+            "duration_ns": 161239,
+            "ns_per_byte": 2.46099
+          },
+          {
+            "duration_ns": 159230,
+            "ns_per_byte": 2.43032
+          },
+          {
+            "duration_ns": 159200,
+            "ns_per_byte": 2.42987
+          },
+          {
+            "duration_ns": 158230,
+            "ns_per_byte": 2.41506
+          },
+          {
+            "duration_ns": 159209,
+            "ns_per_byte": 2.43
+          },
+          {
+            "duration_ns": 159200,
+            "ns_per_byte": 2.42987
+          },
+          {
+            "duration_ns": 152380,
+            "ns_per_byte": 2.32577
+          },
+          {
+            "duration_ns": 159180,
+            "ns_per_byte": 2.42956
+          },
+          {
+            "duration_ns": 159219,
+            "ns_per_byte": 2.43016
+          },
+          {
+            "duration_ns": 159260,
+            "ns_per_byte": 2.43078
+          },
+          {
+            "duration_ns": 166460,
+            "ns_per_byte": 2.54068
+          },
+          {
+            "duration_ns": 159210,
+            "ns_per_byte": 2.43002
+          },
+          {
+            "duration_ns": 158409,
+            "ns_per_byte": 2.41779
+          },
+          {
+            "duration_ns": 159020,
+            "ns_per_byte": 2.42712
+          },
+          {
+            "duration_ns": 151390,
+            "ns_per_byte": 2.31066
+          },
+          {
+            "duration_ns": 158920,
+            "ns_per_byte": 2.42559
+          },
+          {
+            "duration_ns": 159420,
+            "ns_per_byte": 2.43322
+          },
+          {
+            "duration_ns": 159299,
+            "ns_per_byte": 2.43138
+          },
+          {
+            "duration_ns": 159550,
+            "ns_per_byte": 2.43521
+          },
+          {
+            "duration_ns": 158970,
+            "ns_per_byte": 2.42636
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65520,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 163609,
+            "ns_per_byte": 2.49708
+          },
+          {
+            "duration_ns": 163360,
+            "ns_per_byte": 2.49328
+          },
+          {
+            "duration_ns": 164260,
+            "ns_per_byte": 2.50702
+          },
+          {
+            "duration_ns": 162970,
+            "ns_per_byte": 2.48733
+          },
+          {
+            "duration_ns": 163559,
+            "ns_per_byte": 2.49632
+          },
+          {
+            "duration_ns": 171650,
+            "ns_per_byte": 2.61981
+          },
+          {
+            "duration_ns": 164390,
+            "ns_per_byte": 2.509
+          },
+          {
+            "duration_ns": 165390,
+            "ns_per_byte": 2.52427
+          },
+          {
+            "duration_ns": 162719,
+            "ns_per_byte": 2.4835
+          },
+          {
+            "duration_ns": 164620,
+            "ns_per_byte": 2.51252
+          },
+          {
+            "duration_ns": 164210,
+            "ns_per_byte": 2.50626
+          },
+          {
+            "duration_ns": 171560,
+            "ns_per_byte": 2.61844
+          },
+          {
+            "duration_ns": 164909,
+            "ns_per_byte": 2.51693
+          },
+          {
+            "duration_ns": 164880,
+            "ns_per_byte": 2.51648
+          },
+          {
+            "duration_ns": 165000,
+            "ns_per_byte": 2.51832
+          },
+          {
+            "duration_ns": 167950,
+            "ns_per_byte": 2.56334
+          },
+          {
+            "duration_ns": 163389,
+            "ns_per_byte": 2.49373
+          },
+          {
+            "duration_ns": 172240,
+            "ns_per_byte": 2.62882
+          },
+          {
+            "duration_ns": 165060,
+            "ns_per_byte": 2.51923
+          },
+          {
+            "duration_ns": 163660,
+            "ns_per_byte": 2.49786
+          },
+          {
+            "duration_ns": 163539,
+            "ns_per_byte": 2.49602
+          },
+          {
+            "duration_ns": 175460,
+            "ns_per_byte": 2.67796
+          },
+          {
+            "duration_ns": 165470,
+            "ns_per_byte": 2.52549
+          },
+          {
+            "duration_ns": 163460,
+            "ns_per_byte": 2.49481
+          },
+          {
+            "duration_ns": 164129,
+            "ns_per_byte": 2.50502
+          },
+          {
+            "duration_ns": 166310,
+            "ns_per_byte": 2.53831
+          },
+          {
+            "duration_ns": 164440,
+            "ns_per_byte": 2.50977
+          },
+          {
+            "duration_ns": 175969,
+            "ns_per_byte": 2.68573
+          },
+          {
+            "duration_ns": 163560,
+            "ns_per_byte": 2.49634
+          },
+          {
+            "duration_ns": 164140,
+            "ns_per_byte": 2.50519
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "unicode",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "unicode",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65520,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 161129,
+            "ns_per_byte": 2.45923
+          },
+          {
+            "duration_ns": 158700,
+            "ns_per_byte": 2.42216
+          },
+          {
+            "duration_ns": 167490,
+            "ns_per_byte": 2.55632
+          },
+          {
+            "duration_ns": 160030,
+            "ns_per_byte": 2.44246
+          },
+          {
+            "duration_ns": 160189,
+            "ns_per_byte": 2.44489
+          },
+          {
+            "duration_ns": 161210,
+            "ns_per_byte": 2.46047
+          },
+          {
+            "duration_ns": 160380,
+            "ns_per_byte": 2.4478
+          },
+          {
+            "duration_ns": 160110,
+            "ns_per_byte": 2.44368
+          },
+          {
+            "duration_ns": 164369,
+            "ns_per_byte": 2.50868
+          },
+          {
+            "duration_ns": 159480,
+            "ns_per_byte": 2.43407
+          },
+          {
+            "duration_ns": 159170,
+            "ns_per_byte": 2.42933
+          },
+          {
+            "duration_ns": 160230,
+            "ns_per_byte": 2.44551
+          },
+          {
+            "duration_ns": 160149,
+            "ns_per_byte": 2.44428
+          },
+          {
+            "duration_ns": 160510,
+            "ns_per_byte": 2.44979
+          },
+          {
+            "duration_ns": 159250,
+            "ns_per_byte": 2.43056
+          },
+          {
+            "duration_ns": 165370,
+            "ns_per_byte": 2.52396
+          },
+          {
+            "duration_ns": 160029,
+            "ns_per_byte": 2.44245
+          },
+          {
+            "duration_ns": 162140,
+            "ns_per_byte": 2.47466
+          },
+          {
+            "duration_ns": 166530,
+            "ns_per_byte": 2.54167
+          },
+          {
+            "duration_ns": 154820,
+            "ns_per_byte": 2.36294
+          },
+          {
+            "duration_ns": 160229,
+            "ns_per_byte": 2.4455
+          },
+          {
+            "duration_ns": 160370,
+            "ns_per_byte": 2.44765
+          },
+          {
+            "duration_ns": 160410,
+            "ns_per_byte": 2.44826
+          },
+          {
+            "duration_ns": 160210,
+            "ns_per_byte": 2.44521
+          },
+          {
+            "duration_ns": 160089,
+            "ns_per_byte": 2.44336
+          },
+          {
+            "duration_ns": 160320,
+            "ns_per_byte": 2.44689
+          },
+          {
+            "duration_ns": 160080,
+            "ns_per_byte": 2.44322
+          },
+          {
+            "duration_ns": 160120,
+            "ns_per_byte": 2.44383
+          },
+          {
+            "duration_ns": 160299,
+            "ns_per_byte": 2.44657
+          },
+          {
+            "duration_ns": 159380,
+            "ns_per_byte": 2.43254
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 216810,
+            "ns_per_byte": 3.30917
+          },
+          {
+            "duration_ns": 217990,
+            "ns_per_byte": 3.32718
+          },
+          {
+            "duration_ns": 217359,
+            "ns_per_byte": 3.31755
+          },
+          {
+            "duration_ns": 220810,
+            "ns_per_byte": 3.37022
+          },
+          {
+            "duration_ns": 208480,
+            "ns_per_byte": 3.18203
+          },
+          {
+            "duration_ns": 216309,
+            "ns_per_byte": 3.30152
+          },
+          {
+            "duration_ns": 216690,
+            "ns_per_byte": 3.30734
+          },
+          {
+            "duration_ns": 217180,
+            "ns_per_byte": 3.31481
+          },
+          {
+            "duration_ns": 217089,
+            "ns_per_byte": 3.31343
+          },
+          {
+            "duration_ns": 217760,
+            "ns_per_byte": 3.32367
+          },
+          {
+            "duration_ns": 208710,
+            "ns_per_byte": 3.18554
+          },
+          {
+            "duration_ns": 211659,
+            "ns_per_byte": 3.23055
+          },
+          {
+            "duration_ns": 225980,
+            "ns_per_byte": 3.44913
+          },
+          {
+            "duration_ns": 212080,
+            "ns_per_byte": 3.23697
+          },
+          {
+            "duration_ns": 219109,
+            "ns_per_byte": 3.34426
+          },
+          {
+            "duration_ns": 221830,
+            "ns_per_byte": 3.38579
+          },
+          {
+            "duration_ns": 217530,
+            "ns_per_byte": 3.32016
+          },
+          {
+            "duration_ns": 212159,
+            "ns_per_byte": 3.23818
+          },
+          {
+            "duration_ns": 219030,
+            "ns_per_byte": 3.34305
+          },
+          {
+            "duration_ns": 216780,
+            "ns_per_byte": 3.30871
+          },
+          {
+            "duration_ns": 217789,
+            "ns_per_byte": 3.32411
+          },
+          {
+            "duration_ns": 218280,
+            "ns_per_byte": 3.3316
+          },
+          {
+            "duration_ns": 217130,
+            "ns_per_byte": 3.31405
+          },
+          {
+            "duration_ns": 219749,
+            "ns_per_byte": 3.35402
+          },
+          {
+            "duration_ns": 211940,
+            "ns_per_byte": 3.23484
+          },
+          {
+            "duration_ns": 226550,
+            "ns_per_byte": 3.45783
+          },
+          {
+            "duration_ns": 207259,
+            "ns_per_byte": 3.16339
+          },
+          {
+            "duration_ns": 218920,
+            "ns_per_byte": 3.34137
+          },
+          {
+            "duration_ns": 217420,
+            "ns_per_byte": 3.31848
+          },
+          {
+            "duration_ns": 216889,
+            "ns_per_byte": 3.31037
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "graphics",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "graphics",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65518,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 205420,
+            "ns_per_byte": 3.13532
+          },
+          {
+            "duration_ns": 205519,
+            "ns_per_byte": 3.13683
+          },
+          {
+            "duration_ns": 204380,
+            "ns_per_byte": 3.11945
+          },
+          {
+            "duration_ns": 204070,
+            "ns_per_byte": 3.11472
+          },
+          {
+            "duration_ns": 205189,
+            "ns_per_byte": 3.1318
+          },
+          {
+            "duration_ns": 205020,
+            "ns_per_byte": 3.12922
+          },
+          {
+            "duration_ns": 204220,
+            "ns_per_byte": 3.11701
+          },
+          {
+            "duration_ns": 204009,
+            "ns_per_byte": 3.11379
+          },
+          {
+            "duration_ns": 209200,
+            "ns_per_byte": 3.19302
+          },
+          {
+            "duration_ns": 204440,
+            "ns_per_byte": 3.12036
+          },
+          {
+            "duration_ns": 207099,
+            "ns_per_byte": 3.16095
+          },
+          {
+            "duration_ns": 213490,
+            "ns_per_byte": 3.25849
+          },
+          {
+            "duration_ns": 204110,
+            "ns_per_byte": 3.11533
+          },
+          {
+            "duration_ns": 207159,
+            "ns_per_byte": 3.16186
+          },
+          {
+            "duration_ns": 209510,
+            "ns_per_byte": 3.19775
+          },
+          {
+            "duration_ns": 196710,
+            "ns_per_byte": 3.00238
+          },
+          {
+            "duration_ns": 205140,
+            "ns_per_byte": 3.13105
+          },
+          {
+            "duration_ns": 205299,
+            "ns_per_byte": 3.13347
+          },
+          {
+            "duration_ns": 205210,
+            "ns_per_byte": 3.13212
+          },
+          {
+            "duration_ns": 206290,
+            "ns_per_byte": 3.1486
+          },
+          {
+            "duration_ns": 204119,
+            "ns_per_byte": 3.11546
+          },
+          {
+            "duration_ns": 210700,
+            "ns_per_byte": 3.21591
+          },
+          {
+            "duration_ns": 203770,
+            "ns_per_byte": 3.11014
+          },
+          {
+            "duration_ns": 212259,
+            "ns_per_byte": 3.23971
+          },
+          {
+            "duration_ns": 204110,
+            "ns_per_byte": 3.11533
+          },
+          {
+            "duration_ns": 204530,
+            "ns_per_byte": 3.12174
+          },
+          {
+            "duration_ns": 207239,
+            "ns_per_byte": 3.16308
+          },
+          {
+            "duration_ns": 196890,
+            "ns_per_byte": 3.00513
+          },
+          {
+            "duration_ns": 204410,
+            "ns_per_byte": 3.11991
+          },
+          {
+            "duration_ns": 204089,
+            "ns_per_byte": 3.11501
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "after",
+      "command": [
+        "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65534,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 204380,
+            "ns_per_byte": 3.11869
+          },
+          {
+            "duration_ns": 204210,
+            "ns_per_byte": 3.11609
+          },
+          {
+            "duration_ns": 211700,
+            "ns_per_byte": 3.23038
+          },
+          {
+            "duration_ns": 204589,
+            "ns_per_byte": 3.12188
+          },
+          {
+            "duration_ns": 207690,
+            "ns_per_byte": 3.16919
+          },
+          {
+            "duration_ns": 195940,
+            "ns_per_byte": 2.9899
+          },
+          {
+            "duration_ns": 196419,
+            "ns_per_byte": 2.99721
+          },
+          {
+            "duration_ns": 187530,
+            "ns_per_byte": 2.86157
+          },
+          {
+            "duration_ns": 204510,
+            "ns_per_byte": 3.12067
+          },
+          {
+            "duration_ns": 196779,
+            "ns_per_byte": 3.0027
+          },
+          {
+            "duration_ns": 212580,
+            "ns_per_byte": 3.24381
+          },
+          {
+            "duration_ns": 204250,
+            "ns_per_byte": 3.1167
+          },
+          {
+            "duration_ns": 212189,
+            "ns_per_byte": 3.23785
+          },
+          {
+            "duration_ns": 196060,
+            "ns_per_byte": 2.99173
+          },
+          {
+            "duration_ns": 206540,
+            "ns_per_byte": 3.15165
+          },
+          {
+            "duration_ns": 188800,
+            "ns_per_byte": 2.88095
+          },
+          {
+            "duration_ns": 204759,
+            "ns_per_byte": 3.12447
+          },
+          {
+            "duration_ns": 195740,
+            "ns_per_byte": 2.98685
+          },
+          {
+            "duration_ns": 212530,
+            "ns_per_byte": 3.24305
+          },
+          {
+            "duration_ns": 204119,
+            "ns_per_byte": 3.1147
+          },
+          {
+            "duration_ns": 212820,
+            "ns_per_byte": 3.24747
+          },
+          {
+            "duration_ns": 196270,
+            "ns_per_byte": 2.99493
+          },
+          {
+            "duration_ns": 196229,
+            "ns_per_byte": 2.99431
+          },
+          {
+            "duration_ns": 187800,
+            "ns_per_byte": 2.86569
+          },
+          {
+            "duration_ns": 196040,
+            "ns_per_byte": 2.99142
+          },
+          {
+            "duration_ns": 194999,
+            "ns_per_byte": 2.97554
+          },
+          {
+            "duration_ns": 212500,
+            "ns_per_byte": 3.24259
+          },
+          {
+            "duration_ns": 204270,
+            "ns_per_byte": 3.11701
+          },
+          {
+            "duration_ns": 212749,
+            "ns_per_byte": 3.24639
+          },
+          {
+            "duration_ns": 195950,
+            "ns_per_byte": 2.99005
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "label": "before",
+      "command": [
+        "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--replies",
+        "--bytes",
+        "65536",
+        "--workload",
+        "tabs",
+        "--warmup",
+        "2000",
+        "--repeats",
+        "30"
+      ],
+      "result": {
+        "benchmark": "engine-feed-replies",
+        "dense": false,
+        "workload": "tabs",
+        "cols": 318,
+        "rows": 89,
+        "requested_bytes": 65536,
+        "bytes": 65534,
+        "warmup": 2000,
+        "repeats": 30,
+        "samples": [
+          {
+            "duration_ns": 201450,
+            "ns_per_byte": 3.07398
+          },
+          {
+            "duration_ns": 192679,
+            "ns_per_byte": 2.94014
+          },
+          {
+            "duration_ns": 208040,
+            "ns_per_byte": 3.17454
+          },
+          {
+            "duration_ns": 200220,
+            "ns_per_byte": 3.05521
+          },
+          {
+            "duration_ns": 211399,
+            "ns_per_byte": 3.22579
+          },
+          {
+            "duration_ns": 192000,
+            "ns_per_byte": 2.92978
+          },
+          {
+            "duration_ns": 199250,
+            "ns_per_byte": 3.04041
+          },
+          {
+            "duration_ns": 184939,
+            "ns_per_byte": 2.82203
+          },
+          {
+            "duration_ns": 191890,
+            "ns_per_byte": 2.9281
+          },
+          {
+            "duration_ns": 191290,
+            "ns_per_byte": 2.91894
+          },
+          {
+            "duration_ns": 208130,
+            "ns_per_byte": 3.17591
+          },
+          {
+            "duration_ns": 199389,
+            "ns_per_byte": 3.04253
+          },
+          {
+            "duration_ns": 210260,
+            "ns_per_byte": 3.20841
+          },
+          {
+            "duration_ns": 183880,
+            "ns_per_byte": 2.80587
+          },
+          {
+            "duration_ns": 200359,
+            "ns_per_byte": 3.05733
+          },
+          {
+            "duration_ns": 183740,
+            "ns_per_byte": 2.80374
+          },
+          {
+            "duration_ns": 200290,
+            "ns_per_byte": 3.05628
+          },
+          {
+            "duration_ns": 191029,
+            "ns_per_byte": 2.91496
+          },
+          {
+            "duration_ns": 209450,
+            "ns_per_byte": 3.19605
+          },
+          {
+            "duration_ns": 200130,
+            "ns_per_byte": 3.05383
+          },
+          {
+            "duration_ns": 208360,
+            "ns_per_byte": 3.17942
+          },
+          {
+            "duration_ns": 192099,
+            "ns_per_byte": 2.93129
+          },
+          {
+            "duration_ns": 200030,
+            "ns_per_byte": 3.05231
+          },
+          {
+            "duration_ns": 184750,
+            "ns_per_byte": 2.81915
+          },
+          {
+            "duration_ns": 193519,
+            "ns_per_byte": 2.95296
+          },
+          {
+            "duration_ns": 199810,
+            "ns_per_byte": 3.04895
+          },
+          {
+            "duration_ns": 208390,
+            "ns_per_byte": 3.17988
+          },
+          {
+            "duration_ns": 200149,
+            "ns_per_byte": 3.05412
+          },
+          {
+            "duration_ns": 208550,
+            "ns_per_byte": 3.18232
+          },
+          {
+            "duration_ns": 192210,
+            "ns_per_byte": 2.93298
+          }
+        ]
+      }
+    }
+  ]
+}

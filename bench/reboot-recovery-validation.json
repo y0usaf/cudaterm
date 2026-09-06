@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-06",
+  "status": "recovered_candidate_unaccepted",
+  "accepted_store": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0",
+  "accepted_source": "/nix/store/j09dwv5xzbp18ay4a0fz8jaaqvfyc5hy-source",
+  "native_checks": [
+    {
+      "command": "python3 -m py_compile tests/window_sync.py bench/idle_profile.py",
+      "exit": 0
+    },
+    {
+      "command": "python3 tests/test_window_cleanup.py",
+      "exit": 0,
+      "log": "bench/recovery-native-cleanup.log",
+      "scope": "three CPU-only owned-process cleanup tests; not Nix validation"
+    }
+  ],
+  "environment": "bench/reboot-recovery-environment.json",
+  "pending": [
+    "Nix build and flake check of current source",
+    "private sync/search/resize/Ekko regressions including new lifecycle cases",
+    "settled idle trace proving no periodic application-owned timeout or EOF/HUP spin",
+    "three uninstrumented controlled samples at each grid evaluated against unchanged bench/idle-event-gates.json",
+    "repeated graphical-window lifecycle and descriptor/process cleanup observations",
+    "Finix preview build and evaluator"
+  ],
+  "hashes": {
+    "src/main.cu": "43b6215ac05cf38d6792205377c00a67f5f1060c0a92142e375f262f506e0972",
+    "src/engine.cu": "e942843c529b2799053801c1304ce14e8480dca8e800265bb2fd901a3286e95d",
+    "tests/window_sync.py": "f32a635305ca51b2961a1d3231b74e3872f7cbeaac1ec30761c51863388baf67",
+    "tests/test_window_cleanup.py": "72aee29077ad49b5d4758a281c9ad60cb718bb6ca57a5283118e82490da1c4d4",
+    "flake.nix": "98c06bc346b5f4c0f5316043f150dc1c3a44a04608e8a595f08b931249c65ce5",
+    "bench/idle_profile.py": "a231301be4339bbe09759a4ebc469ae5191e1cb801f11c10d763fcb6ad33f8f7",
+    "bench/idle-event-recovered.patch": "430e100e64f55b614342b6101baa2d3e9979664e0e6774ad1571a07d0b19c92e",
+    "bench/idle-driver-attribution.json": "e5abd28b407aa49a606f9b07956c47be9bbfd1a3a2269f4e698bc64271fa3704"
+  }
+}

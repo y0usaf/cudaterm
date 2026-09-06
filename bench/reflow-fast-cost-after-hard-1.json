@@ -1,0 +1,393 @@
+{
+  "status": "passed",
+  "command": [
+    "bench/reflow_perf.py",
+    "--host",
+    "/nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "--output",
+    "bench/reflow-fast-cost-after-hard-1.json",
+    "--lines",
+    "5000",
+    "--cycles",
+    "5"
+  ],
+  "host": "/nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "host_sha256": "347a47c2c041b42fd63385df1cc4c1c0c7daf5a9d36acb73052039acdd72149b",
+  "lines": 5000,
+  "soft_bytes": 0,
+  "soft_unit": "ascii",
+  "seed_bytes": 55000,
+  "seed_sha256": "af4279c86cf3df6a09f7cda8c2606ff8da02bef3986797ebb51c3654eb6c0c58",
+  "cycles": 5,
+  "widths": [
+    40,
+    318,
+    80
+  ],
+  "rows": 24,
+  "samples": [
+    {
+      "cycle": 0,
+      "cols": 40,
+      "resize_ns": 4695933,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 15453902,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 0,
+      "cols": 318,
+      "resize_ns": 4784583,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 52318926,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 0,
+      "cols": 80,
+      "resize_ns": 5946561,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 20758222,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "cols": 40,
+      "resize_ns": 4594283,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 15453902,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "cols": 318,
+      "resize_ns": 4754373,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 52318926,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "cols": 80,
+      "resize_ns": 5691862,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54635,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 20758222,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "cols": 40,
+      "resize_ns": 4586123,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 15453902,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "cols": 318,
+      "resize_ns": 6098151,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 52318926,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "cols": 80,
+      "resize_ns": 5839241,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54537,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 20758222,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "cols": 40,
+      "resize_ns": 4664243,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 15453902,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "cols": 318,
+      "resize_ns": 5060382,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54658,
+        "private_kib": 51260
+      },
+      "allocation": {
+        "device_bytes": 52318926,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "cols": 80,
+      "resize_ns": 5720231,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 20758222,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "cols": 40,
+      "resize_ns": 7225778,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 15453902,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "cols": 318,
+      "resize_ns": 6517100,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 52318926,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "cols": 80,
+      "resize_ns": 7070889,
+      "memory": {
+        "rss_kib": 63804,
+        "pss_kib": 54625,
+        "private_kib": 51252
+      },
+      "allocation": {
+        "device_bytes": 20758222,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 4096
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 23,
+        "col": 0,
+        "history": 4096,
+        "sync": 0
+      }
+    }
+  ],
+  "scope": "Engine-host W request RTT includes IPC and CUDA resize, not presentation latency. Old clipping is not functionally equivalent to reflow.",
+  "sampled_peak_note": "Stage samples are not instantaneous peaks.",
+  "pid": 17434
+}

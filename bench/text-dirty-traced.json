@@ -1,0 +1,236 @@
+{
+  "runs": [
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 1,
+      "warmup": 0,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1966897,
+        409309,
+        391679,
+        410270,
+        401179
+      ],
+      "sample_launch_ns": [
+        276897097
+      ],
+      "barrier_throughput_bytes_per_second": [
+        33307285.536558345,
+        160055117.28303066,
+        167259413.9588796,
+        159680210.5930241,
+        163298677.14910302
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "variant": "before",
+      "trace": "/home/y0usaf/dev/developing/cudaterm/bench/text-dirty-before.csv",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ],
+      "swap_count": 4
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/cx8311rl7mw2l268dw4hrxf8lzc6n734-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/cx8311rl7mw2l268dw4hrxf8lzc6n734-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 1,
+      "warmup": 0,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        707389,
+        1251798,
+        308510,
+        1783947,
+        308020
+      ],
+      "sample_launch_ns": [
+        281095461
+      ],
+      "barrier_throughput_bytes_per_second": [
+        92610996.21283339,
+        52334322.31078816,
+        212349680.72347736,
+        36723064.08206073,
+        212687487.8254659
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "variant": "after",
+      "trace": "/home/y0usaf/dev/developing/cudaterm/bench/text-dirty-after.csv",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/cx8311rl7mw2l268dw4hrxf8lzc6n734-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ],
+      "swap_count": 4
+    }
+  ]
+}

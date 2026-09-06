@@ -1,0 +1,34 @@
+--- a/src/engine.cu
++++ b/src/engine.cu
+@@ -1020,6 +1020,7 @@
+ struct PlainMeta {
+   int start_row, start_col, scroll, history_base;
+ };
++__global__ void initialize_prefix(int *rejected, int n) { *rejected = n; }
+ __global__ void plain_classify(const DeviceState *s, const unsigned char *b,
+                                int n, int *starts, int *rejected, int *styled) {
+   int i = blockIdx.x * blockDim.x + threadIdx.x;
+@@ -1720,9 +1721,8 @@
+   const unsigned char *device_input = p->dbytes;
+   if (n >= 256) {
+     p->reserve_scan(n);
+-    int input_size = (int)n;
+-    ck(cudaMemcpy(p->rejected, &input_size, sizeof(int),
+-                  cudaMemcpyHostToDevice));
++    initialize_prefix<<<1, 1>>>(p->rejected, (int)n);
++    ck(cudaGetLastError());
+     plain_classify<<<(n + 255) / 256, 256>>>(p->d, device_input, n, p->starts,
+                                              p->rejected, p->styled_done);
+     ck(cudaGetLastError());
+@@ -1747,9 +1747,8 @@
+         ck(cudaGetLastError());
+         return;
+       }
+-      input_size = (int)n;
+-      ck(cudaMemcpy(p->rejected, &input_size, sizeof(int),
+-                    cudaMemcpyHostToDevice));
++      initialize_prefix<<<1, 1>>>(p->rejected, (int)n);
++      ck(cudaGetLastError());
+       plain_classify<<<(n + 255) / 256, 256>>>(p->d, device_input, n, p->starts,
+                                                p->rejected, p->styled_done);
+       ck(cudaGetLastError());

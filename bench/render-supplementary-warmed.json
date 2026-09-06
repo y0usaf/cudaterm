@@ -1,0 +1,1812 @@
+{
+  "runs": [
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "text",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262116,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 167936,
+          "ns_per_pixel": 0.0463571
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 167936,
+          "ns_per_pixel": 0.0463571
+        },
+        {
+          "duration_ns": 167936,
+          "ns_per_pixel": 0.0463571
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 167936,
+          "ns_per_pixel": 0.0463571
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        },
+        {
+          "duration_ns": 168960,
+          "ns_per_pixel": 0.0466398
+        }
+      ],
+      "round": 0,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "text",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "text",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262116,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24256,
+          "ns_per_pixel": 0.00669564
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24320,
+          "ns_per_pixel": 0.00671331
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24224,
+          "ns_per_pixel": 0.00668681
+        },
+        {
+          "duration_ns": 24512,
+          "ns_per_pixel": 0.00676631
+        },
+        {
+          "duration_ns": 24288,
+          "ns_per_pixel": 0.00670447
+        },
+        {
+          "duration_ns": 24192,
+          "ns_per_pixel": 0.00667797
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23968,
+          "ns_per_pixel": 0.00661614
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24544,
+          "ns_per_pixel": 0.00677514
+        },
+        {
+          "duration_ns": 24384,
+          "ns_per_pixel": 0.00673097
+        },
+        {
+          "duration_ns": 24192,
+          "ns_per_pixel": 0.00667797
+        },
+        {
+          "duration_ns": 24160,
+          "ns_per_pixel": 0.00666914
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        }
+      ],
+      "round": 0,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "text",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "unicode",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262120,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 23936,
+          "ns_per_pixel": 0.00660731
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24640,
+          "ns_per_pixel": 0.00680164
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24544,
+          "ns_per_pixel": 0.00677514
+        },
+        {
+          "duration_ns": 24544,
+          "ns_per_pixel": 0.00677514
+        },
+        {
+          "duration_ns": 24320,
+          "ns_per_pixel": 0.00671331
+        },
+        {
+          "duration_ns": 23776,
+          "ns_per_pixel": 0.00656314
+        },
+        {
+          "duration_ns": 23904,
+          "ns_per_pixel": 0.00659847
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24544,
+          "ns_per_pixel": 0.00677514
+        },
+        {
+          "duration_ns": 24512,
+          "ns_per_pixel": 0.00676631
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24608,
+          "ns_per_pixel": 0.00679281
+        },
+        {
+          "duration_ns": 23904,
+          "ns_per_pixel": 0.00659847
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        }
+      ],
+      "round": 0,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "unicode",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "unicode",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262120,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24480,
+          "ns_per_pixel": 0.00675747
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24256,
+          "ns_per_pixel": 0.00669564
+        },
+        {
+          "duration_ns": 24384,
+          "ns_per_pixel": 0.00673097
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 25472,
+          "ns_per_pixel": 0.00703131
+        },
+        {
+          "duration_ns": 24256,
+          "ns_per_pixel": 0.00669564
+        },
+        {
+          "duration_ns": 24256,
+          "ns_per_pixel": 0.00669564
+        },
+        {
+          "duration_ns": 24160,
+          "ns_per_pixel": 0.00666914
+        },
+        {
+          "duration_ns": 24224,
+          "ns_per_pixel": 0.00668681
+        },
+        {
+          "duration_ns": 23680,
+          "ns_per_pixel": 0.00653664
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24416,
+          "ns_per_pixel": 0.00673981
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23744,
+          "ns_per_pixel": 0.00655431
+        },
+        {
+          "duration_ns": 23808,
+          "ns_per_pixel": 0.00657197
+        },
+        {
+          "duration_ns": 23776,
+          "ns_per_pixel": 0.00656314
+        }
+      ],
+      "round": 0,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "unicode",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "emoji",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 26688,
+          "ns_per_pixel": 0.00736697
+        },
+        {
+          "duration_ns": 26816,
+          "ns_per_pixel": 0.0074023
+        },
+        {
+          "duration_ns": 27584,
+          "ns_per_pixel": 0.0076143
+        },
+        {
+          "duration_ns": 26944,
+          "ns_per_pixel": 0.00743764
+        },
+        {
+          "duration_ns": 26880,
+          "ns_per_pixel": 0.00741997
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27456,
+          "ns_per_pixel": 0.00757897
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26816,
+          "ns_per_pixel": 0.0074023
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27328,
+          "ns_per_pixel": 0.00754364
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27360,
+          "ns_per_pixel": 0.00755247
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27456,
+          "ns_per_pixel": 0.00757897
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26400,
+          "ns_per_pixel": 0.00728747
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27232,
+          "ns_per_pixel": 0.00751714
+        }
+      ],
+      "round": 0,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "emoji",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "emoji",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 28640,
+          "ns_per_pixel": 0.0079058
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28704,
+          "ns_per_pixel": 0.00792347
+        },
+        {
+          "duration_ns": 28448,
+          "ns_per_pixel": 0.0078528
+        },
+        {
+          "duration_ns": 28768,
+          "ns_per_pixel": 0.00794113
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28640,
+          "ns_per_pixel": 0.0079058
+        },
+        {
+          "duration_ns": 28608,
+          "ns_per_pixel": 0.00789697
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28480,
+          "ns_per_pixel": 0.00786164
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28768,
+          "ns_per_pixel": 0.00794113
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28736,
+          "ns_per_pixel": 0.0079323
+        }
+      ],
+      "round": 0,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "emoji",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "marks",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25152,
+          "ns_per_pixel": 0.00694297
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25472,
+          "ns_per_pixel": 0.00703131
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25472,
+          "ns_per_pixel": 0.00703131
+        },
+        {
+          "duration_ns": 25568,
+          "ns_per_pixel": 0.0070578
+        },
+        {
+          "duration_ns": 25408,
+          "ns_per_pixel": 0.00701364
+        },
+        {
+          "duration_ns": 24896,
+          "ns_per_pixel": 0.00687231
+        },
+        {
+          "duration_ns": 25472,
+          "ns_per_pixel": 0.00703131
+        },
+        {
+          "duration_ns": 24928,
+          "ns_per_pixel": 0.00688114
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 24832,
+          "ns_per_pixel": 0.00685464
+        },
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 25216,
+          "ns_per_pixel": 0.00696064
+        },
+        {
+          "duration_ns": 25216,
+          "ns_per_pixel": 0.00696064
+        },
+        {
+          "duration_ns": 25312,
+          "ns_per_pixel": 0.00698714
+        }
+      ],
+      "round": 0,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "marks",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "marks",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 26848,
+          "ns_per_pixel": 0.00741114
+        },
+        {
+          "duration_ns": 27296,
+          "ns_per_pixel": 0.0075348
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27616,
+          "ns_per_pixel": 0.00762314
+        },
+        {
+          "duration_ns": 27552,
+          "ns_per_pixel": 0.00760547
+        },
+        {
+          "duration_ns": 27360,
+          "ns_per_pixel": 0.00755247
+        },
+        {
+          "duration_ns": 27232,
+          "ns_per_pixel": 0.00751714
+        },
+        {
+          "duration_ns": 26816,
+          "ns_per_pixel": 0.0074023
+        },
+        {
+          "duration_ns": 26880,
+          "ns_per_pixel": 0.00741997
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26976,
+          "ns_per_pixel": 0.00744647
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26912,
+          "ns_per_pixel": 0.0074288
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27040,
+          "ns_per_pixel": 0.00746414
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26976,
+          "ns_per_pixel": 0.00744647
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        }
+      ],
+      "round": 0,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "marks",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "text",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262116,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 21760,
+          "ns_per_pixel": 0.00600664
+        },
+        {
+          "duration_ns": 22528,
+          "ns_per_pixel": 0.00621864
+        },
+        {
+          "duration_ns": 22304,
+          "ns_per_pixel": 0.00615681
+        },
+        {
+          "duration_ns": 22144,
+          "ns_per_pixel": 0.00611264
+        },
+        {
+          "duration_ns": 22144,
+          "ns_per_pixel": 0.00611264
+        },
+        {
+          "duration_ns": 22272,
+          "ns_per_pixel": 0.00614798
+        },
+        {
+          "duration_ns": 22528,
+          "ns_per_pixel": 0.00621864
+        },
+        {
+          "duration_ns": 22368,
+          "ns_per_pixel": 0.00617448
+        },
+        {
+          "duration_ns": 22400,
+          "ns_per_pixel": 0.00618331
+        },
+        {
+          "duration_ns": 22496,
+          "ns_per_pixel": 0.00620981
+        },
+        {
+          "duration_ns": 22496,
+          "ns_per_pixel": 0.00620981
+        },
+        {
+          "duration_ns": 22528,
+          "ns_per_pixel": 0.00621864
+        },
+        {
+          "duration_ns": 22464,
+          "ns_per_pixel": 0.00620098
+        },
+        {
+          "duration_ns": 22528,
+          "ns_per_pixel": 0.00621864
+        },
+        {
+          "duration_ns": 21856,
+          "ns_per_pixel": 0.00603314
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        },
+        {
+          "duration_ns": 22240,
+          "ns_per_pixel": 0.00613914
+        },
+        {
+          "duration_ns": 22368,
+          "ns_per_pixel": 0.00617448
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        }
+      ],
+      "round": 1,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "text",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "text",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262116,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 22528,
+          "ns_per_pixel": 0.00621864
+        },
+        {
+          "duration_ns": 22368,
+          "ns_per_pixel": 0.00617448
+        },
+        {
+          "duration_ns": 22528,
+          "ns_per_pixel": 0.00621864
+        },
+        {
+          "duration_ns": 22464,
+          "ns_per_pixel": 0.00620098
+        },
+        {
+          "duration_ns": 22272,
+          "ns_per_pixel": 0.00614798
+        },
+        {
+          "duration_ns": 22176,
+          "ns_per_pixel": 0.00612148
+        },
+        {
+          "duration_ns": 22272,
+          "ns_per_pixel": 0.00614798
+        },
+        {
+          "duration_ns": 22304,
+          "ns_per_pixel": 0.00615681
+        },
+        {
+          "duration_ns": 22272,
+          "ns_per_pixel": 0.00614798
+        },
+        {
+          "duration_ns": 22144,
+          "ns_per_pixel": 0.00611264
+        },
+        {
+          "duration_ns": 21728,
+          "ns_per_pixel": 0.00599781
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        },
+        {
+          "duration_ns": 21696,
+          "ns_per_pixel": 0.00598898
+        },
+        {
+          "duration_ns": 22112,
+          "ns_per_pixel": 0.00610381
+        },
+        {
+          "duration_ns": 21792,
+          "ns_per_pixel": 0.00601548
+        },
+        {
+          "duration_ns": 21888,
+          "ns_per_pixel": 0.00604198
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        },
+        {
+          "duration_ns": 21504,
+          "ns_per_pixel": 0.00593598
+        },
+        {
+          "duration_ns": 21760,
+          "ns_per_pixel": 0.00600664
+        }
+      ],
+      "round": 1,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "text",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "unicode",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262120,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23616,
+          "ns_per_pixel": 0.00651897
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24384,
+          "ns_per_pixel": 0.00673097
+        },
+        {
+          "duration_ns": 23776,
+          "ns_per_pixel": 0.00656314
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23808,
+          "ns_per_pixel": 0.00657197
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23360,
+          "ns_per_pixel": 0.00644831
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23744,
+          "ns_per_pixel": 0.00655431
+        },
+        {
+          "duration_ns": 24160,
+          "ns_per_pixel": 0.00666914
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23328,
+          "ns_per_pixel": 0.00643947
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23872,
+          "ns_per_pixel": 0.00658964
+        },
+        {
+          "duration_ns": 24416,
+          "ns_per_pixel": 0.00673981
+        }
+      ],
+      "round": 1,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "unicode",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "unicode",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262120,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 23392,
+          "ns_per_pixel": 0.00645714
+        },
+        {
+          "duration_ns": 24224,
+          "ns_per_pixel": 0.00668681
+        },
+        {
+          "duration_ns": 24224,
+          "ns_per_pixel": 0.00668681
+        },
+        {
+          "duration_ns": 24320,
+          "ns_per_pixel": 0.00671331
+        },
+        {
+          "duration_ns": 24448,
+          "ns_per_pixel": 0.00674864
+        },
+        {
+          "duration_ns": 23968,
+          "ns_per_pixel": 0.00661614
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24192,
+          "ns_per_pixel": 0.00667797
+        },
+        {
+          "duration_ns": 23776,
+          "ns_per_pixel": 0.00656314
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24288,
+          "ns_per_pixel": 0.00670447
+        },
+        {
+          "duration_ns": 23616,
+          "ns_per_pixel": 0.00651897
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23904,
+          "ns_per_pixel": 0.00659847
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23392,
+          "ns_per_pixel": 0.00645714
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 23488,
+          "ns_per_pixel": 0.00648364
+        },
+        {
+          "duration_ns": 23552,
+          "ns_per_pixel": 0.00650131
+        },
+        {
+          "duration_ns": 24256,
+          "ns_per_pixel": 0.00669564
+        }
+      ],
+      "round": 1,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "unicode",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "emoji",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28480,
+          "ns_per_pixel": 0.00786164
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28384,
+          "ns_per_pixel": 0.00783514
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28640,
+          "ns_per_pixel": 0.0079058
+        },
+        {
+          "duration_ns": 28512,
+          "ns_per_pixel": 0.00787047
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28736,
+          "ns_per_pixel": 0.0079323
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28544,
+          "ns_per_pixel": 0.0078793
+        },
+        {
+          "duration_ns": 28352,
+          "ns_per_pixel": 0.0078263
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        }
+      ],
+      "round": 1,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "emoji",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "emoji",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26976,
+          "ns_per_pixel": 0.00744647
+        },
+        {
+          "duration_ns": 27424,
+          "ns_per_pixel": 0.00757014
+        },
+        {
+          "duration_ns": 27296,
+          "ns_per_pixel": 0.0075348
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26400,
+          "ns_per_pixel": 0.00728747
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27424,
+          "ns_per_pixel": 0.00757014
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 27488,
+          "ns_per_pixel": 0.0075878
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26880,
+          "ns_per_pixel": 0.00741997
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26528,
+          "ns_per_pixel": 0.0073228
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        },
+        {
+          "duration_ns": 26688,
+          "ns_per_pixel": 0.00736697
+        },
+        {
+          "duration_ns": 27328,
+          "ns_per_pixel": 0.00754364
+        },
+        {
+          "duration_ns": 26624,
+          "ns_per_pixel": 0.0073493
+        }
+      ],
+      "round": 1,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "emoji",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "marks",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27712,
+          "ns_per_pixel": 0.00764964
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 29696,
+          "ns_per_pixel": 0.0081973
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27744,
+          "ns_per_pixel": 0.00765847
+        },
+        {
+          "duration_ns": 28320,
+          "ns_per_pixel": 0.00781747
+        },
+        {
+          "duration_ns": 28480,
+          "ns_per_pixel": 0.00786164
+        },
+        {
+          "duration_ns": 28544,
+          "ns_per_pixel": 0.0078793
+        },
+        {
+          "duration_ns": 28032,
+          "ns_per_pixel": 0.00773797
+        },
+        {
+          "duration_ns": 27776,
+          "ns_per_pixel": 0.0076673
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 28256,
+          "ns_per_pixel": 0.0077998
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27648,
+          "ns_per_pixel": 0.00763197
+        },
+        {
+          "duration_ns": 27968,
+          "ns_per_pixel": 0.0077203
+        },
+        {
+          "duration_ns": 27776,
+          "ns_per_pixel": 0.0076673
+        },
+        {
+          "duration_ns": 28256,
+          "ns_per_pixel": 0.0077998
+        },
+        {
+          "duration_ns": 28672,
+          "ns_per_pixel": 0.00791464
+        },
+        {
+          "duration_ns": 27872,
+          "ns_per_pixel": 0.0076938
+        }
+      ],
+      "round": 1,
+      "variant": "after",
+      "executable": "/nix/store/iizf18vdq1drc13k5b8417hvp7rd08h6-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "./result/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "marks",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    },
+    {
+      "benchmark": "engine-render-cuda-event",
+      "dense": true,
+      "workload": "marks",
+      "cols": 318,
+      "rows": 89,
+      "requested_bytes": 262144,
+      "bytes": 262144,
+      "warmup": 1000,
+      "repeats": 20,
+      "samples": [
+        {
+          "duration_ns": 24576,
+          "ns_per_pixel": 0.00678397
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25440,
+          "ns_per_pixel": 0.00702247
+        },
+        {
+          "duration_ns": 25536,
+          "ns_per_pixel": 0.00704897
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25600,
+          "ns_per_pixel": 0.00706664
+        },
+        {
+          "duration_ns": 25536,
+          "ns_per_pixel": 0.00704897
+        },
+        {
+          "duration_ns": 25376,
+          "ns_per_pixel": 0.00700481
+        },
+        {
+          "duration_ns": 25376,
+          "ns_per_pixel": 0.00700481
+        },
+        {
+          "duration_ns": 24928,
+          "ns_per_pixel": 0.00688114
+        },
+        {
+          "duration_ns": 24896,
+          "ns_per_pixel": 0.00687231
+        },
+        {
+          "duration_ns": 24800,
+          "ns_per_pixel": 0.00684581
+        },
+        {
+          "duration_ns": 25024,
+          "ns_per_pixel": 0.00690764
+        },
+        {
+          "duration_ns": 24992,
+          "ns_per_pixel": 0.00689881
+        },
+        {
+          "duration_ns": 25728,
+          "ns_per_pixel": 0.00710197
+        }
+      ],
+      "round": 1,
+      "variant": "before",
+      "executable": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0/bin/cudaterm-engine-bench",
+      "command": [
+        "/tmp/cudaterm-raster-baseline/bin/cudaterm-engine-bench",
+        "--render",
+        "--dense",
+        "--workload",
+        "marks",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "--bytes",
+        "262144",
+        "--warmup",
+        "1000",
+        "--repeats",
+        "20"
+      ]
+    }
+  ]
+}

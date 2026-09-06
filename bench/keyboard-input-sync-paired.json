@@ -1,0 +1,1300 @@
+{
+  "runs": [
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190916720174405,
+      "injection_start_to_child_last_read_ns": 2413516,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190916717760889,
+      "xdotool_type_duration_ns": 3275265,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-yzkxwaaa",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 0,
+      "variant": "before",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190917409364334,
+      "injection_start_to_child_last_read_ns": 2322487,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190917407041847,
+      "xdotool_type_duration_ns": 3276725,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-90qlzerc",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 0,
+      "variant": "before",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190918133594918,
+      "injection_start_to_child_last_read_ns": 2351346,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190918131243572,
+      "xdotool_type_duration_ns": 3243185,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-3v6t9o84",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 0,
+      "variant": "before",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190918822917457,
+      "injection_start_to_child_last_read_ns": 1891397,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190918821026060,
+      "xdotool_type_duration_ns": 3239195,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-5ss04g7_",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 0,
+      "variant": "after",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190919511923865,
+      "injection_start_to_child_last_read_ns": 2096806,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190919509827059,
+      "xdotool_type_duration_ns": 3272975,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-sgb51fem",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 0,
+      "variant": "after",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190920201240244,
+      "injection_start_to_child_last_read_ns": 2266017,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190920198974227,
+      "xdotool_type_duration_ns": 3274115,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-vr49wleu",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 0,
+      "variant": "after",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190920920624536,
+      "injection_start_to_child_last_read_ns": 32847850,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190920887776686,
+      "xdotool_type_duration_ns": 63534263,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-rkmqa69t",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 0,
+      "variant": "before",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190921673046158,
+      "injection_start_to_child_last_read_ns": 34722987,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190921638323171,
+      "xdotool_type_duration_ns": 63494353,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-hzzsef_8",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 0,
+      "variant": "before",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190922390164883,
+      "injection_start_to_child_last_read_ns": 33433919,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190922356730964,
+      "xdotool_type_duration_ns": 63405434,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-kcaiyw2g",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 0,
+      "variant": "before",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190923138403052,
+      "injection_start_to_child_last_read_ns": 32755220,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190923105647832,
+      "xdotool_type_duration_ns": 63470473,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-l7yggpib",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 0,
+      "variant": "after",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190923888177998,
+      "injection_start_to_child_last_read_ns": 32671120,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190923855506878,
+      "xdotool_type_duration_ns": 63482854,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-3acl9xt4",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 0,
+      "variant": "after",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190924637535464,
+      "injection_start_to_child_last_read_ns": 32724830,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190924604810634,
+      "xdotool_type_duration_ns": 63532553,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-abe4kp2x",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 0,
+      "variant": "after",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190925357088426,
+      "injection_start_to_child_last_read_ns": 2293746,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190925354794680,
+      "xdotool_type_duration_ns": 3270835,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-mkxu7mjq",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 1,
+      "variant": "after",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190926079093705,
+      "injection_start_to_child_last_read_ns": 2127517,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190926076966188,
+      "xdotool_type_duration_ns": 3280845,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-fuit_c7g",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 1,
+      "variant": "after",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190926736310452,
+      "injection_start_to_child_last_read_ns": 2166217,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190926734144235,
+      "xdotool_type_duration_ns": 3242245,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-rmd678by",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 1,
+      "variant": "after",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190927426741828,
+      "injection_start_to_child_last_read_ns": 2939725,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190927423802103,
+      "xdotool_type_duration_ns": 3324814,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-yf69cmi3",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 1,
+      "variant": "before",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190928115606197,
+      "injection_start_to_child_last_read_ns": 2405076,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190928113201121,
+      "xdotool_type_duration_ns": 3245565,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-7ho8dm9p",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 1,
+      "variant": "before",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 1,
+      "expected_bytes": 1,
+      "child_last_read_ns": 190928772779024,
+      "injection_start_to_child_last_read_ns": 2320456,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 1,
+      "window": "52428807",
+      "injection_start_ns": 190928770458568,
+      "xdotool_type_duration_ns": 3244475,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-ubjh61yj",
+          "1"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "a"
+        ]
+      },
+      "round": 1,
+      "variant": "before",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "1"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190929491788837,
+      "injection_start_to_child_last_read_ns": 32756360,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190929459032477,
+      "xdotool_type_duration_ns": 63519193,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-5p9btl7h",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 1,
+      "variant": "after",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190930243713220,
+      "injection_start_to_child_last_read_ns": 34994787,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190930208718433,
+      "xdotool_type_duration_ns": 63491103,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-rbc48gdu",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 1,
+      "variant": "after",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190930993086246,
+      "injection_start_to_child_last_read_ns": 33437199,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190930959649047,
+      "xdotool_type_duration_ns": 63467553,
+      "commands": {
+        "terminal": [
+          "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-ld4_nhvz",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 1,
+      "variant": "after",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190931746551237,
+      "injection_start_to_child_last_read_ns": 37736273,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190931708814964,
+      "xdotool_type_duration_ns": 63507623,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-ikg_nbvr",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 1,
+      "variant": "before",
+      "repeat": 0,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190932493492737,
+      "injection_start_to_child_last_read_ns": 34827407,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190932458665330,
+      "xdotool_type_duration_ns": 63504903,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-bdj7z2x0",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 1,
+      "variant": "before",
+      "repeat": 1,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    },
+    {
+      "exact_text_pass": true,
+      "received_bytes": 512,
+      "expected_bytes": 512,
+      "child_last_read_ns": 190933243300173,
+      "injection_start_to_child_last_read_ns": 35904545,
+      "test": "window-keyboard-input",
+      "status": "passed",
+      "terminal": "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+      "backend": "X11/Xwayland",
+      "count": 512,
+      "window": "52428807",
+      "injection_start_ns": 190933207395628,
+      "xdotool_type_duration_ns": 63506123,
+      "commands": {
+        "terminal": [
+          "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+          "-e",
+          "/run/current-system/sw/bin/python3",
+          "-c",
+          "\nimport json\nimport pathlib\nimport sys\nimport time\nimport tty\n\nroot = pathlib.Path(sys.argv[1])\ncount = int(sys.argv[2])\ntty.setraw(0)\ntime.sleep(0.5)\n(root / 'ready').touch()\nreceived = bytearray()\nwhile len(received) < count:\n    chunk = sys.stdin.buffer.read(min(4096, count - len(received)))\n    if not chunk:\n        raise RuntimeError('PTY closed before all keyboard bytes arrived')\n    received.extend(chunk)\nlast_read_ns = time.monotonic_ns()\n(root / 'received').write_bytes(received)\n# Keep the terminal and its input focus owned until the parent has finished\n# xdotool, so later key-release events cannot reach another window.\nwhile not (root / 'stop').exists():\n    time.sleep(0.005)\nstart_ns = int((root / 'injection_start_ns').read_text())\n(root / 'result.json').write_text(json.dumps({\n    'exact_text_pass': bytes(received) == b'a' * count,\n    'received_bytes': len(received),\n    'expected_bytes': count,\n    'child_last_read_ns': last_read_ns,\n    'injection_start_to_child_last_read_ns': last_read_ns - start_ns,\n}))\n",
+          "/tmp/cudaterm-keyboard-_fk123s1",
+          "512"
+        ],
+        "activate": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "windowactivate",
+          "--sync",
+          "52428807"
+        ],
+        "type": [
+          "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+          "type",
+          "--window",
+          "52428807",
+          "--delay",
+          "0",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "round": 1,
+      "variant": "before",
+      "repeat": 2,
+      "fixture_command": [
+        "python3",
+        "tests/window_keyboard.py",
+        "--terminal",
+        "/nix/store/470qqv0224nbnaj1sq3ki8wygc333sh1-cudaterm-0.1.0/bin/cudaterm",
+        "--xdotool",
+        "/nix/store/skbn0lybxlcsq76s0fz1yb1j966i3fs5-xdotool-4.20260303.1/bin/xdotool",
+        "--count",
+        "512"
+      ]
+    }
+  ]
+}

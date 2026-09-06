@@ -1,0 +1,14 @@
+PASS: slow uploads and coalesced update boundaries retain complete frames
+Traceback (most recent call last):
+  File "/home/y0usaf/dev/developing/cudaterm/tests/window_sync.py", line 108, in <module>
+    else: main()
+          ~~~~^^
+  File "/home/y0usaf/dev/developing/cudaterm/tests/window_sync.py", line 96, in main
+    assert terminal.wait(timeout=10)==23, 'direct child exit status lost'
+           ~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/nix/store/vq4nai7cxppipd3qgirdnma27hxm0m8y-python3-3.14.7-env/lib/python3.14/subprocess.py", line 1279, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/nix/store/vq4nai7cxppipd3qgirdnma27hxm0m8y-python3-3.14.7-env/lib/python3.14/subprocess.py", line 2076, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['/nix/store/zvsnvj0fqij9rvwx009p446xvbg2zqzp-cudaterm-0.1.0/bin/cudaterm', '--cols', '80', '--rows', '32', '--dump', '/tmp/nix-shell.ZsXYnP/cudaterm-sync-l2qmi5by/exit.dump', '-e', '/nix/store/vq4nai7cxppipd3qgirdnma27hxm0m8y-python3-3.14.7-env/bin/python3', '/home/y0usaf/dev/developing/cudaterm/tests/window_sync.py', '--inherited-child', '/tmp/nix-shell.ZsXYnP/cudaterm-sync-l2qmi5by']' timed out after 10 seconds

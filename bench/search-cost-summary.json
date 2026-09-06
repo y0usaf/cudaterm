@@ -1,0 +1,168 @@
+{
+  "scope": "Wall-clock Engine::search call including snapshot/CUDA work; excludes PTY, compositor and display. First functional baseline, not an optimization comparison.",
+  "store_path": "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0",
+  "binary_sha256": "cdb52e644bd31bbc75d88ae3823d587d603b30519c8e984b97216ef8411e064a",
+  "percentile": "Linear interpolation at zero-based rank (n-1)*0.9; pooled three launches, 40 samples each, five warmups per launch.",
+  "cases": {
+    "80-hard": {
+      "samples": 120,
+      "min_ns": 48030,
+      "median_ns": 49549.5,
+      "p90_ns": 50262.0,
+      "max_ns": 62290,
+      "raw": [
+        {
+          "path": "bench/search-cost-80-hard-0.json",
+          "sha256": "3f60ff6fce72de8eda6f7196b916c1c343b5c355ebc9c7ac3a322ffb5018d18c",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "80",
+            "hard"
+          ]
+        },
+        {
+          "path": "bench/search-cost-80-hard-1.json",
+          "sha256": "ca3397777adae80217f6f9ee6238822e6842a25a13c07ad8f81842a2a2239121",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "80",
+            "hard"
+          ]
+        },
+        {
+          "path": "bench/search-cost-80-hard-2.json",
+          "sha256": "d861db73714087edd65316bea4c2f7b55c5d56e6d50f310a625a69acf62b779e",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "80",
+            "hard"
+          ]
+        }
+      ],
+      "tracked_search_bytes": [
+        1072
+      ],
+      "all_cleared_to_baseline": true
+    },
+    "80-soft": {
+      "samples": 120,
+      "min_ns": 5689601,
+      "median_ns": 6815504.5,
+      "p90_ns": 9714184.1,
+      "max_ns": 11466062,
+      "raw": [
+        {
+          "path": "bench/search-cost-80-soft-0.json",
+          "sha256": "a95a0ccdfb520c744b581a12fd43dca126235356caf8db230b82baab1d9d0ed5",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "80",
+            "soft"
+          ]
+        },
+        {
+          "path": "bench/search-cost-80-soft-1.json",
+          "sha256": "c0617d5eba705a5d8a27a99e6b28d4bef9c5a160b6b8565be2598b15045294cb",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "80",
+            "soft"
+          ]
+        },
+        {
+          "path": "bench/search-cost-80-soft-2.json",
+          "sha256": "9d5b34ce143fbc75a095056ff858adda895c82f8c53c2a29507584e339f8a30f",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "80",
+            "soft"
+          ]
+        }
+      ],
+      "tracked_search_bytes": [
+        1072
+      ],
+      "all_cleared_to_baseline": true
+    },
+    "318-hard": {
+      "samples": 120,
+      "min_ns": 96059,
+      "median_ns": 98054.5,
+      "p90_ns": 131146.0,
+      "max_ns": 292130,
+      "raw": [
+        {
+          "path": "bench/search-cost-318-hard-0.json",
+          "sha256": "b5e13ab38249ce5bc9297e3e97487175afa09bc7d280576e2e823fd8f07fd81e",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "318",
+            "hard"
+          ]
+        },
+        {
+          "path": "bench/search-cost-318-hard-1.json",
+          "sha256": "f679946ab7cf800bc8b7ae44695b32498acdb56616c9f6c377a973cc38ab3229",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "318",
+            "hard"
+          ]
+        },
+        {
+          "path": "bench/search-cost-318-hard-2.json",
+          "sha256": "375b7f57b5fd7a18e077b13751a190083b7190109f6f124b2a8b4f5b34165b96",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "318",
+            "hard"
+          ]
+        }
+      ],
+      "tracked_search_bytes": [
+        1072
+      ],
+      "all_cleared_to_baseline": true
+    },
+    "318-soft": {
+      "samples": 120,
+      "min_ns": 22188086,
+      "median_ns": 27622753.0,
+      "p90_ns": 28950747.9,
+      "max_ns": 31709951,
+      "raw": [
+        {
+          "path": "bench/search-cost-318-soft-0.json",
+          "sha256": "17c2d71e3d2db23d300cc46b9d935c0685de9ec8701de20647eb6afaabd957d5",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "318",
+            "soft"
+          ]
+        },
+        {
+          "path": "bench/search-cost-318-soft-1.json",
+          "sha256": "5ca61b01106817c500c6367eb9450ba5f43228ad7672896c5dac0fc9c7066323",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "318",
+            "soft"
+          ]
+        },
+        {
+          "path": "bench/search-cost-318-soft-2.json",
+          "sha256": "a79e46af745cb8eea34641df0bd689eafaca08c5a8a7c6240ee690cee4c184c9",
+          "reproduce": [
+            "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost",
+            "318",
+            "soft"
+          ]
+        }
+      ],
+      "tracked_search_bytes": [
+        1072
+      ],
+      "all_cleared_to_baseline": true
+    }
+  }
+}

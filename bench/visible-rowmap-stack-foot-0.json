@@ -1,0 +1,177 @@
+{
+  "benchmark": "pty-write-to-compositor-capture",
+  "terminal": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+  "command": [
+    "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+    "-o",
+    "font=DejaVu Sans Mono:size=11",
+    "-o",
+    "line-height=16px",
+    "-e"
+  ],
+  "cols": 318,
+  "rows": 89,
+  "capture_dimensions": [
+    64,
+    16
+  ],
+  "capture_region": "40,40 64x16",
+  "sample_pixel": [
+    32,
+    0
+  ],
+  "load_lines": 0,
+  "samples": [
+    {
+      "write_start_ns": 183250966020206,
+      "observed_ns": 183250984449007,
+      "duration_ns": 18428801,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183250984562237,
+      "observed_ns": 183251015737860,
+      "duration_ns": 31175623,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183251015853570,
+      "observed_ns": 183251036154809,
+      "duration_ns": 20301239,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251036268698,
+      "observed_ns": 183251069596538,
+      "duration_ns": 33327840,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183251069705627,
+      "observed_ns": 183251101960578,
+      "duration_ns": 32254951,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183251102081538,
+      "observed_ns": 183251147086479,
+      "duration_ns": 45004941,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183251147201119,
+      "observed_ns": 183251176096205,
+      "duration_ns": 28895086,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251176207715,
+      "observed_ns": 183251202528695,
+      "duration_ns": 26320980,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251202638585,
+      "observed_ns": 183251232800939,
+      "duration_ns": 30162354,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251232927518,
+      "observed_ns": 183251258983499,
+      "duration_ns": 26055981,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251259102918,
+      "observed_ns": 183251286607896,
+      "duration_ns": 27504978,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251286721426,
+      "observed_ns": 183251316150121,
+      "duration_ns": 29428695,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251316271771,
+      "observed_ns": 183251342602251,
+      "duration_ns": 26330480,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251342685401,
+      "observed_ns": 183251369385130,
+      "duration_ns": 26699729,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251369500160,
+      "observed_ns": 183251398322516,
+      "duration_ns": 28822356,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251398424936,
+      "observed_ns": 183251426304333,
+      "duration_ns": 27879397,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251426419383,
+      "observed_ns": 183251454394340,
+      "duration_ns": 27974957,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251454520510,
+      "observed_ns": 183251481046120,
+      "duration_ns": 26525610,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251481155860,
+      "observed_ns": 183251509656346,
+      "duration_ns": 28500486,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183251509780376,
+      "observed_ns": 183251527600779,
+      "duration_ns": 17820403,
+      "captures": 1
+    }
+  ],
+  "capture_duration_ns": [
+    15450136,
+    19509971,
+    14172529,
+    17571523,
+    18320252,
+    13709179,
+    17367654,
+    20210580,
+    14543158,
+    18685402,
+    14048069,
+    18110522,
+    18160302,
+    26728769,
+    28801246,
+    26220020,
+    30063615,
+    25941651,
+    27408788,
+    29332465,
+    26219700,
+    26616469,
+    28709536,
+    27786337,
+    27883337,
+    26417960,
+    28403427,
+    17717613
+  ],
+  "limitations": "Includes capture overhead; not physical scanout or input latency."
+}

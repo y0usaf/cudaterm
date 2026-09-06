@@ -1,0 +1,33 @@
+{
+  "benchmark": "engine-feed",
+  "workload": "tabs",
+  "cols": 318,
+  "rows": 89,
+  "requested_bytes": 65536,
+  "bytes": 65534,
+  "warmup": 1,
+  "repeats": 5,
+  "samples": [
+    {
+      "duration_ns": 4064573,
+      "ns_per_byte": 62.0224
+    },
+    {
+      "duration_ns": 4215594,
+      "ns_per_byte": 64.3268
+    },
+    {
+      "duration_ns": 3997034,
+      "ns_per_byte": 60.9918
+    },
+    {
+      "duration_ns": 4204293,
+      "ns_per_byte": 64.1544
+    },
+    {
+      "duration_ns": 3872455,
+      "ns_per_byte": 59.0908
+    }
+  ],
+  "executable": "/nix/store/dqiagkyhrvqasx3xllwbvbyms5ia706k-cudaterm-0.1.0/bin/cudaterm-engine-bench"
+}

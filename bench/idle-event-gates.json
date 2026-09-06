@@ -1,0 +1,57 @@
+{
+  "status": "predeclared_before_application_edit",
+  "baseline": "bench/private-idle-controlled-summary.json",
+  "baseline_sha256": "b77be6b94a03c0c0dbbc7df38f59f49c31ca60cc13c76b62be53de107ce0a09b",
+  "scope": "incremental event-loop guard; original better-comparator resource targets remain unchanged",
+  "comparator_target": "Foot/Monstar observed zero voluntary context switches per three-second interval; this target remains zero, not a wakeup measurement.",
+  "requirements": [
+    "Zero repeated application-owned 100 ms poll/ppoll timeouts during settled idle interval in an instrumented diagnostic; exclude startup/shutdown and preserve raw traces.",
+    "Three uninstrumented launches per 80x24 and 318x89 using the controlled baseline environment; pooled per-grid median and linear p90 voluntary context-switch deltas must not exceed the fixed values below.",
+    "CPU tick-delta median/p90 must not exceed fixed baseline with same measurement resolution.",
+    "After-idle RSS/PSS/private maxima may not exceed original per-grid maxima by more than 1 MiB; this predeclared incremental allowance covers fixed host implementation/layout costs and does not change the unmet comparator targets.",
+    "Attributed CUDA GPU memory must not exceed 242 MiB at 80x24 or 300 MiB at 318x89. Unknown is not zero.",
+    "Private graphical tests must retain direct-child exit status/final output when a daemon owns the PTY, idle close, wake on output, POLLOUT input backpressure, search/resize, synchronized-frame completion/abandonment, and decode input response below existing 50 ms test bound.",
+    "Owned control/pid descriptors and worker must close/join on normal exit and exception paths; repeated lifecycle checks must show no surviving window processes.",
+    "Nix build/check and Finix preview/evaluator must pass. Preserve CUDA parsing/state/raster and Ekko behavior."
+  ],
+  "gates": {
+    "80x24": {
+      "voluntary_context_switches": {
+        "min": 351,
+        "median": 361,
+        "p90": 363.4,
+        "max": 364
+      },
+      "cpu_seconds_delta": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.007999999999999997,
+        "max": 0.009999999999999995
+      },
+      "host_max_bytes": {
+        "rss_bytes": 123379712,
+        "pss_bytes": 78086144,
+        "private_bytes": 71098368
+      }
+    },
+    "318x89": {
+      "voluntary_context_switches": {
+        "min": 393,
+        "median": 401,
+        "p90": 408.2,
+        "max": 410
+      },
+      "cpu_seconds_delta": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.007999999999999997,
+        "max": 0.009999999999999995
+      },
+      "host_max_bytes": {
+        "rss_bytes": 123367424,
+        "pss_bytes": 78073856,
+        "private_bytes": 71086080
+      }
+    }
+  }
+}

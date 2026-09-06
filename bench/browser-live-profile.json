@@ -1,0 +1,129 @@
+{
+  "seconds": 10.076537393993931,
+  "browser_frames_per_second": 4.962021976894786,
+  "browser_pty_MiB_per_second": 15.25321976296991,
+  "ekko_allocated_MiB_per_second": 122.75461943889536,
+  "ekko_gc_seconds": 0.06669199999999975,
+  "processes": [
+    {
+      "pid": 15685,
+      "role": "/nix/store/ph69lq4s66awap1an7wkbpp40fpkkc5x-cudaterm-0.1.0/bin/cudaterm --cols 318 --rows 89 -e /home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko attach cuda-workspace ",
+      "cpu_percent": 99.84,
+      "rss_mib": 114.7
+    },
+    {
+      "pid": 20313,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=renderer --enable-crash-reporter=b1ecb48a-26fc-4718-81ec-5b0cd15e2a9b,no_cha",
+      "cpu_percent": 21.54,
+      "rss_mib": 332.9
+    },
+    {
+      "pid": 19281,
+      "role": "/nix/store/52jgsbjfgr4fxz4x51xqyxnn9ikb8p7c-ekko-0.1.0/bin/ekko --serve cuda-workspace /nix/store/gqzjvqvzrbnsi6gg9ljfmh1ln6p57pbb-rush-0.1.0/bin/rush -i ::: /home/y0usaf/.local/state/ekko-v2/benchmark/bin/terminal-brows",
+      "cpu_percent": 17.27,
+      "rss_mib": 244.5
+    },
+    {
+      "pid": 19319,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --daemon /home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/browser/dist/main.",
+      "cpu_percent": 16.47,
+      "rss_mib": 325.2
+    },
+    {
+      "pid": 19361,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=gpu-process --ozone-platform=wayland --render-node-override=/dev/dri/renderD",
+      "cpu_percent": 7.74,
+      "rss_mib": 351.6
+    },
+    {
+      "pid": 15714,
+      "role": "/home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko attach cuda-workspace ",
+      "cpu_percent": 1.29,
+      "rss_mib": 159.1
+    },
+    {
+      "pid": 19595,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=renderer --enable-crash-reporter=b1ecb48a-26fc-4718-81ec-5b0cd15e2a9b,no_cha",
+      "cpu_percent": 0.3,
+      "rss_mib": 290.7
+    },
+    {
+      "pid": 21757,
+      "role": "python3 - ",
+      "cpu_percent": 0.3,
+      "rss_mib": 13.9
+    },
+    {
+      "pid": 19365,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --servi",
+      "cpu_percent": 0.1,
+      "rss_mib": 96.2
+    },
+    {
+      "pid": 19701,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US --service-s",
+      "cpu_percent": 0.1,
+      "rss_mib": 70.1
+    },
+    {
+      "pid": 19330,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=zygote --no-zygote-sandbox ",
+      "cpu_percent": 0.0,
+      "rss_mib": 55.6
+    },
+    {
+      "pid": 19331,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=zygote ",
+      "cpu_percent": 0.0,
+      "rss_mib": 55.9
+    },
+    {
+      "pid": 19333,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=zygote ",
+      "cpu_percent": 0.0,
+      "rss_mib": 13.8
+    },
+    {
+      "pid": 19628,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=renderer --enable-crash-reporter=b1ecb48a-26fc-4718-81ec-5b0cd15e2a9b,no_cha",
+      "cpu_percent": 0.0,
+      "rss_mib": 82.3
+    },
+    {
+      "pid": 19379,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=broker ",
+      "cpu_percent": 0.0,
+      "rss_mib": 35.7
+    },
+    {
+      "pid": 20432,
+      "role": "/home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/node_modules/.pnpm/electron@43.3.0/node_modules/electron/dist/electron.unwrapped --type=renderer --enable-crash-reporter=b1ecb48a-26fc-4718-81ec-5b0cd15e2a9b,no_cha",
+      "cpu_percent": 0.0,
+      "rss_mib": 100.5
+    },
+    {
+      "pid": 19286,
+      "role": "/nix/store/gqzjvqvzrbnsi6gg9ljfmh1ln6p57pbb-rush-0.1.0/bin/rush -i ",
+      "cpu_percent": 0.0,
+      "rss_mib": 7.1
+    },
+    {
+      "pid": 19287,
+      "role": "node cli/dist/main.js open https://example.com ",
+      "cpu_percent": 0.0,
+      "rss_mib": 91.4
+    },
+    {
+      "pid": 19311,
+      "role": "/nix/store/lqndphylsxqwbwm804n473pb4sqb98sh-bubblewrap-0.11.2/bin/bwrap --dev-bind /dev /dev --proc /proc --chdir /home/y0usaf/.cache/terminal-slack/runtime-e4dc44d1a5a3/browser --die-with-parent --bind /nix /nix --tmpfs",
+      "cpu_percent": 0.0,
+      "rss_mib": 2.1
+    },
+    {
+      "pid": 21756,
+      "role": "/run/current-system/sw/bin/bash -c python3 - <<'PY'\nimport os,time,json,subprocess\nfrom pathlib import Path\nexe='/home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko'\ndef sample():\n s=json.loads(subprocess.check_output([",
+      "cpu_percent": 0.0,
+      "rss_mib": 3.9
+    }
+  ]
+}

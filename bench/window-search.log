@@ -1,0 +1,6 @@
+these 2 derivations will be built:
+  /nix/store/641k8cgqriq2zi6wawmdhh7bdc4kv4ak-cudaterm-0.1.0.drv
+  /nix/store/51g536z38rzfkv00hn13d4wsxal2vinw-cudaterm-window-search-test.drv
+building '/nix/store/641k8cgqriq2zi6wawmdhh7bdc4kv4ak-cudaterm-0.1.0.drv'...
+building '/nix/store/51g536z38rzfkv00hn13d4wsxal2vinw-cudaterm-window-search-test.drv'...
+PASS: local UTF-8 history search, navigation, copy and normal input after close

@@ -1,0 +1,47 @@
+{
+  "store_path": "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0",
+  "source_sha256": {
+    "src/engine.cu": "e942843c529b2799053801c1304ce14e8480dca8e800265bb2fd901a3286e95d",
+    "src/engine.cuh": "38e8cab0ee9f2182dc4806fc413471e11f048c067cfe4405541f65058a3d46be",
+    "src/search_kernels.cuh": "d614d0baf85a5e4ca0c35fd7e64d7e1431b518efafaa42bb826221b1387fd923",
+    "tests/search_test.cu": "3a46322ee9197a61eaa7a03638d1e88968a8896c7cebfccef14eff4e6ce7bd97",
+    "tests/search_cost.cu": "23156531c6bba448cbe540ca080fdf3f09e2227c8a8916f20a0a868be50aa481"
+  },
+  "binary_sha256": {
+    "search-test": "1052ed7072cff30bca82c51c3a5c6d649e793780eebd45ed630979dbe1702ff1",
+    "engine-host": "73ff1df0549ccd3a479b5255811729d3550a4473ec24b806cc50214576c027b9",
+    "search-cost": "cdb52e644bd31bbc75d88ae3823d587d603b30519c8e984b97216ef8411e064a"
+  },
+  "commands": [
+    {"command":"nix build .","exit":0,"log":"bench/search-validation-build.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-test","exit":0,"log":"bench/search-search.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-reflow-test","exit":0,"log":"bench/search-reflow.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-engine-test","exit":0,"log":"bench/search-engine.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-appearance-test","exit":0,"log":"bench/search-appearance.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-charset-test","exit":0,"log":"bench/search-charset.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-csi-test","exit":0,"log":"bench/search-csi.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-mouse-test","exit":0,"log":"bench/search-mouse.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-plain-test","exit":0,"log":"bench/search-plain.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-reference-test","exit":0,"log":"bench/search-reference.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-scrollback-test","exit":0,"log":"bench/search-scrollback.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-selection-test","exit":0,"log":"bench/search-selection.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-styled-test","exit":0,"log":"bench/search-styled.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-unicode-test","exit":0,"log":"bench/search-unicode.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-vt-test","exit":0,"log":"bench/search-vt.log"},
+    {"command":"nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-workspace-test","exit":0,"log":"bench/search-workspace.log"},
+    {"command":"nix develop . --command python3 tests/test_graphics.py --host /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-engine-host","exit":0,"log":"bench/search-graphics.log","result":"38 cases passed"},
+    {"command":"nix develop . --command python3 tests/test_lifecycle.py --host /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-engine-host --cycles 30 --processes 3 --output bench/search-lifecycle.json","exit":0,"log":"bench/search-lifecycle.log","result":"90 cycles, 3 processes passed"},
+    {"command":"compute-sanitizer --tool memcheck cudaterm-search-test","exit":0,"log":"bench/search-validation-memcheck.log","result":"0 errors"},
+    {"command":"compute-sanitizer --tool racecheck cudaterm-search-test","exit":0,"log":"bench/search-validation-racecheck.log","result":"0 hazards"}
+  ],
+  "search_cost": {"launches":12,"cases":["80-hard","80-soft","318-hard","318-soft"],"repeats":[0,1,2],"samples_per_run":40,"warmup":5,"status":"all exits 0","logs":"bench/search-cost-{cols}-{case}-{repeat}.json"},
+  "final_checks": {
+    "final_store_path": "/nix/store/1rn5djnv9hid0mzzg9p6c63wzyn4vyjj-cudaterm-0.1.0",
+    "final_binary_sha256": {"cudaterm": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00", "engine-host": "73ff1df0549ccd3a479b5255811729d3550a4473ec24b806cc50214576c027b9", "search-test": "1052ed7072cff30bca82c51c3a5c6d649e793780eebd45ed630979dbe1702ff1"},
+    "nix_flake_check": {"exit": 0, "log": "bench/search-final-flake-check-frozen.log"},
+    "finix_preview": {"exit": 0, "path": "/nix/store/srj8dv88i933fw1f2vr41210w3np6m13-cudaterm-finix", "log": "bench/search-final-finix-build-frozen.log"},
+    "finix_evaluate": {"exit": 0, "log": "bench/search-final-finix-evaluate-frozen.log", "result": "amdGuard=true, desktop.failedAssertions=[], explicitOverride=foot, framework.terminal=monstar"},
+    "app_host_hashes_match_validated_store": true,
+    "validated_store_path": "/nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0"
+  }
+}

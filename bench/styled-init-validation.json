@@ -1,0 +1,9 @@
+{
+  "retained": true,
+  "performance_claim": "No stable ANSI PTY improvement established; retains a smaller initialization path with one fewer styled launch.",
+  "before": "/nix/store/in8gw2rpj3fx0cprwmw1mpr7f0xrjkfv-cudaterm-0.1.0",
+  "after": "/nix/store/0ln3rrbzl61k4w120r0gvghaizdc4vdy-cudaterm-0.1.0",
+  "derivation": "/nix/store/0whfqw28dns6al0fq2l804nwqq692cy3-cudaterm-0.1.0.drv",
+  "benchmark_sha256": "411d8773a46ff791226709a9d9718033a14c1953483d85a314db8ed757e8a720",
+  "nix_command": "nix build . && nix flake check && nix run .#styled-test && nix run .#plain-test && nix run .#reference-test && nix run .#csi-test && nix run .#scrollback-test"
+}

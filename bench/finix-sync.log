@@ -1,0 +1,5 @@
+this derivation will be built:
+  /nix/store/wggfx4kxs3g0gl1vbh1sd25n3dlayxv1-cudaterm-sync-test.drv
+building '/nix/store/wggfx4kxs3g0gl1vbh1sd25n3dlayxv1-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames
+PASS: inherited PTY closes with final output and direct child status

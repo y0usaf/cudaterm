@@ -1,0 +1,26 @@
+{
+  "status": "pass",
+  "command": "nix run .#sync-test -- --terminal /nix/store/fgfysy0bsdlkjc4wlsrdzy33pgcgx93v-cudaterm-0.1.0/bin/cudaterm --seat /nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so",
+  "log": "bench/reflow-private-window.log",
+  "modes_passed": [0, 1, 2, 3, 4, 5],
+  "resize_manifest": {
+    "requested_outer_pixels": {"width": 328, "height": 540},
+    "observed_client_content_pixels": {"width": 320, "height": 512},
+    "decoration_extents_pixels": {"horizontal": 8, "vertical": 28},
+    "child_geometry_ack": {"columns": 40, "rows": 32, "marker": "clipboard.resized"}
+  },
+  "application": {
+    "path": "/nix/store/fgfysy0bsdlkjc4wlsrdzy33pgcgx93v-cudaterm-0.1.0/bin/cudaterm",
+    "sha256": "f0dced1dc6f0d076381d9d0560cb65f14b60f11ff50b1047fb5b085c3398bc21"
+  },
+  "seat_module": {
+    "path": "/nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so",
+    "build_link": "result-reflow-seat/lib/seat.so",
+    "sha256": "8c64db4d3b2eacc15acfae6fb58d63adf85f0728de0c7a9ef72579a20eb18818"
+  },
+  "initial_failure_artifacts": {
+    "json": "bench/reflow-private-window-initial.json",
+    "log": "bench/reflow-private-window-initial.log",
+    "debug": "bench/reflow-private-window-initial-debug.log"
+  }
+}

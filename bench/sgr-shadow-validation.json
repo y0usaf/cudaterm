@@ -1,0 +1,24 @@
+{
+  "retained": true,
+  "derivation": "/nix/store/gydpz22wi48l3fnca1m4fsq6v37ix70w-cudaterm-0.1.0.drv",
+  "output": "/nix/store/0mymmqy7bn9h84hnzhx27h79354bxil3-cudaterm-0.1.0",
+  "nix_command": "nix build . && nix flake check && nix run .#styled-test && nix run .#csi-test && nix run .#reference-test && nix run .#vt-test",
+  "sanitizer": {
+    "tool": "memcheck",
+    "kernel_filter": "kns=styled_lines",
+    "test": "cudaterm-styled-test --bulk-only",
+    "errors": 0
+  },
+  "desktop_benchmark": "interrupted at user request; excluded",
+  "headless_performance": "No consistent ANSI improvement established",
+  "compiler_styled_lines": {
+    "before": {
+      "registers": 29,
+      "stack_bytes": 160
+    },
+    "after": {
+      "registers": 26,
+      "stack_bytes": 80
+    }
+  }
+}

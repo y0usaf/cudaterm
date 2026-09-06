@@ -1,0 +1,22 @@
+{
+  "status": "fixture_failure",
+  "command": "nix run .#sync-test -- --terminal /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm",
+  "log": "bench/reflow-private-window.log",
+  "passed_modes": [0, 1, 2, 3, 4],
+  "failed_mode": 5,
+  "failure": "timed out: clipboard.resized",
+  "requested_resize_pixels": {"width": 320, "height": 512},
+  "observed_client_geometry_pixels": {"width": 312, "height": 484},
+  "expected_pty_geometry": {"columns": 40, "rows": 32},
+  "observed_pty_geometry": "clipboard.resized marker was not created before the 10 second deadline",
+  "application": {
+    "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm",
+    "sha256": "2a3d7048ebbcad95207174ab386fdafe0a5e09fcec1b32d22645e78fb9f6e86b",
+    "identical_fresh_path": "/nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm"
+  },
+  "seat_module": {
+    "path": "/nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so",
+    "build_link": "result-reflow-seat/lib/seat.so",
+    "sha256": "8c64db4d3b2eacc15acfae6fb58d63adf85f0728de0c7a9ef72579a20eb18818"
+  }
+}

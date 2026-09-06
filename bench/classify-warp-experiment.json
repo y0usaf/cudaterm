@@ -1,0 +1,9 @@
+{
+  "retained": false,
+  "reason": "Shuffle gains reversed; native reduction regressed Unicode in both rounds and failed to establish broad benefit.",
+  "before": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0",
+  "shuffle": "/nix/store/d6783mqdwyy1dsrpprvmkqf8qrdih94c-cudaterm-0.1.0",
+  "native": "/nix/store/48nlgdw2gpw6fpjmhz6y65zk661jm35k-cudaterm-0.1.0",
+  "shuffle_derivation": "/nix/store/8izsdwm28dwh4v39rwhgp3m97pvs7d94-cudaterm-0.1.0.drv",
+  "native_derivation": "/nix/store/rz8f6w1qxszi7qn1kisnfdmwf4qq0l0x-cudaterm-0.1.0.drv"
+}

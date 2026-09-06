@@ -1,0 +1,7 @@
+{
+  "status": "interrupted",
+  "reason": "Stopped at user request because terminal window launches prevented compositor use; subsequent work is headless.",
+  "partial_results": "sgr-shadow-pty-paired.json",
+  "use_for_completed_comparison": false,
+  "vm_created": false
+}

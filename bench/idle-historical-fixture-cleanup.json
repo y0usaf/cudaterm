@@ -1,0 +1,28 @@
+[
+  {
+    "pid": 17399,
+    "argv": [
+      "/nix/store/vq4nai7cxppipd3qgirdnma27hxm0m8y-python3-3.14.7-env/bin/python3",
+      "/nix/store/7ifg4g77zajc2n3jb50zvmn50sx4g6nk-window_sync.py",
+      "--inherited-child",
+      "/tmp/cudaterm-sync-w7ibk9ae"
+    ],
+    "cwd": "/tmp/cudaterm-sync-w7ibk9ae (deleted)",
+    "script_sha256": "0b92d069a741c717c6e4a5adc0dcc2e7fe4fc9ece6a1900dc8772f6c81fa11ba",
+    "status": "terminated_verified_orphaned_fixture_descendant",
+    "reason": "stop file was removed with temporary directory before descendant observed it"
+  },
+  {
+    "pid": 18416,
+    "argv": [
+      "/nix/store/vq4nai7cxppipd3qgirdnma27hxm0m8y-python3-3.14.7-env/bin/python3",
+      "/nix/store/4ym9473c8ranb8hcdb62y6xpmlji3bfm-window_sync.py",
+      "--inherited-child",
+      "/tmp/cudaterm-sync-sbttgvi7"
+    ],
+    "cwd": "/tmp/cudaterm-sync-sbttgvi7 (deleted)",
+    "script_sha256": "8cee72c1c28b1d8ab272d9ae1171355a4cdc837d4a95af9f9fcc2cb19fbb8115",
+    "status": "terminated_verified_orphaned_fixture_descendant",
+    "reason": "stop file was removed with temporary directory before descendant observed it"
+  }
+]

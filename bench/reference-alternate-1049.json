@@ -1,0 +1,67 @@
+{
+  "reference_library": "/nix/store/v5qbgn45khh5wkfxdldmh2ryj7rnn5h9-libvterm-neovim-0.3.3",
+  "old_source": "/nix/store/ild5wsr13n4493md8hfvbp3shnid117a-source",
+  "baseline_expression": "let\n  flake = builtins.getFlake \"/home/y0usaf/dev/developing/cudaterm\";\n  oldSource = builtins.storePath \"/nix/store/ild5wsr13n4493md8hfvbp3shnid117a-source\";\nin flake.packages.x86_64-linux.default.overrideAttrs (old: {\n  pname = \"cudaterm-reference-before\";\n  postPatch = \"cp -r ${oldSource}/src/. src/\";\n})\n",
+  "runs": [
+    {
+      "variant": "before",
+      "command": [
+        "/nix/store/29b01az13vjvlnqxx6q43xvcp3xxjz2j-cudaterm-reference-before-0.1.0/bin/cudaterm-reference-test",
+        "alternate_1049_entry_cursor"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "reference-test: alternate_1049_entry_cursor chunk=0 cell (0,0) codepoint expected=32 actual=65\n"
+    },
+    {
+      "variant": "after",
+      "command": [
+        "/nix/store/zc44xy462ap5gfdpwfhhxw41drxflsa4-cudaterm-0.1.0/bin/cudaterm-reference-test",
+        "alternate_1049_entry_cursor"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": "before",
+      "command": [
+        "/nix/store/29b01az13vjvlnqxx6q43xvcp3xxjz2j-cudaterm-reference-before-0.1.0/bin/cudaterm-reference-test",
+        "alternate_1049_entry_margin"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "reference-test: alternate_1049_entry_margin chunk=0 cell (0,0) codepoint expected=32 actual=65\n"
+    },
+    {
+      "variant": "after",
+      "command": [
+        "/nix/store/zc44xy462ap5gfdpwfhhxw41drxflsa4-cudaterm-0.1.0/bin/cudaterm-reference-test",
+        "alternate_1049_entry_margin"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": "before",
+      "command": [
+        "/nix/store/29b01az13vjvlnqxx6q43xvcp3xxjz2j-cudaterm-reference-before-0.1.0/bin/cudaterm-reference-test",
+        "alternate_1049_entry_wrap"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "reference-test: alternate_1049_entry_wrap chunk=0 cell (0,0) codepoint expected=32 actual=90\n"
+    },
+    {
+      "variant": "after",
+      "command": [
+        "/nix/store/zc44xy462ap5gfdpwfhhxw41drxflsa4-cudaterm-0.1.0/bin/cudaterm-reference-test",
+        "alternate_1049_entry_wrap"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

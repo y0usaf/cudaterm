@@ -1,0 +1,36 @@
+{
+  "store_path": "/nix/store/fgfysy0bsdlkjc4wlsrdzy33pgcgx93v-cudaterm-0.1.0",
+  "finix_store_path": "/nix/store/q46mb95npb4sagdgwq8spfvzvy9bv20m-cudaterm-finix",
+  "source_hashes": {
+    "src/reflow.cuh": "5d5c6d58b434eeb8a13dea3b25873ef9c390d7d85b94503e523003564ddd5928",
+    "drv/src/reflow.cuh": "5d5c6d58b434eeb8a13dea3b25873ef9c390d7d85b94503e523003564ddd5928",
+    "tests/reflow_test.cu": "4660ee28d15e8e7694e02fd9735e2b9e3792bed168964ee246bd0d5fab28056e",
+    "drv/tests/reflow_test.cu": "4660ee28d15e8e7694e02fd9735e2b9e3792bed168964ee246bd0d5fab28056e",
+    "src/engine.cu": "77033c073ee74cdef546661729d62ac02899b8ac8cedf58a1139336fb8415d77",
+    "drv/src/engine.cu": "77033c073ee74cdef546661729d62ac02899b8ac8cedf58a1139336fb8415d77"
+  },
+  "binary_hashes": {
+    "cudaterm-reflow-test": "4444f1efd9f18899ff2d195cb55c2dc96044a9ab5a56f224b6633e18886c247b",
+    "cudaterm-engine-host": "347a47c2c041b42fd63385df1cc4c1c0c7daf5a9d36acb73052039acdd72149b"
+  },
+  "commands": [
+    {"command": "nix build .", "exit": 0, "log": "bench/reflow-final-build.log"},
+    {"command": "nix flake check", "exit": 0, "log": "bench/reflow-final-flake-check.log"},
+    {"command": "nix develop . --command /nix/store/fgfysy0bsdlkjc4wlsrdzy33pgcgx93v-cudaterm-0.1.0/bin/cudaterm-reflow-test", "exit": 0, "log": "bench/reflow-final-focused.log"},
+    {"command": "nix develop . --command /nix/store/mqm2lxpmssgsp1a3gcsf1i56w98cw000-cuda12.9-cuda_sanitizer_api-12.9.79/bin/compute-sanitizer --tool memcheck /nix/store/fgfysy0bsdlkjc4wlsrdzy33pgcgx93v-cudaterm-0.1.0/bin/cudaterm-reflow-test", "exit": 0, "log": "bench/reflow-final-memcheck.log", "result": "0 errors"},
+    {"command": "nix develop . --command /nix/store/mqm2lxpmssgsp1a3gcsf1i56w98cw000-cuda12.9-cuda_sanitizer_api-12.9.79/bin/compute-sanitizer --tool racecheck /nix/store/fgfysy0bsdlkjc4wlsrdzy33pgcgx93v-cudaterm-0.1.0/bin/cudaterm-reflow-test", "exit": 0, "log": "bench/reflow-final-racecheck.log", "result": "0 hazards"},
+    {"command": "nix build --impure --file nix/finix-preview.nix --out-link result-finix", "exit": 0, "log": "bench/reflow-final-finix-build.log"},
+    {"command": "nix eval --impure --json --file nix/finix-evaluate.nix", "exit": 1, "log": "bench/reflow-final-finix-evaluate.log", "error": "The option `user.ui.cudaterm.enable' in `<unknown-file>' is already declared in `<unknown-file>'."},
+    {"command": "nix eval --impure --json --file nix/finix-evaluate.nix", "exit": 0, "log": "bench/reflow-final-finix-evaluate-fixed4.log", "result": "amdGuard=true, desktop.failedAssertions=[], explicitOverride=foot, framework.terminal=monstar"}
+    ,{"command": "nix eval --impure --json --file nix/finix-evaluate.nix", "exit": 0, "log": "bench/reflow-final-finix-evaluate-current2.log", "result": "amdGuard=true, desktop.failedAssertions=[], explicitOverride=foot, framework.terminal=monstar, package=/nix/store/q46mb95npb4sagdgwq8spfvzvy9bv20m-cudaterm-finix"},
+    {"command": "nix flake check", "exit": 0, "log": "bench/reflow-final-flake-check-after-evaluator.log"}
+  ],
+  "prior_gpu_validation": {
+    "suites": 14,
+    "suite_logs": ["bench/reflow-fast-engine.log", "bench/reflow-fast-appearance.log", "bench/reflow-fast-charset.log", "bench/reflow-fast-csi.log", "bench/reflow-fast-mouse.log", "bench/reflow-fast-plain.log", "bench/reflow-fast-reference.log", "bench/reflow-fast-scrollback.log", "bench/reflow-fast-selection.log", "bench/reflow-fast-styled.log", "bench/reflow-fast-unicode.log", "bench/reflow-fast-vt.log", "bench/reflow-fast-workspace.log", "bench/reflow-fast-reflow.log"],
+    "graphics": {"cases": 38, "exit": 0, "command": "nix develop . --command python3 tests/test_graphics.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host", "log": "bench/reflow-fast-graphics.log"},
+    "lifecycle": {"cycles": 90, "processes": 3, "exit": 0, "command": "nix develop . --command python3 tests/test_lifecycle.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --cycles 30 --processes 3 --output bench/reflow-fast-lifecycle.json", "log": "bench/reflow-fast-lifecycle.log"},
+    "all_passed": true,
+    "host_sha256": "347a47c2c041b42fd63385df1cc4c1c0c7daf5a9d36acb73052039acdd72149b"
+  }
+}

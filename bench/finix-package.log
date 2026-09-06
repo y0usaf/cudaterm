@@ -1,0 +1,6 @@
+these 3 derivations will be built:
+  /nix/store/dxzj3b9vrj56ba8clvrf2d3j3vb21pff-cudaterm-0.1.0.drv
+  /nix/store/jqzrcb9xczg2qgfj40x4g3w1291kyavp-cudaterm-finix.drv
+  /nix/store/d8x1dhxf3gmc9lnmy4shslfmls3pq052-cudaterm-finix.drv
+building '/nix/store/jqzrcb9xczg2qgfj40x4g3w1291kyavp-cudaterm-finix.drv'...
+building '/nix/store/d8x1dhxf3gmc9lnmy4shslfmls3pq052-cudaterm-finix.drv'...

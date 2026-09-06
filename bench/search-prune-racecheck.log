@@ -1,0 +1,3 @@
+error (ignored): SQLite database '/home/y0usaf/.cache/nix/eval-cache-v6/bb03f3ff463fa87bf6163ef705325bc7dceb511731c653938ff46879c2877210.sqlite' is busy
+========= COMPUTE-SANITIZER
+========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)

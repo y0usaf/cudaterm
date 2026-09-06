@@ -1,0 +1,11 @@
+this derivation will be built:
+  /nix/store/cwxs9b563i817rxzgjqfxj032clyraiw-cudaterm-sync-test.drv
+building '/nix/store/cwxs9b563i817rxzgjqfxj032clyraiw-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames
+PASS: inherited PTY closes with final output and direct child status
+PASS: Wayland Ctrl-Space reached the PTY during CUDA decode in 0.1 ms
+PASS: Wayland Shift-selection mode 0 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland large external clipboard paste preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 2 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 3 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 4 clipboard roundtrip preserves UTF-8 and bracketed-paste framing

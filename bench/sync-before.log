@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/y0usaf/dev/developing/cudaterm/tests/window_sync.py", line 83, in <module>
+    else: main()
+          ~~~~^^
+  File "/home/y0usaf/dev/developing/cudaterm/tests/window_sync.py", line 71, in main
+    assert count>=256*128,(stage,'partial frame presented',count)
+           ^^^^^^^^^^^^^^
+AssertionError: ('red', 'partial frame presented', 0)

@@ -1,0 +1,44 @@
+{
+  "benchmark": "terminal-idle-parent-resources",
+  "command": [
+    "/nix/store/za63fn0a6a5bbam1581n409ikqywhqwc-cudaterm-0.1.0/bin/cudaterm",
+    "-e"
+  ],
+  "terminal_resolved": "/nix/store/za63fn0a6a5bbam1581n409ikqywhqwc-cudaterm-0.1.0/bin/cudaterm",
+  "samples": [
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000178232003236,
+      "cpu_seconds": 0.009999999999999981,
+      "cpu_percent_one_core": 0.33331353095389016,
+      "rss_bytes": 223092736,
+      "nvidia_compute_memory_bytes": 587202560
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000183811993338,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 224350208,
+      "nvidia_compute_memory_bytes": 587202560
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.0002088820037898,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 223580160,
+      "nvidia_compute_memory_bytes": 587202560
+    }
+  ],
+  "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+}

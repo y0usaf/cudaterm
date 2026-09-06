@@ -1,0 +1,4 @@
+this derivation will be built:
+  /nix/store/460kx24cqf4sl5jd73c1kcz23ivgi631-cudaterm-sync-test.drv
+building '/nix/store/460kx24cqf4sl5jd73c1kcz23ivgi631-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames

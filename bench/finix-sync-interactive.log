@@ -1,0 +1,8 @@
+these 2 derivations will be built:
+  /nix/store/k2pqlw3r2x18k5lnwiipd2l9jcksgqfn-cudaterm-headless-seat.drv
+  /nix/store/jzn9c04m4b7z7jca5mgzq0p8nxa20bnc-cudaterm-sync-test.drv
+building '/nix/store/k2pqlw3r2x18k5lnwiipd2l9jcksgqfn-cudaterm-headless-seat.drv'...
+building '/nix/store/jzn9c04m4b7z7jca5mgzq0p8nxa20bnc-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames
+PASS: inherited PTY closes with final output and direct child status
+PASS: Wayland Ctrl-Space reached the PTY during CUDA decode in 0.1 ms

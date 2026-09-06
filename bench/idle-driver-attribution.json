@@ -1,0 +1,45 @@
+{
+  "source": "bench/idle-profile-corrected.strace",
+  "source_sha256": "d36ba9f1d2f246702c82090b01d6062d9dc5a4d20ec942be3d9ee5ac9ec69c68",
+  "scope": "startup through shutdown; instrumented trace, not a settled idle measurement",
+  "terminal_pid": 2530,
+  "selection": {
+    "criterion": "most poll( calls with more than one fd, grouped by source TID",
+    "source_tid": 2533,
+    "poll_calls": 388,
+    "multi_fd_poll_calls": 387,
+    "other_poll_call_counts_by_tid": {
+      "2530": 22,
+      "2532": 3,
+      "2575": 30,
+      "3022": 12
+    }
+  },
+  "representative": {
+    "syscall_line": 423141,
+    "resume_line": 423143,
+    "syscall": "2533  21:08:50.150787 poll([{fd=16<{eventfd-count=0, eventfd-id=340, eventfd-semaphore=0}>, events=POLLIN}, {fd=18</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=20</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=22</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=23<{eventfd-count=0, eventfd-id=358, eventfd-semaphore=0}>, events=POLLIN}, {fd=25</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=27</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=29</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=31</dev/nvidia0<char 195:0>>, events=POLLIN}, {fd=32<pipe:[68968571]>, events=POLLIN}], 10, 55 <unfinished ...>",
+    "result": "2533  21:08:50.150952 <... poll resumed>) = 1 ([{fd=18, revents=POLLIN}])",
+    "stack_frames": [
+      " > /nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84/lib/libc.so.6(__syscall_cancel_arch+0x32) [0xa5a22]",
+      " > /nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84/lib/libc.so.6(__internal_syscall_cancel+0x5b) [0x9912b]",
+      " > /nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84/lib/libc.so.6(__syscall_cancel+0x13) [0x991a3]",
+      " > /nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84/lib/libc.so.6(__poll+0x1d) [0x11640d]",
+      " > /nix/store/w3s90zck17xr2i87q7zi8x372bgfwlrr-nvidia-x11-595.91.07/lib/libcuda.so.595.91.07() [0x3038d6]",
+      " > /nix/store/w3s90zck17xr2i87q7zi8x372bgfwlrr-nvidia-x11-595.91.07/lib/libcuda.so.595.91.07() [0x3df214]",
+      " > /nix/store/w3s90zck17xr2i87q7zi8x372bgfwlrr-nvidia-x11-595.91.07/lib/libcuda.so.595.91.07() [0x2ee372]",
+      " > /nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84/lib/libc.so.6(start_thread+0x2e2) [0x9ce72]",
+      " > /nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84/lib/libc.so.6(__clone3+0x2b) [0x1242bb]"
+    ]
+  },
+  "attribution": {
+    "status": "CUDA-related polling activity",
+    "owner": "unknown",
+    "basis": "Representative call polls seven /dev/nvidia0 descriptors; the following stack frames pass through libcuda. This identifies CUDA-driver-associated polling, not the internal subsystem, a settled idle rate, or irreducible cost."
+  },
+  "limitations": [
+    "This trace does not establish a settled-idle rate or CPU cost.",
+    "No new-process profiling, GPU run, source edit, build, network access, or Nix test claim is included."
+  ],
+  "review": "Parent checked original numbered lines and raw SHA; restored unabridged excerpts and corrected descriptor count from five to seven. Parent independently counted poll starts (excluding ppoll): main thread has 22, not 50."
+}

@@ -1,0 +1,3 @@
+370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00  /nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm
+a0c3a6bc4ed40f3b3ea0d14fea0016b297315165a7538e831b89b8f2e3762477  /nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/bin/weston
+8c64db4d3b2eacc15acfae6fb58d63adf85f0728de0c7a9ef72579a20eb18818  /nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so

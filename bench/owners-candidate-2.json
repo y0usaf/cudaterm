@@ -1,0 +1,94 @@
+{
+  "binary": "/nix/store/pk03f5y591si07aaiqnfrgsy6xsg3ihd-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "width": 1274,
+  "height": 1368,
+  "scope": "synthetic images, headless CUDA; shared desktop GPU; Python transport overhead included",
+  "cases": {
+    "solid": {
+      "raw_bytes": 6971328,
+      "compressed_bytes": 6798,
+      "pty_bytes": 9134,
+      "samples": [
+        {
+          "chunks_ms": 14.61879801354371,
+          "final_decode_commit_ms": 135.00659400597215,
+          "raster_and_host_copy_ms": 12.333720980677754
+        },
+        {
+          "chunks_ms": 5.108062003273517,
+          "final_decode_commit_ms": 81.73171599628404,
+          "raster_and_host_copy_ms": 10.403544001746923
+        },
+        {
+          "chunks_ms": 5.332261003786698,
+          "final_decode_commit_ms": 99.33296899544075,
+          "raster_and_host_copy_ms": 10.71755401790142
+        },
+        {
+          "chunks_ms": 8.37377700372599,
+          "final_decode_commit_ms": 134.14903500233777,
+          "raster_and_host_copy_ms": 11.975592002272606
+        },
+        {
+          "chunks_ms": 16.467724984977394,
+          "final_decode_commit_ms": 135.55046301917173,
+          "raster_and_host_copy_ms": 8.767975989030674
+        },
+        {
+          "chunks_ms": 17.315374017925933,
+          "final_decode_commit_ms": 135.719102981966,
+          "raster_and_host_copy_ms": 7.921018026536331
+        }
+      ],
+      "memory": {
+        "device_bytes": 18171778,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      }
+    },
+    "grayscale_noise": {
+      "raw_bytes": 6971328,
+      "compressed_bytes": 2616904,
+      "pty_bytes": 3496919,
+      "samples": [
+        {
+          "chunks_ms": 273.0699540115893,
+          "final_decode_commit_ms": 559.4137060106732,
+          "raster_and_host_copy_ms": 8.08926799800247
+        },
+        {
+          "chunks_ms": 268.4421400190331,
+          "final_decode_commit_ms": 616.0986199975014,
+          "raster_and_host_copy_ms": 5.965210992144421
+        },
+        {
+          "chunks_ms": 172.3516269994434,
+          "final_decode_commit_ms": 704.749014985282,
+          "raster_and_host_copy_ms": 8.66624599439092
+        },
+        {
+          "chunks_ms": 143.3304920210503,
+          "final_decode_commit_ms": 669.6754779841285,
+          "raster_and_host_copy_ms": 8.794505993137136
+        },
+        {
+          "chunks_ms": 210.0615199888125,
+          "final_decode_commit_ms": 586.5160750108771,
+          "raster_and_host_copy_ms": 8.861015987349674
+        },
+        {
+          "chunks_ms": 273.2428230228834,
+          "final_decode_commit_ms": 540.8190650050528,
+          "raster_and_host_copy_ms": 9.10790599300526
+        }
+      ],
+      "memory": {
+        "device_bytes": 20213122,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "binary": "/nix/store/ph69lq4s66awap1an7wkbpp40fpkkc5x-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "width": 1274,
+  "height": 1368,
+  "scope": "synthetic images, headless CUDA; shared desktop GPU; Python transport overhead included",
+  "cases": {
+    "solid": {
+      "raw_bytes": 6971328,
+      "compressed_bytes": 6798,
+      "pty_bytes": 9134,
+      "samples": [
+        {
+          "chunks_ms": 21.27642699633725,
+          "final_decode_commit_ms": 206.39201501035132,
+          "raster_and_host_copy_ms": 11.724051990313455
+        },
+        {
+          "chunks_ms": 9.935984999174252,
+          "final_decode_commit_ms": 91.90851001767442,
+          "raster_and_host_copy_ms": 10.161083977436647
+        },
+        {
+          "chunks_ms": 3.266674990300089,
+          "final_decode_commit_ms": 55.51187600940466,
+          "raster_and_host_copy_ms": 7.692797982599586
+        }
+      ],
+      "memory": {
+        "device_bytes": 18171762,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      }
+    },
+    "grayscale_noise": {
+      "raw_bytes": 6971328,
+      "compressed_bytes": 2616904,
+      "pty_bytes": 3496919,
+      "samples": [
+        {
+          "chunks_ms": 1213.561407988891,
+          "final_decode_commit_ms": 1122.182048013201,
+          "raster_and_host_copy_ms": 7.099959009792656
+        },
+        {
+          "chunks_ms": 1197.8581020084675,
+          "final_decode_commit_ms": 1113.2170420023613,
+          "raster_and_host_copy_ms": 4.8588819918222725
+        },
+        {
+          "chunks_ms": 1154.6245590143371,
+          "final_decode_commit_ms": 1115.7806970004458,
+          "raster_and_host_copy_ms": 5.05227199755609
+        }
+      ],
+      "memory": {
+        "device_bytes": 20213106,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      }
+    }
+  }
+}

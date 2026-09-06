@@ -1,0 +1,31 @@
+{
+  "store_path": "/nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0",
+  "commands": [
+    {
+      "command": "nix build .",
+      "exit": 0,
+      "log": "bench/reflow-final-scrollback-build.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm-scrollback-test",
+      "exit": 0,
+      "log": "bench/reflow-final-scrollback.log"
+    },
+    {
+      "command": "nix develop . --command python3 tests/test_graphics.py --host /nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm-engine-host",
+      "exit": 0,
+      "log": "bench/reflow-graphics.log",
+      "result": "graphics_cases=38, status=passed"
+    },
+    {
+      "command": "nix develop . --command python3 tests/test_lifecycle.py --host /nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm-engine-host --cycles 30 --processes 3 --output bench/reflow-lifecycle.json",
+      "exit": 0,
+      "log": "bench/reflow-lifecycle.log",
+      "result": "cycles=90, process_runs=3, status=passed"
+    }
+  ],
+  "sha256": {
+    "cudaterm-engine-host": "2aa73c17be4d4d99e843a5e863cf6e7b15a4a287613ee614f2c6b05f78199f19",
+    "cudaterm-scrollback-test": "d3483f84e8f2f523bac6003fda2b16a4c890262545277e27a2713ad4da9497b9"
+  }
+}

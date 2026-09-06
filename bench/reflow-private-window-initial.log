@@ -1,0 +1,24 @@
+these 2 derivations will be built:
+  /nix/store/s90c8jagp4wg8np76piwl89b1vqdg25m-cudaterm-0.1.0.drv
+  /nix/store/n8ak92yznzkb4sfyzd8yvc5cci4zhn7g-cudaterm-sync-test.drv
+building '/nix/store/s90c8jagp4wg8np76piwl89b1vqdg25m-cudaterm-0.1.0.drv'...
+building '/nix/store/n8ak92yznzkb4sfyzd8yvc5cci4zhn7g-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames
+PASS: inherited PTY closes with final output and direct child status
+PASS: Wayland Ctrl-Space reached the PTY during CUDA decode in 0.1 ms
+PASS: Wayland Shift-selection mode 0 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland large external clipboard paste preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 2 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 3 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 4 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+Traceback (most recent call last):
+  File "/nix/store/dlvvih16lg8x4v2k8frcggb736fkv28j-window_sync.py", line 258, in <module>
+    else: main()
+          ~~~~^^
+  File "/nix/store/dlvvih16lg8x4v2k8frcggb736fkv28j-window_sync.py", line 200, in main
+    wait('clipboard.resized')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/dlvvih16lg8x4v2k8frcggb736fkv28j-window_sync.py", line 124, in wait
+    if time.monotonic()>deadline: raise RuntimeError('timed out: '+name)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: timed out: clipboard.resized

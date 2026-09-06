@@ -1,0 +1,5 @@
+evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
+evaluation warning: stdenv.isLinux is deprecated, use stdenv.hostPlatform.isLinux instead
+evaluation warning: stdenv.isDarwin is deprecated, use stdenv.hostPlatform.isDarwin instead
+evaluation warning: stdenv.is32bit is deprecated, use stdenv.hostPlatform.is32bit instead
+evaluation warning: stdenv.is32bit is deprecated, use stdenv.hostPlatform.is32bit instead

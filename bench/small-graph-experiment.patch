@@ -1,0 +1,146 @@
+--- a/src/engine.cu
++++ b/src/engine.cu
+@@ -5,6 +5,7 @@
+ #include <cub/device/device_scan.cuh>
+ #include <cuda_runtime.h>
+ #include <fstream>
++#include <memory>
+ #include <stdexcept>
+ #ifndef CUDATERM_DATA_DIR
+ #define CUDATERM_DATA_DIR "."
+@@ -1454,6 +1455,55 @@
+ 
+ } // namespace
+ 
++static void ck(cudaError_t e) {
++  if (e != cudaSuccess)
++    throw std::runtime_error(cudaGetErrorString(e));
++}
++struct SmallFeedGraph {
++  cudaGraph_t graph = nullptr;
++  cudaGraphExec_t executable = nullptr;
++  cudaGraphNode_t kernel = nullptr;
++  unsigned char *input = nullptr;
++  ReplyBuffer *output = nullptr;
++  size_t previous_length = 0;
++  ~SmallFeedGraph() {
++    if (executable)
++      cudaGraphExecDestroy(executable);
++    if (graph)
++      cudaGraphDestroy(graph);
++    cudaFreeHost(input);
++    cudaFreeHost(output);
++  }
++  void run(DeviceState *state, unsigned char *device_input, ReplyBuffer *replies,
++           const unsigned char *bytes, size_t length) {
++    const int *skip = nullptr;
++    int *resume = nullptr;
++    void *args[] = {&state, &device_input, &length, &skip, &skip, &resume};
++    cudaKernelNodeParams params{};
++    params.func = reinterpret_cast<void *>(feed_kernel);
++    params.gridDim = dim3(1);
++    params.blockDim = dim3(32);
++    params.kernelParams = args;
++    if (!executable) {
++      ck(cudaMallocHost(&input, 256));
++      ck(cudaMallocHost(&output, sizeof(ReplyBuffer)));
++      std::memset(input, 0, 256);
++      ck(cudaGraphCreate(&graph, 0));
++      cudaGraphNode_t copy_in, copy_out;
++      ck(cudaGraphAddMemcpyNode1D(&copy_in, graph, nullptr, 0, device_input,
++                                  input, 256, cudaMemcpyHostToDevice));
++      ck(cudaGraphAddKernelNode(&kernel, graph, &copy_in, 1, &params));
++      ck(cudaGraphAddMemcpyNode1D(&copy_out, graph, &kernel, 1, output, replies,
++                                  sizeof(ReplyBuffer), cudaMemcpyDeviceToHost));
++      ck(cudaGraphInstantiate(&executable, graph, 0));
++    } else if (length != previous_length)
++      ck(cudaGraphExecKernelNodeSetParams(executable, kernel, &params));
++    previous_length = length;
++    std::memcpy(input, bytes, length);
++    ck(cudaGraphLaunch(executable, nullptr));
++    ck(cudaStreamSynchronize(nullptr));
++  }
++};
+ struct Engine::Impl {
+   DeviceState *d = nullptr;
+   uint32_t *repair_flags = nullptr;
+@@ -1482,7 +1532,11 @@
+   unsigned char *selection_output = nullptr;
+   size_t selection_output_capacity = 0;
+   bool selection_possible = false;
++  std::unique_ptr<SmallFeedGraph> small_graph;
++  void prepare_feed(size_t n);
++  std::string finish_replies(const ReplyBuffer &buffer);
+   ~Impl() {
++    small_graph.reset();
+     cudaFree(repair_flags);
+     cudaFree(font_rows);
+     cudaFree(font_pages);
+@@ -1508,10 +1562,6 @@
+     cudaFree(selection_output);
+   }
+ };
+-static void ck(cudaError_t e) {
+-  if (e != cudaSuccess)
+-    throw std::runtime_error(cudaGetErrorString(e));
+-}
+ void Engine::Impl::reserve_scan(size_t requested) {
+   if (requested <= (size_t)scan_capacity)
+     return;
+@@ -1700,6 +1750,18 @@
+     ck(cudaDeviceSynchronize());
+ }
+ std::string Engine::feed_and_replies(const unsigned char *b, size_t n) {
++  if (n && n < 256) {
++    if (!b)
++      throw std::runtime_error("invalid input chunk");
++    p->prepare_feed(n);
++    if (!p->small_graph) {
++      auto graph = std::make_unique<SmallFeedGraph>();
++      graph->run(p->d, p->dbytes, p->replies, b, n);
++      p->small_graph = std::move(graph);
++    } else
++      p->small_graph->run(p->d, p->dbytes, p->replies, b, n);
++    return p->finish_replies(*p->small_graph->output);
++  }
+   enqueue_feed(b, n);
+   // The blocking reply-buffer copy completes preceding default-stream work.
+   return take_replies();
+@@ -1709,12 +1771,7 @@
+     return;
+   if (!b || n > (1u << 20))
+     throw std::runtime_error("invalid input chunk");
+-  p->reserve_history(n);
+-  if (p->selection_possible) {
+-    clear_selection_kernel<<<1, 1>>>(p->d);
+-    ck(cudaGetLastError());
+-    p->selection_possible = false;
+-  }
++  p->prepare_feed(n);
+   ck(cudaMemcpy(p->dbytes, b, n, cudaMemcpyHostToDevice));
+   const unsigned char *device_input = p->dbytes;
+   if (n >= 256) {
+@@ -1893,11 +1950,22 @@
+ std::string Engine::take_replies() {
+   ReplyBuffer buffer;
+   ck(cudaMemcpy(&buffer, p->replies, sizeof(buffer), cudaMemcpyDeviceToHost));
++  return p->finish_replies(buffer);
++}
++void Engine::Impl::prepare_feed(size_t n) {
++  reserve_history(n);
++  if (selection_possible) {
++    clear_selection_kernel<<<1, 1>>>(d);
++    ck(cudaGetLastError());
++    selection_possible = false;
++  }
++}
++std::string Engine::Impl::finish_replies(const ReplyBuffer &buffer) {
+   if (buffer.length < 0 || buffer.length > REPLY_CAP)
+     throw std::runtime_error("invalid reply buffer length");
+   std::string z(reinterpret_cast<const char *>(buffer.bytes), buffer.length);
+   if (buffer.length) {
+-    reset_replies<<<1, 1>>>(p->d);
++    reset_replies<<<1, 1>>>(d);
+     ck(cudaGetLastError());
+   }
+   return z;

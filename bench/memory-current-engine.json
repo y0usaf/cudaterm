@@ -1,0 +1,141 @@
+{
+  "binary": "/nix/store/0nzbwym76jfm15dv0qwbjg6q1rhmxqdx-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "samples": [
+    {
+      "stage": "empty",
+      "engine_allocations": {
+        "device_bytes": 10517179,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "host_kib": {
+        "Rss": 62236,
+        "Pss": 58655,
+        "Pss_Dirty": 28464,
+        "Pss_Anon": 17600,
+        "Pss_File": 32863,
+        "Pss_Shmem": 8192,
+        "Shared_Clean": 6572,
+        "Shared_Dirty": 0,
+        "Private_Clean": 27200,
+        "Private_Dirty": 28464,
+        "Referenced": 62236,
+        "Anonymous": 17600,
+        "KSM": 0,
+        "LazyFree": 0,
+        "AnonHugePages": 0,
+        "ShmemPmdMapped": 0,
+        "FilePmdMapped": 0,
+        "Shared_Hugetlb": 0,
+        "Private_Hugetlb": 0,
+        "Swap": 0,
+        "SwapPss": 0,
+        "Locked": 0
+      },
+      "nvidia_compute_mib": 400
+    },
+    {
+      "stage": "alternate_text",
+      "engine_allocations": {
+        "device_bytes": 13241786,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "host_kib": {
+        "Rss": 62364,
+        "Pss": 58719,
+        "Pss_Dirty": 28772,
+        "Pss_Anon": 17600,
+        "Pss_File": 32927,
+        "Pss_Shmem": 8192,
+        "Shared_Clean": 6700,
+        "Shared_Dirty": 0,
+        "Private_Clean": 26892,
+        "Private_Dirty": 28772,
+        "Referenced": 62364,
+        "Anonymous": 17600,
+        "KSM": 0,
+        "LazyFree": 0,
+        "AnonHugePages": 0,
+        "ShmemPmdMapped": 0,
+        "FilePmdMapped": 0,
+        "Shared_Hugetlb": 0,
+        "Private_Hugetlb": 0,
+        "Swap": 0,
+        "SwapPss": 0,
+        "Locked": 0
+      },
+      "nvidia_compute_mib": 402
+    },
+    {
+      "stage": "browser_sized_image",
+      "engine_allocations": {
+        "device_bytes": 20213114,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "host_kib": {
+        "Rss": 62364,
+        "Pss": 58719,
+        "Pss_Dirty": 28860,
+        "Pss_Anon": 17600,
+        "Pss_File": 32927,
+        "Pss_Shmem": 8192,
+        "Shared_Clean": 6700,
+        "Shared_Dirty": 0,
+        "Private_Clean": 26804,
+        "Private_Dirty": 28860,
+        "Referenced": 62364,
+        "Anonymous": 17600,
+        "KSM": 0,
+        "LazyFree": 0,
+        "AnonHugePages": 0,
+        "ShmemPmdMapped": 0,
+        "FilePmdMapped": 0,
+        "Shared_Hugetlb": 0,
+        "Private_Hugetlb": 0,
+        "Swap": 0,
+        "SwapPss": 0,
+        "Locked": 0
+      },
+      "nvidia_compute_mib": 410
+    },
+    {
+      "stage": "alternate_closed",
+      "engine_allocations": {
+        "device_bytes": 13241786,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "host_kib": {
+        "Rss": 62364,
+        "Pss": 58719,
+        "Pss_Dirty": 28860,
+        "Pss_Anon": 17600,
+        "Pss_File": 32927,
+        "Pss_Shmem": 8192,
+        "Shared_Clean": 6700,
+        "Shared_Dirty": 0,
+        "Private_Clean": 26804,
+        "Private_Dirty": 28860,
+        "Referenced": 62364,
+        "Anonymous": 17600,
+        "KSM": 0,
+        "LazyFree": 0,
+        "AnonHugePages": 0,
+        "ShmemPmdMapped": 0,
+        "FilePmdMapped": 0,
+        "Shared_Hugetlb": 0,
+        "Private_Hugetlb": 0,
+        "Swap": 0,
+        "SwapPss": 0,
+        "Locked": 0
+      },
+      "nvidia_compute_mib": 402
+    }
+  ]
+}

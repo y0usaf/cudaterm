@@ -1,0 +1,827 @@
+{
+  "benchmark": "private-headless-idle-resources-controlled-summary",
+  "status": "passed",
+  "scope": "private headless Weston only; 3 raw samples per terminal per geometry; no user desktop",
+  "raw_report": "bench/private-idle-controlled.json",
+  "raw_report_sha256": "653988b867b9979f3de088a33b7467afc41ea3623496575f0beba6e7381afbde",
+  "collector": "bench/private_baseline.py",
+  "collector_sha256": "c8852f6adf60646c811f3d7af5c0def77627bd324870fcff3a090553f8d57808",
+  "fontconfig_file": "bench/controlled-fonts.conf",
+  "fontconfig_sha256": "903c2add94b5a5353ef736d78e095b88f631b10743134cf59918ec5f8250ba25",
+  "weston": {
+    "path": "/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/bin/weston",
+    "sha256": "a0c3a6bc4ed40f3b3ea0d14fea0016b297315165a7538e831b89b8f2e3762477"
+  },
+  "seat_module": {
+    "path": "/nix/store/gjy7nxx5l52l9nfc6yw1bxvm0yppg586-cudaterm-headless-seat/lib/seat.so",
+    "sha256": "f3405e94feb3596762221ead186659cdfeec194bf84f241b6d90058e9ae0ba7c"
+  },
+  "terminals": {
+    "foot": {
+      "path": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+      "sha256": "b59004701fa4b34584eca3cbfd7017e8da516e4faf11262ade73e39ec3ead314",
+      "geometries": {
+        "80x24": {
+          "requested_geometry": {
+            "cols": 80,
+            "rows": 24
+          },
+          "actual_geometries": [
+            {
+              "cols": 80,
+              "rows": 24
+            },
+            {
+              "cols": 80,
+              "rows": 24
+            },
+            {
+              "cols": 80,
+              "rows": 24
+            }
+          ],
+          "rss_bytes": [
+            13185024,
+            13185024,
+            13164544
+          ],
+          "pss_bytes": [
+            4591616,
+            4591616,
+            4567040
+          ],
+          "private_bytes": [
+            3743744,
+            3743744,
+            3715072
+          ],
+          "cpu_seconds_delta": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "voluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "nonvoluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "gpu_memory_bytes_before": [
+            null,
+            null,
+            null
+          ],
+          "gpu_memory_bytes_after": [
+            null,
+            null,
+            null
+          ],
+          "font_resolution_proxy": [
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:size=11",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "11.4583",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:size=11",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "11.4583",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:size=11",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "11.4583",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            }
+          ],
+          "metrics": {
+            "rss_bytes": {
+              "min": 13164544,
+              "median": 13185024,
+              "p90": 13185024.0,
+              "max": 13185024
+            },
+            "pss_bytes": {
+              "min": 4567040,
+              "median": 4591616,
+              "p90": 4591616.0,
+              "max": 4591616
+            },
+            "private_bytes": {
+              "min": 3715072,
+              "median": 3743744,
+              "p90": 3743744.0,
+              "max": 3743744
+            },
+            "cpu_seconds_delta": {
+              "min": 0.0,
+              "median": 0.0,
+              "p90": 0.0,
+              "max": 0.0
+            },
+            "voluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            },
+            "nonvoluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            }
+          }
+        },
+        "318x89": {
+          "requested_geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "actual_geometries": [
+            {
+              "cols": 318,
+              "rows": 89
+            },
+            {
+              "cols": 318,
+              "rows": 89
+            },
+            {
+              "cols": 318,
+              "rows": 89
+            }
+          ],
+          "rss_bytes": [
+            30883840,
+            30863360,
+            30842880
+          ],
+          "pss_bytes": [
+            14356480,
+            14395392,
+            14368768
+          ],
+          "private_bytes": [
+            5578752,
+            5672960,
+            5644288
+          ],
+          "cpu_seconds_delta": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "voluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "nonvoluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "gpu_memory_bytes_before": [
+            null,
+            null,
+            null
+          ],
+          "gpu_memory_bytes_after": [
+            null,
+            null,
+            null
+          ],
+          "font_resolution_proxy": [
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:size=11",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "11.4583",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:size=11",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "11.4583",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:size=11",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "11.4583",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            }
+          ],
+          "metrics": {
+            "rss_bytes": {
+              "min": 30842880,
+              "median": 30863360,
+              "p90": 30879744.0,
+              "max": 30883840
+            },
+            "pss_bytes": {
+              "min": 14356480,
+              "median": 14368768,
+              "p90": 14390067.2,
+              "max": 14395392
+            },
+            "private_bytes": {
+              "min": 5578752,
+              "median": 5644288,
+              "p90": 5667225.6,
+              "max": 5672960
+            },
+            "cpu_seconds_delta": {
+              "min": 0.0,
+              "median": 0.0,
+              "p90": 0.0,
+              "max": 0.0
+            },
+            "voluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            },
+            "nonvoluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            }
+          }
+        }
+      }
+    },
+    "monstar": {
+      "path": "/nix/store/h8q9vhbxzpsla7m2hqgqygyw6wd0pjny-monstar-1.1.0/bin/monstar",
+      "sha256": "cf5000df68e9e2e9db5e74f622a837eac5a54407f276351d222e1d8a1ada5653",
+      "geometries": {
+        "80x24": {
+          "requested_geometry": {
+            "cols": 80,
+            "rows": 24
+          },
+          "actual_geometries": [
+            {
+              "cols": 80,
+              "rows": 24
+            },
+            {
+              "cols": 80,
+              "rows": 24
+            },
+            {
+              "cols": 80,
+              "rows": 24
+            }
+          ],
+          "rss_bytes": [
+            16809984,
+            16809984,
+            16809984
+          ],
+          "pss_bytes": [
+            9042944,
+            9042944,
+            9040896
+          ],
+          "private_bytes": [
+            7806976,
+            7806976,
+            7806976
+          ],
+          "cpu_seconds_delta": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "voluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "nonvoluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "gpu_memory_bytes_before": [
+            null,
+            null,
+            null
+          ],
+          "gpu_memory_bytes_after": [
+            null,
+            null,
+            null
+          ],
+          "font_resolution_proxy": [
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:pixelsize=17",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "17",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:pixelsize=17",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "17",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:pixelsize=17",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "17",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            }
+          ],
+          "metrics": {
+            "rss_bytes": {
+              "min": 16809984,
+              "median": 16809984,
+              "p90": 16809984.0,
+              "max": 16809984
+            },
+            "pss_bytes": {
+              "min": 9040896,
+              "median": 9042944,
+              "p90": 9042944.0,
+              "max": 9042944
+            },
+            "private_bytes": {
+              "min": 7806976,
+              "median": 7806976,
+              "p90": 7806976.0,
+              "max": 7806976
+            },
+            "cpu_seconds_delta": {
+              "min": 0.0,
+              "median": 0.0,
+              "p90": 0.0,
+              "max": 0.0
+            },
+            "voluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            },
+            "nonvoluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            }
+          }
+        },
+        "318x89": {
+          "requested_geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "actual_geometries": [
+            {
+              "cols": 318,
+              "rows": 89
+            },
+            {
+              "cols": 318,
+              "rows": 89
+            },
+            {
+              "cols": 318,
+              "rows": 89
+            }
+          ],
+          "rss_bytes": [
+            53665792,
+            53665792,
+            36683776
+          ],
+          "pss_bytes": [
+            37680128,
+            37684224,
+            21001216
+          ],
+          "private_bytes": [
+            28229632,
+            28237824,
+            11853824
+          ],
+          "cpu_seconds_delta": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "voluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "nonvoluntary_context_switches": [
+            0,
+            0,
+            0
+          ],
+          "gpu_memory_bytes_before": [
+            null,
+            null,
+            null
+          ],
+          "gpu_memory_bytes_after": [
+            null,
+            null,
+            null
+          ],
+          "font_resolution_proxy": [
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:pixelsize=17",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "17",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:pixelsize=17",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "17",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            },
+            {
+              "kind": "fontconfig-resolver-proxy",
+              "actual_client_font": false,
+              "requested_pattern": "DejaVu Sans Mono:pixelsize=17",
+              "executable": "/nix/store/0lyxm80fs3raba24pc52rbvr6h18vwsp-fontconfig-2.18.2-bin/bin/fc-match",
+              "family": "DejaVu Sans Mono",
+              "style": "Book",
+              "file": "/nix/store/8cs9jsy0bpajym7lf9qbps1h5snyjk9y-dejavu-fonts-2.37/share/fonts/truetype/DejaVuSansMono.ttf",
+              "index": "0",
+              "pixelsize": "17",
+              "executable_sha256": "ea5c4ad3565d1ec04baa3b6f85c3462b229e36d1f5bb61f0d1a941b0eab55006",
+              "fontfile_sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+            }
+          ],
+          "metrics": {
+            "rss_bytes": {
+              "min": 36683776,
+              "median": 53665792,
+              "p90": 53665792.0,
+              "max": 53665792
+            },
+            "pss_bytes": {
+              "min": 21001216,
+              "median": 37680128,
+              "p90": 37683404.8,
+              "max": 37684224
+            },
+            "private_bytes": {
+              "min": 11853824,
+              "median": 28229632,
+              "p90": 28236185.6,
+              "max": 28237824
+            },
+            "cpu_seconds_delta": {
+              "min": 0.0,
+              "median": 0.0,
+              "p90": 0.0,
+              "max": 0.0
+            },
+            "voluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            },
+            "nonvoluntary_context_switches": {
+              "min": 0,
+              "median": 0,
+              "p90": 0.0,
+              "max": 0
+            }
+          }
+        }
+      }
+    },
+    "cudaterm": {
+      "path": "/nix/store/1rn5djnv9hid0mzzg9p6c63wzyn4vyjj-cudaterm-0.1.0/bin/cudaterm",
+      "sha256": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00",
+      "geometries": {
+        "80x24": {
+          "requested_geometry": {
+            "cols": 80,
+            "rows": 24
+          },
+          "actual_geometries": [
+            {
+              "cols": 80,
+              "rows": 24
+            },
+            {
+              "cols": 80,
+              "rows": 24
+            },
+            {
+              "cols": 80,
+              "rows": 24
+            }
+          ],
+          "rss_bytes": [
+            122331136,
+            122331136,
+            122331136
+          ],
+          "pss_bytes": [
+            77037568,
+            77037568,
+            77037568
+          ],
+          "private_bytes": [
+            70049792,
+            70049792,
+            70049792
+          ],
+          "cpu_seconds_delta": [
+            0.0,
+            0.0,
+            0.009999999999999995
+          ],
+          "voluntary_context_switches": [
+            361,
+            351,
+            364
+          ],
+          "nonvoluntary_context_switches": [
+            3,
+            1,
+            2
+          ],
+          "gpu_memory_bytes_before": [
+            253755392,
+            253755392,
+            253755392
+          ],
+          "gpu_memory_bytes_after": [
+            253755392,
+            253755392,
+            253755392
+          ],
+          "font_resolution_proxy": [
+            {
+              "kind": "not-applicable",
+              "actual_client_font": false
+            },
+            {
+              "kind": "not-applicable",
+              "actual_client_font": false
+            },
+            {
+              "kind": "not-applicable",
+              "actual_client_font": false
+            }
+          ],
+          "metrics": {
+            "rss_bytes": {
+              "min": 122331136,
+              "median": 122331136,
+              "p90": 122331136.0,
+              "max": 122331136
+            },
+            "pss_bytes": {
+              "min": 77037568,
+              "median": 77037568,
+              "p90": 77037568.0,
+              "max": 77037568
+            },
+            "private_bytes": {
+              "min": 70049792,
+              "median": 70049792,
+              "p90": 70049792.0,
+              "max": 70049792
+            },
+            "cpu_seconds_delta": {
+              "min": 0.0,
+              "median": 0.0,
+              "p90": 0.007999999999999997,
+              "max": 0.009999999999999995
+            },
+            "voluntary_context_switches": {
+              "min": 351,
+              "median": 361,
+              "p90": 363.4,
+              "max": 364
+            },
+            "nonvoluntary_context_switches": {
+              "min": 1,
+              "median": 2,
+              "p90": 2.8,
+              "max": 3
+            }
+          }
+        },
+        "318x89": {
+          "requested_geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "actual_geometries": [
+            {
+              "cols": 318,
+              "rows": 89
+            },
+            {
+              "cols": 318,
+              "rows": 89
+            },
+            {
+              "cols": 318,
+              "rows": 89
+            }
+          ],
+          "rss_bytes": [
+            122318848,
+            122318848,
+            122318848
+          ],
+          "pss_bytes": [
+            76984320,
+            77025280,
+            76984320
+          ],
+          "private_bytes": [
+            70037504,
+            70037504,
+            70037504
+          ],
+          "cpu_seconds_delta": [
+            0.009999999999999995,
+            0.0,
+            0.0
+          ],
+          "voluntary_context_switches": [
+            410,
+            393,
+            401
+          ],
+          "nonvoluntary_context_switches": [
+            2,
+            3,
+            2
+          ],
+          "gpu_memory_bytes_before": [
+            314572800,
+            314572800,
+            314572800
+          ],
+          "gpu_memory_bytes_after": [
+            314572800,
+            314572800,
+            314572800
+          ],
+          "font_resolution_proxy": [
+            {
+              "kind": "not-applicable",
+              "actual_client_font": false
+            },
+            {
+              "kind": "not-applicable",
+              "actual_client_font": false
+            },
+            {
+              "kind": "not-applicable",
+              "actual_client_font": false
+            }
+          ],
+          "metrics": {
+            "rss_bytes": {
+              "min": 122318848,
+              "median": 122318848,
+              "p90": 122318848.0,
+              "max": 122318848
+            },
+            "pss_bytes": {
+              "min": 76984320,
+              "median": 76984320,
+              "p90": 77017088.0,
+              "max": 77025280
+            },
+            "private_bytes": {
+              "min": 70037504,
+              "median": 70037504,
+              "p90": 70037504.0,
+              "max": 70037504
+            },
+            "cpu_seconds_delta": {
+              "min": 0.0,
+              "median": 0.0,
+              "p90": 0.007999999999999997,
+              "max": 0.009999999999999995
+            },
+            "voluntary_context_switches": {
+              "min": 393,
+              "median": 401,
+              "p90": 408.2,
+              "max": 410
+            },
+            "nonvoluntary_context_switches": {
+              "min": 2,
+              "median": 2,
+              "p90": 2.8,
+              "max": 3
+            }
+          }
+        }
+      }
+    }
+  },
+  "geometry_validation": {
+    "all_18_samples": true,
+    "all_requested_equal_actual": true
+  },
+  "font_proxy_validation": {
+    "all_12_foot_monstar_samples_pinned": true,
+    "all_actual_client_font_false": true
+  }
+}

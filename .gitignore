@@ -1,3 +1,8 @@
-result
-*.o
-repro[0-9]*
+/result
+/result-*
+__pycache__/
+
+# Generated font atlas and raw profiling captures.
+/bench/*.bin
+/bench/*.raw
+/bench/*.strace

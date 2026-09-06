@@ -1,0 +1,38 @@
+{
+  "binary": "/nix/store/ph69lq4s66awap1an7wkbpp40fpkkc5x-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "scope": "synthetic grayscale-noise RGBA image at browser dimensions; headless CUDA; live desktop workload remains active",
+  "width": 1274,
+  "height": 1368,
+  "raw_bytes": 6971328,
+  "compressed_bytes": 2616904,
+  "pty_bytes": 3496919,
+  "samples": [
+    {
+      "chunks_ms": 2962.7519299974665,
+      "final_decode_commit_ms": 2192.8768130019307,
+      "raster_and_host_copy_ms": 12.335131992585957
+    },
+    {
+      "chunks_ms": 3476.1743749841116,
+      "final_decode_commit_ms": 1461.6401999955997,
+      "raster_and_host_copy_ms": 11.239813000429422
+    },
+    {
+      "chunks_ms": 3383.342626999365,
+      "final_decode_commit_ms": 1394.5776019827463,
+      "raster_and_host_copy_ms": 5.771862022811547
+    },
+    {
+      "chunks_ms": 3647.4541640200187,
+      "final_decode_commit_ms": 1436.5166179777589,
+      "raster_and_host_copy_ms": 7.5346890080254525
+    }
+  ],
+  "cpu_zlib_ms": [
+    13.220658991485834,
+    11.88733201706782,
+    11.798521998571232,
+    11.890341993421316,
+    12.57002100464888
+  ]
+}

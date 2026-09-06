@@ -1,0 +1,132 @@
+{
+  "cycle_count": 90,
+  "cycles_per_process": 30,
+  "peak_note": "samples occur after lifecycle stages; they are not a true instantaneous peak",
+  "processes": 3,
+  "processes_summary": [
+    {
+      "after_host_memory_kib": {
+        "private_kib": {
+          "final": 50744,
+          "first_warm": 50744,
+          "max": 50744,
+          "median": 50744.0,
+          "min": 50744
+        },
+        "pss_kib": {
+          "final": 53270,
+          "first_warm": 53266,
+          "max": 53398,
+          "median": 53265.5,
+          "min": 53265
+        },
+        "rss_kib": {
+          "final": 63320,
+          "first_warm": 63320,
+          "max": 63320,
+          "median": 63320.0,
+          "min": 63320
+        }
+      },
+      "cycles": 30,
+      "final_allocation": {
+        "device_bytes": 10600142,
+        "history_capacity": 128,
+        "image_bytes": 0,
+        "transfer_bytes": 0
+      },
+      "first_warm_allocation": {
+        "device_bytes": 10600142,
+        "history_capacity": 128,
+        "image_bytes": 0,
+        "transfer_bytes": 0
+      },
+      "pid": 19762,
+      "process": 0
+    },
+    {
+      "after_host_memory_kib": {
+        "private_kib": {
+          "final": 50744,
+          "first_warm": 50744,
+          "max": 50744,
+          "median": 50744.0,
+          "min": 50744
+        },
+        "pss_kib": {
+          "final": 53266,
+          "first_warm": 53268,
+          "max": 53398,
+          "median": 53268.0,
+          "min": 53266
+        },
+        "rss_kib": {
+          "final": 63320,
+          "first_warm": 63320,
+          "max": 63320,
+          "median": 63320.0,
+          "min": 63320
+        }
+      },
+      "cycles": 30,
+      "final_allocation": {
+        "device_bytes": 10600142,
+        "history_capacity": 128,
+        "image_bytes": 0,
+        "transfer_bytes": 0
+      },
+      "first_warm_allocation": {
+        "device_bytes": 10600142,
+        "history_capacity": 128,
+        "image_bytes": 0,
+        "transfer_bytes": 0
+      },
+      "pid": 19785,
+      "process": 1
+    },
+    {
+      "after_host_memory_kib": {
+        "private_kib": {
+          "final": 50744,
+          "first_warm": 50744,
+          "max": 50744,
+          "median": 50744.0,
+          "min": 50744
+        },
+        "pss_kib": {
+          "final": 53265,
+          "first_warm": 53276,
+          "max": 53276,
+          "median": 53269.0,
+          "min": 53265
+        },
+        "rss_kib": {
+          "final": 63320,
+          "first_warm": 63320,
+          "max": 63320,
+          "median": 63320.0,
+          "min": 63320
+        }
+      },
+      "cycles": 30,
+      "final_allocation": {
+        "device_bytes": 10600142,
+        "history_capacity": 128,
+        "image_bytes": 0,
+        "transfer_bytes": 0
+      },
+      "first_warm_allocation": {
+        "device_bytes": 10600142,
+        "history_capacity": 128,
+        "image_bytes": 0,
+        "transfer_bytes": 0
+      },
+      "pid": 19799,
+      "process": 2
+    }
+  ],
+  "raw_source": "bench/lifecycle-current.json",
+  "raw_source_sha256": "3eef0a0a8e1db463b0364af34ebb6306ca911b46a6dea60a59ccc506c9fee3b7",
+  "reset_stage": "after",
+  "status": "passed"
+}

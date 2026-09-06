@@ -1,0 +1,28 @@
+{
+  "scope": "headless only",
+  "core_sha256": {
+    "src/engine.cu": "c579c4fd5b6f5b7892ff774d90298b6de75d2f6efa5acb44d1dc2c036a45797d",
+    "src/graphics.cuh": "0c36f5b41290152b4228f4c90a6fa4baa79113baf0d90f310c90c605464fe4be",
+    "src/inflate.cuh": "85098377ec52842078129b718aec48fc4eb49fe959f6108613547b0dc4fbcbfc",
+    "src/runtime.hpp": "6e9123494a6c1703be0ca5e3f9c1e001af4e6f439efeb6da8b0f7fdc7e8651be",
+    "src/main.cu": "9e77bba8b2b152a07c1b2819aa312f66a79314d9d0b1280433781d13b61638c1"
+  },
+  "tested_output": "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0",
+  "tests": [
+    "nix build .",
+    "nix flake check",
+    "nix run .#graphics-test",
+    "Nix-shell engine/plain/vt/csi/styled/unicode/workspace/selection/scrollback/charset/mouse/reference",
+    "Nix-shell test_ekko.py",
+    "Nix-shell test_browser.py",
+    "Nix-shell compute-sanitizer memcheck/racecheck graphics_"
+  ],
+  "sanitizer_filter": "kns=graphics_",
+  "sanitizer_error_exitcode": 99,
+  "results": "passed",
+  "sanitizer_tested_output": "/nix/store/yjhrgsw1981fqqaf4afi972aaqfi9adi-cudaterm-0.1.0",
+  "final_output": "/nix/store/vawcwy3ik0by5aprbyw36cfjglaczsic-cudaterm-0.1.0",
+  "final_engine_host_identical_to_sanitized_binary": true,
+  "final_regression_and_integration_rerun": "passed",
+  "final_private_compositor_presentation": "passed"
+}

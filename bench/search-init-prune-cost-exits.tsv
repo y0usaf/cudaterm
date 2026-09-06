@@ -1,0 +1,12 @@
+80 hard 0 0 bench/search-init-prune-cost-80-hard-0.json
+80 hard 1 0 bench/search-init-prune-cost-80-hard-1.json
+80 hard 2 0 bench/search-init-prune-cost-80-hard-2.json
+80 soft 0 0 bench/search-init-prune-cost-80-soft-0.json
+80 soft 1 0 bench/search-init-prune-cost-80-soft-1.json
+80 soft 2 0 bench/search-init-prune-cost-80-soft-2.json
+318 hard 0 0 bench/search-init-prune-cost-318-hard-0.json
+318 hard 1 0 bench/search-init-prune-cost-318-hard-1.json
+318 hard 2 0 bench/search-init-prune-cost-318-hard-2.json
+318 soft 0 0 bench/search-init-prune-cost-318-soft-0.json
+318 soft 1 0 bench/search-init-prune-cost-318-soft-1.json
+318 soft 2 0 bench/search-init-prune-cost-318-soft-2.json

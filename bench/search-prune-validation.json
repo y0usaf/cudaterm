@@ -1,0 +1,90 @@
+{
+  "candidate_store": "/nix/store/4y4q4r21an9b2n59ps20a9bgy7ry4yg1-cudaterm-0.1.0",
+  "candidate_change": "directional rank maps thread index to token and prunes with relaxed atomic rank load",
+  "commands": [
+    {
+      "command": "nix build .",
+      "exit": 0,
+      "log": "bench/search-prune-build.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/4y4q4r21an9b2n59ps20a9bgy7ry4yg1-cudaterm-0.1.0/bin/cudaterm-search-test",
+      "exit": 0,
+      "log": "bench/search-prune-search.log"
+    },
+    {
+      "command": "compute-sanitizer --tool memcheck cudaterm-search-test",
+      "exit": 0,
+      "log": "bench/search-prune-memcheck.log",
+      "result": "0 errors"
+    },
+    {
+      "command": "compute-sanitizer --tool racecheck cudaterm-search-test",
+      "exit": 0,
+      "log": "bench/search-prune-racecheck.log",
+      "result": "0 hazards"
+    },
+    {
+      "command": "CUDA_INJECTION64_PATH=/home/y0usaf/dev/developing/cudaterm/bench/libwrap_profile.so nix develop . --command /nix/store/aik8ar8zchmkxzayqxcpkajm6mwni6di-cudaterm-0.1.0/bin/cudaterm-search-cost 318 soft",
+      "exit": 0,
+      "raw": "bench/search-prune-baseline-profile.raw",
+      "parsed": "bench/search-prune-baseline-profile.json"
+    },
+    {
+      "command": "CUDA_INJECTION64_PATH=/home/y0usaf/dev/developing/cudaterm/bench/libwrap_profile.so nix develop . --command /nix/store/4y4q4r21an9b2n59ps20a9bgy7ry4yg1-cudaterm-0.1.0/bin/cudaterm-search-cost 318 soft",
+      "exit": 0,
+      "raw": "bench/search-prune-candidate-profile.raw",
+      "parsed": "bench/search-prune-candidate-profile.json"
+    }
+  ],
+  "gate_method": "Linear interpolation at zero-based (n-1)*0.9; 120 pooled samples per case.",
+  "gate": {
+    "80-hard": {
+      "baseline": {
+        "median": 49549.5,
+        "p90": 50262.0
+      },
+      "candidate": {
+        "median": 62175.0,
+        "p90": 63671.0
+      },
+      "pass": false
+    },
+    "80-soft": {
+      "baseline": {
+        "median": 6815504.5,
+        "p90": 9714184.1
+      },
+      "candidate": {
+        "median": 1118488.0,
+        "p90": 1767810.1
+      },
+      "pass": true
+    },
+    "318-hard": {
+      "baseline": {
+        "median": 98054.5,
+        "p90": 131146.0
+      },
+      "candidate": {
+        "median": 98070.0,
+        "p90": 136596.00000000003
+      },
+      "pass": false
+    },
+    "318-soft": {
+      "baseline": {
+        "median": 27622753.0,
+        "p90": 28950747.9
+      },
+      "candidate": {
+        "median": 1254653.5,
+        "p90": 1914396.0
+      },
+      "pass": true
+    }
+  },
+  "overall_pass": false,
+  "raw_candidate_files": "bench/search-prune-cost-{80,318}-{hard,soft}-{0,1,2}.json",
+  "review_note": "Parent corrected earlier nearest-rank values to the fixed linear interpolation method. Rejected; search-experiment-gates.json retains raw hashes."
+}

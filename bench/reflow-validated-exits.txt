@@ -1,0 +1,14 @@
+reflow:0
+appearance:0
+charset:0
+csi:0
+engine:0
+mouse:0
+plain:0
+reference:0
+scrollback:1
+selection:0
+styled:0
+unicode:0
+vt:0
+workspace:0

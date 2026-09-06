@@ -1,0 +1,307 @@
+{
+  "source": "bench/private-idle-three-terminal.json",
+  "sha256": "ef25ae1643daeb555769024fd8e93e3fec25320e4bb1f16c642e7b0a840036cf",
+  "scope": "private headless Weston; terminal parent only; initialized with baseline ready marker before settling; no user desktop",
+  "groups": [
+    {
+      "terminal": "foot",
+      "geometry": {
+        "cols": 80,
+        "rows": 24
+      },
+      "count": 3,
+      "metrics": {
+        "rss_bytes": {
+          "samples": [
+            17571840,
+            17575936,
+            17575936
+          ],
+          "min": 17571840,
+          "median": 17575936,
+          "max": 17575936
+        },
+        "pss_bytes": {
+          "samples": [
+            5755904,
+            5756928,
+            5755904
+          ],
+          "min": 5755904,
+          "median": 5755904,
+          "max": 5756928
+        },
+        "private_bytes": {
+          "samples": [
+            4231168,
+            4227072,
+            4227072
+          ],
+          "min": 4227072,
+          "median": 4227072,
+          "max": 4231168
+        }
+      },
+      "cpu_seconds_deltas": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "nvidia_memory_bytes": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "terminal": "foot",
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "count": 3,
+      "metrics": {
+        "rss_bytes": {
+          "samples": [
+            30146560,
+            30130176,
+            30167040
+          ],
+          "min": 30130176,
+          "median": 30146560,
+          "max": 30167040
+        },
+        "pss_bytes": {
+          "samples": [
+            12390400,
+            12374016,
+            12411904
+          ],
+          "min": 12374016,
+          "median": 12390400,
+          "max": 12411904
+        },
+        "private_bytes": {
+          "samples": [
+            4923392,
+            4907008,
+            4943872
+          ],
+          "min": 4907008,
+          "median": 4923392,
+          "max": 4943872
+        }
+      },
+      "cpu_seconds_deltas": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "nvidia_memory_bytes": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "terminal": "monstar",
+      "geometry": {
+        "cols": 80,
+        "rows": 24
+      },
+      "count": 3,
+      "metrics": {
+        "rss_bytes": {
+          "samples": [
+            22044672,
+            22044672,
+            22044672
+          ],
+          "min": 22044672,
+          "median": 22044672,
+          "max": 22044672
+        },
+        "pss_bytes": {
+          "samples": [
+            10463232,
+            10465280,
+            10464256
+          ],
+          "min": 10463232,
+          "median": 10464256,
+          "max": 10465280
+        },
+        "private_bytes": {
+          "samples": [
+            8744960,
+            8744960,
+            8744960
+          ],
+          "min": 8744960,
+          "median": 8744960,
+          "max": 8744960
+        }
+      },
+      "cpu_seconds_deltas": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "nvidia_memory_bytes": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "terminal": "monstar",
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "count": 3,
+      "metrics": {
+        "rss_bytes": {
+          "samples": [
+            63504384,
+            63504384,
+            44142592
+          ],
+          "min": 44142592,
+          "median": 63504384,
+          "max": 63504384
+        },
+        "pss_bytes": {
+          "samples": [
+            42546176,
+            42560512,
+            23531520
+          ],
+          "min": 23531520,
+          "median": 42546176,
+          "max": 42560512
+        },
+        "private_bytes": {
+          "samples": [
+            31449088,
+            31477760,
+            12779520
+          ],
+          "min": 12779520,
+          "median": 31449088,
+          "max": 31477760
+        }
+      },
+      "cpu_seconds_deltas": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "nvidia_memory_bytes": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "terminal": "cudaterm",
+      "geometry": {
+        "cols": 80,
+        "rows": 24
+      },
+      "count": 3,
+      "metrics": {
+        "rss_bytes": {
+          "samples": [
+            121675776,
+            121675776,
+            121675776
+          ],
+          "min": 121675776,
+          "median": 121675776,
+          "max": 121675776
+        },
+        "pss_bytes": {
+          "samples": [
+            75326464,
+            75372544,
+            75326464
+          ],
+          "min": 75326464,
+          "median": 75326464,
+          "max": 75372544
+        },
+        "private_bytes": {
+          "samples": [
+            69361664,
+            69361664,
+            69361664
+          ],
+          "min": 69361664,
+          "median": 69361664,
+          "max": 69361664
+        }
+      },
+      "cpu_seconds_deltas": [
+        0.0,
+        0.009999999999999995,
+        0.0
+      ],
+      "nvidia_memory_bytes": [
+        253755392,
+        253755392,
+        253755392
+      ]
+    },
+    {
+      "terminal": "cudaterm",
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "count": 3,
+      "metrics": {
+        "rss_bytes": {
+          "samples": [
+            121688064,
+            121688064,
+            121688064
+          ],
+          "min": 121688064,
+          "median": 121688064,
+          "max": 121688064
+        },
+        "pss_bytes": {
+          "samples": [
+            75384832,
+            75384832,
+            75343872
+          ],
+          "min": 75343872,
+          "median": 75384832,
+          "max": 75384832
+        },
+        "private_bytes": {
+          "samples": [
+            69373952,
+            69373952,
+            69373952
+          ],
+          "min": 69373952,
+          "median": 69373952,
+          "max": 69373952
+        }
+      },
+      "cpu_seconds_deltas": [
+        0.0,
+        0.0,
+        0.010000000000000009
+      ],
+      "nvidia_memory_bytes": [
+        314572800,
+        314572800,
+        314572800
+      ]
+    }
+  ]
+}

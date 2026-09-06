@@ -1,0 +1,513 @@
+--- a/src/main.cu
++++ b/src/main.cu
+@@ -12,7 +12,6 @@
+ #include <atomic>
+ #include <cerrno>
+ #include <chrono>
+-#include <condition_variable>
+ #include <csignal>
+ #include <cstdint>
+ #include <cstdio>
+@@ -26,6 +25,8 @@
+ #include <stdexcept>
+ #include <string>
+ #include <sys/ioctl.h>
++#include <sys/eventfd.h>
++#include <sys/syscall.h>
+ #include <sys/wait.h>
+ #include <thread>
+ #include <unistd.h>
+@@ -87,24 +88,53 @@
+   std::atomic<bool> stop{false};
+   std::thread worker;
+   std::mutex mutex;
+-  std::condition_variable condition;
+   bool armed = false;
+   short events = POLLIN;
++  int wake_fd = -1;
++  int pid_fd = -1;
++  std::atomic<int> failure{0};
++  void init(pid_t child) {
++    wake_fd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
++    if (wake_fd < 0)
++      throw std::runtime_error(std::string("eventfd: ") + std::strerror(errno));
++    pid_fd = (int)syscall(SYS_pidfd_open, child, 0);
++    if (pid_fd < 0)
++      throw std::runtime_error(std::string("pidfd_open: ") + std::strerror(errno));
++  }
++  void notify() {
++    uint64_t one = 1;
++    for (;;) {
++      ssize_t n = write(wake_fd, &one, sizeof(one));
++      if (n == (ssize_t)sizeof(one) || (n < 0 && errno == EAGAIN))
++        return;
++      if (n < 0 && errno == EINTR)
++        continue;
++      failure.store(errno ? errno : EIO, std::memory_order_release);
++      glfwPostEmptyEvent();
++      return;
++    }
++  }
+   void arm(short requested) {
+     {
+       std::lock_guard<std::mutex> lock(mutex);
+-      armed = true;
++      // A zero mask must remove the PTY from poll entirely.  poll(2) still
++      // reports HUP/ERR for a descriptor with events == 0, which would turn
++      // the post-EOF loop into a busy wakeup while the pidfd remains useful.
++      armed = requested != 0;
+       events = requested;
+     }
+-    condition.notify_one();
++    notify();
+   }
+   ~PtyWaiter() {
+-    if (!worker.joinable())
+-      return;
+     stop.store(true, std::memory_order_release);
+-    condition.notify_one();
+-    glfwPostEmptyEvent();
+-    worker.join();
++    if (wake_fd >= 0) {
++      notify();
++      if (worker.joinable())
++        worker.join();
++      close(wake_fd);
++    }
++    if (pid_fd >= 0)
++      close(pid_fd);
+   }
+ };
+ struct Trace {
+@@ -958,30 +988,40 @@
+     int status = 0;
+     int texture_w = 0, texture_h = 0;
+     PtyWaiter waiter;
++    waiter.init(p.child);
+     waiter.worker = std::thread([&] {
+-      pollfd f{p.fd, POLLIN, 0};
++      pollfd f[3]{{p.fd, POLLIN, 0}, {waiter.wake_fd, POLLIN, 0},
++                  {waiter.pid_fd, POLLIN, 0}};
+       for (;;) {
+-        std::unique_lock<std::mutex> lock(waiter.mutex);
+-        waiter.condition.wait(lock, [&] {
+-          return waiter.armed || waiter.stop.load(std::memory_order_relaxed);
+-        });
+-        if (waiter.stop.load(std::memory_order_relaxed))
+-          return;
+-        f.events = waiter.events;
+-        lock.unlock();
+-        int ready = poll(&f, 1, 100);
++        {
++          std::lock_guard<std::mutex> lock(waiter.mutex);
++          f[0].fd = waiter.armed ? p.fd : -1;
++          f[0].events = waiter.events;
++        }
++        int ready = poll(f, 3, -1);
+         if (ready < 0) {
+           if (errno == EINTR)
+             continue;
++          waiter.failure.store(errno, std::memory_order_release);
++          glfwPostEmptyEvent();
+           break;
+         }
+-        if (ready == 0)
++        if (f[1].revents) {
++          uint64_t value;
++          while (read(waiter.wake_fd, &value, sizeof(value)) == sizeof(value)) {}
++          if (waiter.stop.load(std::memory_order_acquire))
++            return;
+           continue;
+-        lock.lock();
+-        waiter.armed = false;
+-        lock.unlock();
+-        if (ready > 0)
++        }
++        if (f[2].revents) {
++          f[2].fd = -1; // pidfds remain readable after exit.
+           glfwPostEmptyEvent();
++        }
++        if (f[0].revents) {
++          std::lock_guard<std::mutex> lock(waiter.mutex);
++          waiter.armed = false;
++          glfwPostEmptyEvent();
++        }
+       }
+     });
+     auto next_frame = std::chrono::steady_clock::now();
+@@ -989,15 +1029,28 @@
+     bool sync_active = false;
+     unsigned char buf[65536];
+     size_t pending = 0;
++    auto reap_child = [&] {
++      if (p.child <= 0)
++        return;
++      pid_t r = waitpid(p.child, &status, WNOHANG);
++      if (r == p.child)
++        p.child = -1;
++      else if (r < 0 && errno != EINTR && errno != ECHILD)
++        fail("waitpid");
++    };
+     while (!glfwWindowShouldClose(win) && (!eof || p.child > 0 || pending)) {
+       if (app.error)
+         std::rethrow_exception(app.error);
++      int waiter_error = waiter.failure.load(std::memory_order_acquire);
++      if (waiter_error)
++        throw std::runtime_error(std::string("PTY waiter: ") + std::strerror(waiter_error));
++      reap_child();
+       pollfd f{p.fd, POLLIN, 0};
+-      int ready = poll(&f, 1, 0);
++      int ready = eof ? 0 : poll(&f, 1, 0);
+       if (ready < 0 && errno != EINTR)
+         fail("poll");
+-      // A daemon may inherit the slave PTY after our direct child exits.
+-      // Drain already queued output, then close without waiting for that daemon.
++      // This decision is driven by the pidfd readiness event.  A zero-result
++      // poll on the PTY alone is only EAGAIN and must not end the session.
+       if (ready >= 0 && p.child < 0 && !pending && !(f.revents & POLLIN))
+         eof = true;
+       size_t drained = 0;
+@@ -1111,20 +1164,26 @@
+       if (drained)
+         glfwPollEvents();
+       else {
+-        waiter.arm(POLLIN | (app.input.empty() ? 0 : POLLOUT));
++        if (eof && !pending && p.child <= 0)
++          break;
++        waiter.arm(eof ? 0 : POLLIN | (app.input.empty() ? 0 : POLLOUT));
++        int arm_error = waiter.failure.load(std::memory_order_acquire);
++        if (arm_error)
++          throw std::runtime_error(std::string("PTY waiter: ") + std::strerror(arm_error));
+         auto now = std::chrono::steady_clock::now();
+-        double timeout = 0.1;
+-        if (app.dirty && next_frame > now)
+-          timeout = std::chrono::duration<double>(next_frame - now).count();
+         uint64_t trace_start = trace.begin();
+-        glfwWaitEventsTimeout(std::max(0.0001, timeout));
++        if (app.dirty && wsx > 0 && wsy > 0) {
++          auto deadline = next_frame;
++          if (sync_active && !(eof && !pending))
++            deadline = std::max(deadline, sync_started + std::chrono::seconds(1));
++          double timeout = std::chrono::duration<double>(deadline - now).count();
++          glfwWaitEventsTimeout(std::max(0.0001, timeout));
++        } else {
++          glfwWaitEvents();
++        }
+         trace.record(trace_start, "event_wait", 0);
+       }
+-      if (p.child > 0) {
+-        pid_t r = waitpid(p.child, &status, WNOHANG);
+-        if (r == p.child)
+-          p.child = -1;
+-      }
++      reap_child();
+     }
+     if (!o.dump.empty()) {
+       FILE *out = std::fopen(o.dump.c_str(), "w");
+--- a/tests/window_sync.py
++++ b/tests/window_sync.py
+@@ -5,6 +5,7 @@
+ import csv
+ import json
+ import random
++import select
+ import struct
+ import tty
+ from pathlib import Path
+@@ -14,6 +15,34 @@
+ import time
+ 
+ from test_graphics import upload, apc
++
++def stop_daemon(root, pid_name, stop_name):
++    pid_file = root/pid_name
++    if not pid_file.exists(): return
++    pid = int(pid_file.read_text())
++    try:
++        pidfd = os.pidfd_open(pid)
++    except ProcessLookupError:
++        pid_file.unlink(missing_ok=True)
++        return
++    try:
++        (root/stop_name).touch()
++        poller = select.poll(); poller.register(pidfd, select.POLLIN)
++        if not poller.poll(1000):
++            try:
++                signal.pidfd_send_signal(pidfd, signal.SIGTERM)
++            except ProcessLookupError:
++                pass
++            if not poller.poll(1000):
++                try:
++                    signal.pidfd_send_signal(pidfd, signal.SIGKILL)
++                except ProcessLookupError:
++                    pass
++                if not poller.poll(1000):
++                    raise RuntimeError(f'{pid_name} survived bounded cleanup')
++        pid_file.unlink(missing_ok=True)
++    finally:
++        os.close(pidfd)
+ 
+ 
+ def child(directory):
+@@ -46,13 +75,74 @@
+     signal.signal(signal.SIGHUP, signal.SIG_IGN)
+     if os.fork() == 0:
+         (root/'inherited.pid').write_text(str(os.getpid()))
+-        while not (root/'inherited.stop').exists(): time.sleep(.02)
++        deadline = time.monotonic() + 15
++        while not (root/'inherited.stop').exists() and time.monotonic() < deadline: time.sleep(.02)
+         os._exit(0)
+     # More than one input buffer; the terminal must retain the final output
+     # and direct child's exit status despite the background PTY owner.
+     data = b'x' * (256 * 1024) + b'\r\nFINAL-CHILD-OUTPUT'
+     while data: data = data[os.write(1, data):]
+     os._exit(23)
++
++def inherited_race_child(directory, tag):
++    root = Path(directory)
++    stop = root/f'race.stop.{tag}'
++    signal.signal(signal.SIGHUP, signal.SIG_IGN)
++    if os.fork() == 0:
++        (root/f'race.inherited.pid.{tag}').write_text(str(os.getpid()))
++        deadline = time.monotonic() + 10
++        while not stop.exists() and time.monotonic() < deadline: time.sleep(.01)
++        os._exit(0)
++    time.sleep(1)
++    data = b'z' * (256 * 1024) + b'\r\nRACE-FINAL-OUTPUT-'
++    while data: data = data[os.write(1, data):]
++    (root/'race.ready').touch()
++    os._exit(23)
++
++def quiet_inherited_child(directory):
++    root = Path(directory)
++    signal.signal(signal.SIGHUP, signal.SIG_IGN)
++    if os.fork() == 0:
++        (root/'quiet.inherited.pid').write_text(str(os.getpid()))
++        deadline = time.monotonic() + 15
++        while not (root/'quiet.inherited.stop').exists() and time.monotonic() < deadline: time.sleep(.01)
++        os._exit(0)
++    (root/'quiet.ready').touch()
++    time.sleep(1)
++    os._exit(17)
++
++def closed_slave_child(directory):
++    root = Path(directory)
++    (root/'closed-slave.ready').touch()
++    for fd in (0, 1, 2):
++        os.close(fd)
++    time.sleep(1)
++    os._exit(17)
++
++def idle_close_child(directory):
++    root = Path(directory)
++    (root/'idle-close.ready').touch()
++    deadline = time.monotonic() + 15
++    while not (root/'idle-close.stop').exists() and time.monotonic() < deadline:
++        time.sleep(.01)
++
++def delayed_wake_child(directory):
++    root = Path(directory)
++    tty.setraw(0)
++    (root/'wake.ready').touch()
++    time.sleep(1)
++    os.write(1, b'WAKE-OUTPUT\r\n\x1b[5n')
++    response = bytearray()
++    deadline = time.monotonic() + 5
++    while len(response) < 4:
++        remaining = deadline - time.monotonic()
++        if remaining <= 0 or not select.select([0], [], [], remaining)[0]:
++            raise RuntimeError('timed out waiting for DSR response')
++        response.extend(os.read(0, 4-len(response)))
++    (root/'wake.response').write_bytes(response)
++    assert bytes(response) == b'\x1b[0n', repr(response)
++    deadline = time.monotonic() + 15
++    while not (root/'wake.stop').exists() and time.monotonic() < deadline: time.sleep(.01)
+ 
+ 
+ def decode_child(directory):
+@@ -92,7 +182,7 @@
+                 'COPY é中 é').encode()
+     framed = b'\x1b[200~' + expected + b'\x1b[201~'
+     received = bytearray()
+-    time.sleep(.2)  # Deliberately let the PTY input queue fill.
++    time.sleep(1.0)  # Deliberately let the PTY input queue fill before POLLOUT.
+     while len(received) < len(framed):
+         received.extend(os.read(0, min(4096, len(framed) - len(received))))
+     (root/'clipboard.received').write_bytes(received)
+@@ -155,7 +245,72 @@
+                 assert 'set_app_id("launcher")' in protocol.read_text()
+                 assert 'set_title("Finix launcher")' in protocol.read_text()
+                 assert 'FINAL-CHILD-OUTPUT' in dump.read_text(), 'final child output lost'
++                stop_daemon(root, 'inherited.pid', 'inherited.stop')
+                 print('PASS: inherited PTY closes with final output and direct child status')
++                for race in range(3):
++                    tag = str(race)
++                    for name in (f'race.ready',f'race.inherited.pid.{tag}',f'race.stop.{tag}'):
++                        (root/name).unlink(missing_ok=True)
++                    dump = root/f'race-{race}.dump'
++                    terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32',
++                        '--dump',str(dump),'-e',sys.executable,
++                        str(Path(__file__).resolve()),'--inherited-race-child',directory,tag],env=env)
++                    wait('race.ready')
++                    assert terminal.wait(timeout=5)==23, 'delayed inherited child status lost'
++                    assert 'RACE-FINAL-OUTPUT-' in dump.read_text(), 'delayed final output lost'
++                    stop_daemon(root, f'race.inherited.pid.{tag}', f'race.stop.{tag}')
++                print('PASS: repeated inherited PTY final-byte race preserves output and status')
++                for name in ('quiet.ready','quiet.inherited.pid','quiet.inherited.stop'):
++                    (root/name).unlink(missing_ok=True)
++                terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
++                    str(Path(__file__).resolve()),'--quiet-inherited-child',directory],env=env)
++                wait('quiet.ready')
++                assert terminal.wait(timeout=5)==17, 'quiet EOF with inherited PTY did not preserve direct child status'
++                stop_daemon(root, 'quiet.inherited.pid', 'quiet.inherited.stop')
++                print('PASS: quiet inherited PTY closes after direct child EOF and preserves status')
++                (root/'closed-slave.ready').unlink(missing_ok=True)
++                terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
++                    str(Path(__file__).resolve()),'--closed-slave-child',directory],env=env)
++                wait('closed-slave.ready')
++                assert terminal.wait(timeout=3)==17, 'closed-slave EOF did not preserve child status'
++                print('PASS: closed-slave EOF exits after child remains alive briefly')
++                (root/'idle-close.ready').unlink(missing_ok=True)
++                (root/'idle-close.stop').unlink(missing_ok=True)
++                idle_trace = root/'idle-close.csv'
++                terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
++                    str(Path(__file__).resolve()),'--idle-close-child',directory],
++                    env=dict(env,CUDATERM_TRACE=str(idle_trace)))
++                wait('idle-close.ready')
++                frame_deadline=time.monotonic()+5
++                while not idle_trace.exists() or 'gl_texture_swap' not in idle_trace.read_text():
++                    if terminal.poll() is not None or time.monotonic()>frame_deadline:
++                        raise RuntimeError('idle-close initial frame missing')
++                    time.sleep(.01)
++                time.sleep(.3)
++                assert terminal.poll() is None, 'idle child exited before close input'
++                deadline=time.monotonic()+3
++                with (root/'keys').open('wb', buffering=0) as keys:
++                    keys.write(struct.pack('=II',56,1)); keys.write(struct.pack('=II',62,1))
++                    keys.write(struct.pack('=II',62,0)); keys.write(struct.pack('=II',56,0))
++                while terminal.poll() is None and time.monotonic() < deadline:
++                    time.sleep(.01)
++                if terminal.poll() is None:
++                    (root/'idle-close.stop').touch()
++                    terminal.terminate()
++                    terminal.wait(timeout=5)
++                    raise RuntimeError('Alt-F4 idle close timed out')
++                assert terminal.returncode == 0, ('idle close failed', terminal.returncode)
++                print('PASS: idle Alt-F4 closes the window within bounded timeout')
++                for name in ('wake.ready','wake.response','wake.stop'):
++                    (root/name).unlink(missing_ok=True)
++                terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
++                    str(Path(__file__).resolve()),'--delayed-wake-child',directory],env=env)
++                wait('wake.ready')
++                wait('wake.response')
++                assert (root/'wake.response').read_bytes()==b'\x1b[0n'
++                (root/'wake.stop').touch()
++                assert terminal.wait(timeout=5)==0
++                print('PASS: delayed PTY output wakes event-driven waiter and DSR reply returns')
+                 timing = root/'decode.csv'
+                 terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
+                     str(Path(__file__).resolve()),'--decode-child',directory],
+@@ -246,16 +401,37 @@
+                     print('PASS: Wayland ' + ('large external clipboard paste' if mode == 1 else f'Shift-selection mode {mode} clipboard roundtrip') +
+                           ' preserves UTF-8 and bracketed-paste framing')
+             finally:
+-                (root/'inherited.stop').touch()
+-                (root/'decode.stop').touch()
+-                (root/'clipboard.stop').touch()
+-                if terminal and terminal.poll() is None: terminal.terminate(); terminal.wait(timeout=5)
+-                weston.terminate(); weston.wait(timeout=5)
++                for name in ('stop', 'decode.stop', 'clipboard.stop', 'idle-close.stop', 'wake.stop'):
++                    (root/name).touch()
++                try:
++                    stop_daemon(root, 'inherited.pid', 'inherited.stop')
++                    stop_daemon(root, 'quiet.inherited.pid', 'quiet.inherited.stop')
++                    for pid_file in root.glob('race.inherited.pid.*'):
++                        tag = pid_file.name.rsplit('.', 1)[1]
++                        stop_daemon(root, pid_file.name, f'race.stop.{tag}')
++                finally:
++                    try:
++                        if terminal and terminal.poll() is None:
++                            terminal.terminate()
++                            try: terminal.wait(timeout=5)
++                            except subprocess.TimeoutExpired:
++                                terminal.kill(); terminal.wait(timeout=5)
++                    finally:
++                        weston.terminate()
++                        try: weston.wait(timeout=5)
++                        except subprocess.TimeoutExpired:
++                            weston.kill(); weston.wait(timeout=5)
++
+ 
+ 
+ if __name__=='__main__':
+     if len(sys.argv)>1 and sys.argv[1]=='--child': child(sys.argv[2])
+     elif len(sys.argv)>1 and sys.argv[1]=='--inherited-child': inherited_child(sys.argv[2])
++    elif len(sys.argv)>1 and sys.argv[1]=='--inherited-race-child': inherited_race_child(sys.argv[2], sys.argv[3])
++    elif len(sys.argv)>1 and sys.argv[1]=='--quiet-inherited-child': quiet_inherited_child(sys.argv[2])
++    elif len(sys.argv)>1 and sys.argv[1]=='--closed-slave-child': closed_slave_child(sys.argv[2])
++    elif len(sys.argv)>1 and sys.argv[1]=='--idle-close-child': idle_close_child(sys.argv[2])
++    elif len(sys.argv)>1 and sys.argv[1]=='--delayed-wake-child': delayed_wake_child(sys.argv[2])
+     elif len(sys.argv)>1 and sys.argv[1]=='--decode-child': decode_child(sys.argv[2])
+     elif len(sys.argv)>1 and sys.argv[1]=='--clipboard-child': clipboard_child(sys.argv[2],int(sys.argv[3]))
+     else: main()
+--- a/tests/test_window_cleanup.py
++++ b/tests/test_window_cleanup.py
+@@ -0,0 +1,53 @@
++"""CPU checks for bounded cleanup of fixture-owned descendants."""
++import pathlib
++import signal
++import subprocess
++import sys
++import tempfile
++import time
++import unittest
++
++from window_sync import stop_daemon
++
++
++class CleanupTests(unittest.TestCase):
++    def exercise(self, mode, expected):
++        with tempfile.TemporaryDirectory() as directory:
++            root = pathlib.Path(directory)
++            program = """import pathlib,signal,sys,time
++root=pathlib.Path(sys.argv[1]); mode=sys.argv[2]
++if mode=='kill': signal.signal(signal.SIGTERM,signal.SIG_IGN)
++(root/'ready').touch()
++while mode!='cooperative' or not (root/'stop').exists(): time.sleep(.01)
++"""
++            process = subprocess.Popen([sys.executable, '-c', program, directory, mode])
++            try:
++                deadline = time.monotonic() + 3
++                while not (root/'ready').exists():
++                    if process.poll() is not None or time.monotonic() > deadline:
++                        self.fail('cleanup child failed to become ready')
++                    time.sleep(.01)
++                (root/'pid').write_text(str(process.pid))
++                before = set(pathlib.Path('/proc/self/fd').iterdir())
++                stop_daemon(root, 'pid', 'stop')
++                self.assertEqual(process.wait(timeout=1), expected)
++                self.assertEqual(set(pathlib.Path('/proc/self/fd').iterdir()), before)
++                self.assertFalse((root/'pid').exists())
++                stop_daemon(root, 'pid', 'stop')  # Repeated cleanup is harmless.
++            finally:
++                if process.poll() is None:
++                    process.kill()
++                    process.wait(timeout=3)
++
++    def test_cooperative_exit(self):
++        self.exercise('cooperative', 0)
++
++    def test_term_fallback(self):
++        self.exercise('term', -signal.SIGTERM)
++
++    def test_kill_fallback(self):
++        self.exercise('kill', -signal.SIGKILL)
++
++
++if __name__ == '__main__':
++    unittest.main()
+--- a/flake.nix
++++ b/flake.nix
+@@ -86,1 +86,2 @@
+         python3 tests/test_private_baseline.py
++        python3 tests/test_window_cleanup.py

@@ -1,0 +1,1157 @@
+#include "engine.cuh"
+#include "input.hpp"
+#include "config.hpp"
+#include "face.hpp"
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <cuda_gl_interop.h>
+#include <cuda_runtime.h>
+
+#include <algorithm>
+#include <atomic>
+#include <cerrno>
+#include <chrono>
+#include <condition_variable>
+#include <csignal>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <exception>
+#include <fcntl.h>
+#include <mutex>
+#include <poll.h>
+#include <pty.h>
+#include <stdexcept>
+#include <string>
+#include <sys/ioctl.h>
+#include <sys/wait.h>
+#include <thread>
+#include <unistd.h>
+#include <vector>
+
+namespace {
+using ct::Engine;
+int CellW = 8, CellH = 16;
+int BaseCellW = 8, BaseCellH = 16;
+constexpr int MaxCols = 512, MaxRows = 256;
+
+struct Options {
+  int cols = 120, rows = 40;
+  std::string dump;
+  std::string app_id = "cudaterm", title = "cudaterm", directory;
+  std::string theme;
+  std::string face;
+  float opacity = 1;
+  std::vector<char *> command;
+};
+struct Pty {
+  int fd = -1;
+  pid_t child = -1;
+  ~Pty() {
+    if (fd >= 0)
+      close(fd);
+    if (child <= 0)
+      return;
+    kill(child, SIGHUP);
+    for (int i = 0; i < 20; ++i) {
+      pid_t r = waitpid(child, nullptr, WNOHANG);
+      if (r == child || (r < 0 && errno == ECHILD))
+        return;
+      usleep(10000);
+    }
+    kill(child, SIGKILL);
+    while (waitpid(child, nullptr, 0) < 0 && errno == EINTR) {
+    }
+  }
+};
+struct Graphics {
+  GLFWwindow *window = nullptr;
+  GLuint pbo = 0;
+  GLuint texture = 0;
+  cudaGraphicsResource *resource = nullptr;
+  ~Graphics() {
+    if (resource)
+      cudaGraphicsUnregisterResource(resource);
+    if (pbo)
+      glDeleteBuffers(1, &pbo);
+    if (texture)
+      glDeleteTextures(1, &texture);
+    if (window)
+      glfwDestroyWindow(window);
+    glfwTerminate();
+  }
+};
+struct PtyWaiter {
+  std::atomic<bool> stop{false};
+  std::thread worker;
+  std::mutex mutex;
+  std::condition_variable condition;
+  bool armed = false;
+  short events = POLLIN;
+  void arm(short requested) {
+    {
+      std::lock_guard<std::mutex> lock(mutex);
+      armed = true;
+      events = requested;
+    }
+    condition.notify_one();
+  }
+  ~PtyWaiter() {
+    if (!worker.joinable())
+      return;
+    stop.store(true, std::memory_order_release);
+    condition.notify_one();
+    glfwPostEmptyEvent();
+    worker.join();
+  }
+};
+struct Trace {
+  FILE *file = nullptr;
+  ~Trace() {
+    if (file)
+      std::fclose(file);
+  }
+  void open(const char *path) {
+    if (!path || !*path)
+      return;
+    file = std::fopen(path, "w");
+    if (!file)
+      throw std::runtime_error(std::string("open CUDATERM_TRACE: ") +
+                               std::strerror(errno));
+    if (std::fputs("start_ns,end_ns,stage,bytes\n", file) < 0)
+      throw std::runtime_error("write CUDATERM_TRACE header failed");
+  }
+  uint64_t now() const {
+    return (uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(
+               std::chrono::steady_clock::now().time_since_epoch())
+        .count();
+  }
+  uint64_t begin() const { return file ? now() : 0; }
+  void record(uint64_t start, const char *stage, size_t bytes) {
+    if (!file)
+      return;
+    if (std::fprintf(file, "%llu,%llu,%s,%zu\n", (unsigned long long)start,
+                     (unsigned long long)now(), stage, bytes) < 0 ||
+        std::fflush(file) != 0)
+      throw std::runtime_error("write CUDATERM_TRACE failed");
+  }
+};
+int dimension(const char *text, int max) {
+  char *end;
+  errno = 0;
+  long n = std::strtol(text, &end, 10);
+  if (errno || *end || end == text || n < 1 || n > max)
+    throw std::runtime_error("dimension must be an integer from 1 to " +
+                             std::to_string(max));
+  return (int)n;
+}
+
+void fail(const char *what) {
+  throw std::runtime_error(std::string(what) + ": " + std::strerror(errno));
+}
+void check_cuda(cudaError_t e, const char *what) {
+  if (e != cudaSuccess)
+    throw std::runtime_error(std::string(what) + ": " + cudaGetErrorString(e));
+}
+int clamp_cols(int n) { return n < 1 ? 1 : n > MaxCols ? MaxCols : n; }
+int clamp_rows(int n) { return n < 1 ? 1 : n > MaxRows ? MaxRows : n; }
+
+Options options(int argc, char **argv) {
+  Options o;
+  for (int i = 1; i < argc; ++i) {
+    if (!std::strcmp(argv[i], "--help")) {
+      std::puts("usage: cudaterm [--cols N] [--rows N] [--dump PATH] "
+                "[--app-id ID] [--title TITLE] [--theme PATH] [--working-directory PATH] "
+                "[--font-face PATH] [--cell-width N] [--cell-height N] "
+                "[--background-opacity 0..1] -e "
+                "command [args...]");
+      std::exit(0);
+    } else if (!std::strcmp(argv[i], "--cols") && i + 1 < argc)
+      o.cols = dimension(argv[++i], MaxCols);
+    else if (!std::strcmp(argv[i], "--rows") && i + 1 < argc)
+      o.rows = dimension(argv[++i], MaxRows);
+    else if (!std::strcmp(argv[i], "--cell-width") && i + 1 < argc)
+      CellW = dimension(argv[++i], 64);
+    else if (!std::strcmp(argv[i], "--cell-height") && i + 1 < argc)
+      CellH = dimension(argv[++i], 128);
+    else if (!std::strcmp(argv[i], "--dump") && i + 1 < argc)
+      o.dump = argv[++i];
+    else if (!std::strcmp(argv[i], "--theme") && i + 1 < argc)
+      o.theme = argv[++i];
+    else if (!std::strcmp(argv[i], "--font-face") && i + 1 < argc)
+      o.face = argv[++i];
+    else if (!std::strcmp(argv[i], "--background-opacity") && i + 1 < argc) {
+      std::string value = argv[++i]; size_t used = 0;
+      o.opacity = std::stof(value, &used);
+      if (used != value.size() || !(o.opacity >= 0 && o.opacity <= 1))
+        throw std::runtime_error("background opacity must be between 0 and 1");
+    }
+    else if (!std::strncmp(argv[i], "--app-id=", 9))
+      o.app_id = argv[i] + 9;
+    else if (!std::strcmp(argv[i], "--app-id") && i + 1 < argc)
+      o.app_id = argv[++i];
+    else if (!std::strncmp(argv[i], "--title=", 8))
+      o.title = argv[i] + 8;
+    else if (!std::strcmp(argv[i], "--title") && i + 1 < argc)
+      o.title = argv[++i];
+    else if (!std::strncmp(argv[i], "--working-directory=", 20))
+      o.directory = argv[i] + 20;
+    else if (!std::strcmp(argv[i], "--working-directory") && i + 1 < argc)
+      o.directory = argv[++i];
+    else if (!std::strcmp(argv[i], "-e")) {
+      for (++i; i < argc; ++i)
+        o.command.push_back(argv[i]);
+      if (o.command.empty())
+        throw std::runtime_error("-e requires a command");
+      break;
+    } else
+      throw std::runtime_error("unknown option (use --help)");
+  }
+  if (o.command.empty()) {
+    o.command = {const_cast<char *>(std::getenv("SHELL") ?: "/bin/sh")};
+  }
+  o.cols = clamp_cols(o.cols);
+  o.rows = clamp_rows(o.rows);
+  o.command.push_back(nullptr);
+  return o;
+}
+
+void utf8(uint32_t cp, std::vector<unsigned char> &out) {
+  if (cp < 0x80)
+    out.push_back((unsigned char)cp);
+  else if (cp < 0x800) {
+    out.push_back(0xc0 | (cp >> 6));
+    out.push_back(0x80 | (cp & 63));
+  } else if (cp < 0x10000) {
+    out.push_back(0xe0 | (cp >> 12));
+    out.push_back(0x80 | ((cp >> 6) & 63));
+    out.push_back(0x80 | (cp & 63));
+  } else {
+    out.push_back(0xf0 | (cp >> 18));
+    out.push_back(0x80 | ((cp >> 12) & 63));
+    out.push_back(0x80 | ((cp >> 6) & 63));
+    out.push_back(0x80 | (cp & 63));
+  }
+}
+
+struct App {
+  Engine *engine;
+  int pty;
+  ct::input::PendingBytes input;
+  bool dirty = true;
+  bool selecting = false;
+  int anchor_row = 0, anchor_col = 0;
+  ct::SelectionMode selection_mode = ct::SelectionMode::Cell;
+  double last_selection_click = -1;
+  int click_row = -1, click_col = -1, selection_clicks = 0;
+  double pointer_x = 0, pointer_y = 0;
+  double wheel_rows = 0, wheel_ticks = 0;
+  double wheel_horizontal = 0;
+  unsigned int held_buttons = 0;
+  std::exception_ptr error;
+  GLFWwindow *window = nullptr;
+  bool decoding = false, input_closed = false;
+  int pending_width = 0, pending_height = 0;
+  Trace *trace = nullptr;
+  bool searching = false;
+  std::string search_query;
+  ct::SearchMatch search_match{};
+  ct::SearchDirection search_direction = ct::SearchDirection::Backward;
+  int search_saved_view = 0;
+};
+void queue(App *a, const unsigned char *p, size_t n) {
+  a->input.append(p, n);
+}
+void flush_input(App *a) {
+  while (!a->input.empty() && !a->input_closed) {
+    ssize_t n = write(a->pty, a->input.data(), a->input.size());
+    if (n > 0) a->input.consume((size_t)n);
+    else if (n < 0 && errno == EINTR) continue;
+    else if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) break;
+    else a->input_closed = true;
+  }
+}
+void follow_output(App *a) {
+  a->engine->follow_output();
+  a->selecting = false;
+  a->dirty = true;
+}
+constexpr size_t SearchMaxCodepoints = 256, SearchMaxBytes = 1024;
+bool append_search_utf8(std::string &query, const unsigned char *p, size_t n) {
+  size_t points = 0;
+  for (size_t i = 0; i < query.size();) {
+    if ((query[i] & 0xc0) != 0x80) ++points;
+    ++i;
+  }
+  while (n && query.size() < SearchMaxBytes && points < SearchMaxCodepoints) {
+    unsigned char c = *p;
+    size_t width = c < 0x80 ? 1 : (c >= 0xc2 && c <= 0xdf) ? 2 :
+      (c >= 0xe0 && c <= 0xef) ? 3 : (c >= 0xf0 && c <= 0xf4) ? 4 : 0;
+    if (!width || width > n || width > SearchMaxBytes - query.size()) break;
+    bool valid = true;
+    uint32_t cp = c & (width == 1 ? 0x7f : width == 2 ? 0x1f :
+                       width == 3 ? 0x0f : 0x07);
+    for (size_t j = 1; j < width; ++j) {
+      valid = valid && (p[j] & 0xc0) == 0x80;
+      cp = (cp << 6) | (p[j] & 0x3f);
+    }
+    valid = valid && !(width == 2 && cp < 0x80) &&
+      !(width == 3 && cp < 0x800) && !(width == 4 && cp < 0x10000) &&
+      cp <= 0x10ffff && !(cp >= 0xd800 && cp <= 0xdfff) && cp != '\r' && cp != '\n';
+    if (!valid) { ++p; --n; continue; }
+    query.append((const char *)p, width); p += width; n -= width; ++points;
+  }
+  return points != 0;
+}
+void search_prompt(App *a) {
+  if (!a->searching) { a->engine->set_search_prompt({}); return; }
+  std::string prompt = "Search:";
+  if (!a->search_query.empty() && !a->search_match.found)
+    prompt += " [no match]";
+  prompt += " " + a->search_query;
+  a->engine->set_search_prompt(prompt);
+  a->dirty = true;
+}
+void refresh_search(App *a, bool restart) {
+  if (!a->searching) return;
+  uint64_t trace_start = a->trace ? a->trace->begin() : 0;
+  if (a->search_query.empty()) {
+    a->engine->clear_search();
+    a->search_match = {};
+  } else {
+    a->search_match = a->engine->search(a->search_query, a->search_direction, restart);
+    if (a->search_match.invalidated && !restart)
+      a->search_match = a->engine->search(a->search_query, a->search_direction, true);
+  }
+  if (a->trace)
+    a->trace->record(trace_start, a->search_match.found ? "search_found" : "search_missing",
+                     a->search_query.size());
+  search_prompt(a);
+}
+void close_search(App *a) {
+  if (!a->searching) return;
+  a->engine->clear_search();
+  a->engine->set_search_prompt({});
+  auto now = a->engine->snapshot();
+  a->engine->scroll_view(a->search_saved_view - now.view_offset);
+  a->searching = false;
+  a->search_query.clear();
+  a->search_match = {};
+  a->dirty = true;
+}
+void open_search(App *a) {
+  if (a->searching) return;
+  uint64_t trace_start = a->trace ? a->trace->begin() : 0;
+  a->engine->clear_selection();
+  a->search_saved_view = a->engine->snapshot().view_offset;
+  a->searching = true;
+  a->search_direction = ct::SearchDirection::Backward;
+  a->search_query.clear();
+  a->search_match = {};
+  if (a->trace) a->trace->record(trace_start, "search_open", 0);
+  search_prompt(a);
+}
+void copy_search_match(GLFWwindow *w, App *a) {
+  if (!a->searching || !a->search_match.found) return;
+  std::string text = a->engine->selected_text();
+  uint64_t trace_start = a->trace ? a->trace->begin() : 0;
+  if (a->trace) a->trace->record(trace_start, "search_copy", text.size());
+  if (!text.empty()) glfwSetClipboardString(w, text.c_str());
+}
+void key_impl(GLFWwindow *w, int key, int, int action, int mods) {
+  if (action != GLFW_PRESS && action != GLFW_REPEAT)
+    return;
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  std::vector<unsigned char> b;
+  bool ctrl = mods & GLFW_MOD_CONTROL, alt = mods & GLFW_MOD_ALT;
+  if (ctrl && (mods & GLFW_MOD_SHIFT) && key == GLFW_KEY_F && !alt) {
+    open_search(a); return;
+  }
+  if (a->searching) {
+    if (key == GLFW_KEY_ESCAPE) { close_search(a); return; }
+    if (ctrl && key == GLFW_KEY_U) {
+      a->search_query.clear();
+      a->search_direction = ct::SearchDirection::Backward;
+      refresh_search(a, true); return;
+    }
+    if (key == GLFW_KEY_BACKSPACE) {
+      while (!a->search_query.empty() &&
+             ((unsigned char)a->search_query.back() & 0xc0) == 0x80)
+        a->search_query.pop_back();
+      if (!a->search_query.empty()) a->search_query.pop_back();
+      a->search_direction = ct::SearchDirection::Backward;
+      refresh_search(a, true); return;
+    }
+    if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+      a->search_direction = (mods & GLFW_MOD_SHIFT) ? ct::SearchDirection::Backward :
+                                                        ct::SearchDirection::Forward;
+      refresh_search(a, false); return;
+    }
+    if (ctrl && (mods & GLFW_MOD_SHIFT) && key == GLFW_KEY_C) {
+      copy_search_match(w, a); return;
+    }
+    if (ctrl && (mods & GLFW_MOD_SHIFT) && key == GLFW_KEY_V) {
+      const char *s = glfwGetClipboardString(w);
+      if (s) { append_search_utf8(a->search_query, (const unsigned char *)s,
+                                   std::strlen(s));
+        a->search_direction = ct::SearchDirection::Backward;
+        refresh_search(a, true); }
+      return;
+    }
+    return;
+  }
+  if ((mods & GLFW_MOD_SHIFT) && !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT)) &&
+      (key == GLFW_KEY_PAGE_UP || key == GLFW_KEY_PAGE_DOWN)) {
+    int page = std::max(1, a->engine->snapshot().rows - 1);
+    a->engine->scroll_view(key == GLFW_KEY_PAGE_UP ? page : -page);
+    a->selecting = false;
+    a->dirty = true;
+    return;
+  }
+  if (ctrl && key == GLFW_KEY_C && (mods & GLFW_MOD_SHIFT)) {
+    std::string text = a->engine->selected_text();
+    if (!text.empty())
+      glfwSetClipboardString(w, text.c_str());
+    return;
+  }
+  if (ctrl && (key == GLFW_KEY_V) && (mods & GLFW_MOD_SHIFT)) {
+    const char *s = glfwGetClipboardString(w);
+    if (s) {
+      follow_output(a);
+      const bool bracketed = a->engine->snapshot().bracketed_paste;
+      if (bracketed)
+        queue(a, (const unsigned char *)"\033[200~", 6);
+      queue(a, (const unsigned char *)s, std::strlen(s));
+      if (bracketed)
+        queue(a, (const unsigned char *)"\033[201~", 6);
+    }
+    return;
+  }
+  const char *seq = nullptr;
+  ct::input::Key input_key{};
+  bool has_input_key = false;
+  switch (key) {
+  case GLFW_KEY_ENTER:
+  case GLFW_KEY_KP_ENTER:
+    seq = "\r";
+    break;
+  case GLFW_KEY_BACKSPACE:
+    seq = "\177";
+    break;
+  case GLFW_KEY_TAB:
+    seq = (mods & GLFW_MOD_SHIFT) ? "\033[Z" : "\t";
+    break;
+  case GLFW_KEY_ESCAPE:
+    seq = "\033";
+    break;
+  case GLFW_KEY_UP:
+    input_key = ct::input::Key::Up;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_DOWN:
+    input_key = ct::input::Key::Down;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_RIGHT:
+    input_key = ct::input::Key::Right;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_LEFT:
+    input_key = ct::input::Key::Left;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_HOME:
+    input_key = ct::input::Key::Home;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_END:
+    input_key = ct::input::Key::End;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_INSERT:
+    input_key = ct::input::Key::Insert;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_DELETE:
+    input_key = ct::input::Key::Delete;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_PAGE_UP:
+    input_key = ct::input::Key::PageUp;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_PAGE_DOWN:
+    input_key = ct::input::Key::PageDown;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F1:
+    input_key = ct::input::Key::F1;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F2:
+    input_key = ct::input::Key::F2;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F3:
+    input_key = ct::input::Key::F3;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F4:
+    input_key = ct::input::Key::F4;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F5:
+    input_key = ct::input::Key::F5;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F6:
+    input_key = ct::input::Key::F6;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F7:
+    input_key = ct::input::Key::F7;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F8:
+    input_key = ct::input::Key::F8;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F9:
+    input_key = ct::input::Key::F9;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F10:
+    input_key = ct::input::Key::F10;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F11:
+    input_key = ct::input::Key::F11;
+    has_input_key = true;
+    break;
+  case GLFW_KEY_F12:
+    input_key = ct::input::Key::F12;
+    has_input_key = true;
+    break;
+  default:
+    break;
+  }
+  std::string input_sequence;
+  if (has_input_key)
+    input_sequence = ct::input::sequence(
+        input_key,
+        (mods & GLFW_MOD_SHIFT ? ct::input::Shift : 0) |
+            (alt ? ct::input::Alt : 0) | (ctrl ? ct::input::Control : 0),
+        a->engine->snapshot().application_cursor);
+  if (ctrl && key >= GLFW_KEY_A && key <= GLFW_KEY_Z)
+    b.push_back((unsigned char)(key - GLFW_KEY_A + 1));
+  else if (ctrl) {
+    // The C0 controls generated by the ASCII punctuation keys.
+    switch (key) {
+    case GLFW_KEY_SPACE: // Ctrl-Space
+    case GLFW_KEY_2: // Ctrl-@
+      b.push_back(0);
+      break;
+    case GLFW_KEY_LEFT_BRACKET:
+      b.push_back(0x1b);
+      break;
+    case GLFW_KEY_BACKSLASH:
+      b.push_back(0x1c);
+      break;
+    case GLFW_KEY_RIGHT_BRACKET:
+      b.push_back(0x1d);
+      break;
+    case GLFW_KEY_6: // Ctrl-^
+      b.push_back(0x1e);
+      break;
+    case GLFW_KEY_MINUS: // Ctrl-_
+      b.push_back(0x1f);
+      break;
+    case GLFW_KEY_SLASH: // Ctrl-?
+      b.push_back(0x7f);
+      break;
+    default:
+      break;
+    }
+  }
+  if (b.empty() && has_input_key)
+    b.assign(input_sequence.begin(), input_sequence.end());
+  if (b.empty() && seq)
+    b.assign((const unsigned char *)seq,
+             (const unsigned char *)seq + std::strlen(seq));
+  if (b.empty())
+    return;
+  follow_output(a);
+  if (alt && !has_input_key)
+    b.insert(b.begin(), 27);
+  queue(a, b.data(), b.size());
+}
+void key(GLFWwindow *w, int code, int scancode, int action, int mods) {
+  try {
+    key_impl(w, code, scancode, action, mods);
+  } catch (...) {
+    static_cast<App *>(glfwGetWindowUserPointer(w))->error =
+        std::current_exception();
+  }
+}
+void character(GLFWwindow *w, unsigned int cp) {
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  try {
+    if (a->searching) {
+      std::vector<unsigned char> encoded;
+      utf8(cp, encoded);
+      append_search_utf8(a->search_query, encoded.data(), encoded.size());
+      a->search_direction = ct::SearchDirection::Backward;
+      refresh_search(a, true);
+      return;
+    }
+    std::vector<unsigned char> b;
+    if (glfwGetKey(w, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
+        glfwGetKey(w, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS)
+      b.push_back(27);
+    utf8(cp, b);
+    follow_output(a);
+    queue(a, b.data(), b.size());
+  } catch (...) {
+    a->error = std::current_exception();
+  }
+}
+void selection_position(GLFWwindow *w, double x, double y, int &row, int &col) {
+  int width, height, pixels_w, pixels_h;
+  glfwGetWindowSize(w, &width, &height);
+  glfwGetFramebufferSize(w, &pixels_w, &pixels_h);
+  // Cursor positions use window coordinates; glyphs use framebuffer pixels.
+  x = std::max(0.0, std::min(x, static_cast<double>(width)));
+  y = std::max(0.0, std::min(y, static_cast<double>(height)));
+  col = width > 0 ? static_cast<int>(x * pixels_w / width) / CellW : 0;
+  row = height > 0 ? static_cast<int>(y * pixels_h / height) / CellH : 0;
+}
+int mouse_modifiers(GLFWwindow *w) {
+  int mods = 0;
+  if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
+      glfwGetKey(w, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+    mods |= 4;
+  if (glfwGetKey(w, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
+      glfwGetKey(w, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS)
+    mods |= 8;
+  if (glfwGetKey(w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
+      glfwGetKey(w, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)
+    mods |= 16;
+  return mods;
+}
+int mouse_button_code(int button) {
+  switch (button) {
+  case GLFW_MOUSE_BUTTON_LEFT:
+    return 0;
+  case GLFW_MOUSE_BUTTON_MIDDLE:
+    return 1;
+  case GLFW_MOUSE_BUTTON_RIGHT:
+    return 2;
+  default:
+    return 3;
+  }
+}
+bool report_mouse(App *a, GLFWwindow *w, int button, int row, int col,
+                  int modifiers, int action) {
+  int width, height, pixels_w, pixels_h;
+  glfwGetWindowSize(w, &width, &height);
+  glfwGetFramebufferSize(w, &pixels_w, &pixels_h);
+  int x = width > 0 ? int(a->pointer_x * pixels_w / width) : 0;
+  int y = height > 0 ? int(a->pointer_y * pixels_h / height) : 0;
+  bool reported = a->engine->mouse(button, row, col, modifiers, action, x, y);
+  std::string replies = a->engine->take_replies();
+  if (!replies.empty())
+    queue(a, (const unsigned char *)replies.data(), replies.size());
+  return reported;
+}
+void pointer_moved(GLFWwindow *w, double x, double y) {
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  a->pointer_x = x;
+  a->pointer_y = y;
+  try {
+    int row, col;
+    selection_position(w, x, y, row, col);
+    if (a->selecting) {
+      a->engine->select(a->anchor_row, a->anchor_col, row, col, a->selection_mode);
+      a->dirty = true;
+      return;
+    }
+    if (mouse_modifiers(w) & 4)
+      return;
+    int button = 3;
+    if (a->held_buttons & (1u << GLFW_MOUSE_BUTTON_LEFT))
+      button = 0;
+    else if (a->held_buttons & (1u << GLFW_MOUSE_BUTTON_MIDDLE))
+      button = 1;
+    else if (a->held_buttons & (1u << GLFW_MOUSE_BUTTON_RIGHT))
+      button = 2;
+    report_mouse(a, w, button, row, col, mouse_modifiers(w), 2);
+  } catch (...) {
+    a->error = std::current_exception();
+  }
+}
+void begin_selection(App *a, int row, int col) {
+  double now = glfwGetTime();
+  if (now - a->last_selection_click <= 0.4 && row == a->click_row &&
+      col == a->click_col)
+    a->selection_clicks = a->selection_clicks % 3 + 1;
+  else
+    a->selection_clicks = 1;
+  a->last_selection_click = now;
+  a->click_row = a->anchor_row = row;
+  a->click_col = a->anchor_col = col;
+  a->selection_mode = a->selection_clicks == 2 ? ct::SelectionMode::Word :
+                      a->selection_clicks == 3 ? ct::SelectionMode::Line :
+                                                ct::SelectionMode::Cell;
+  a->selecting = true;
+}
+void mouse_button(GLFWwindow *w, int button, int action, int mods) {
+  if (button != GLFW_MOUSE_BUTTON_LEFT && button != GLFW_MOUSE_BUTTON_MIDDLE &&
+      button != GLFW_MOUSE_BUTTON_RIGHT)
+    return;
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  try {
+    // Use event-ordered coordinates: querying the pointer here can see a
+    // later move already queued behind this button event.
+    double x = a->pointer_x, y = a->pointer_y;
+    int row, col;
+    selection_position(w, x, y, row, col);
+    bool local = a->selecting ||
+                 ((mods & GLFW_MOD_SHIFT) && !(a->held_buttons & (1u << button)));
+    if (local && button == GLFW_MOUSE_BUTTON_LEFT) {
+      if (action == GLFW_PRESS) {
+        begin_selection(a, row, col);
+      }
+      pointer_moved(w, x, y);
+      if (action == GLFW_RELEASE)
+        a->selecting = false;
+      return;
+    }
+    if (local)
+      return;
+    int mapped = mouse_button_code(button);
+    int mouse_action = action == GLFW_PRESS ? 0 : 1;
+    bool reported = report_mouse(
+        a, w, mapped, row, col,
+        ((mods & GLFW_MOD_SHIFT) ? 4 : 0) |
+            ((mods & GLFW_MOD_ALT) ? 8 : 0) |
+            ((mods & GLFW_MOD_CONTROL) ? 16 : 0),
+        mouse_action);
+    if (!reported && button == GLFW_MOUSE_BUTTON_LEFT) {
+      if (action == GLFW_PRESS) {
+        begin_selection(a, row, col);
+      }
+      pointer_moved(w, x, y);
+      if (action == GLFW_RELEASE)
+        a->selecting = false;
+      return;
+    }
+    if (action == GLFW_PRESS)
+      a->held_buttons |= 1u << button;
+    if (action == GLFW_RELEASE)
+      a->held_buttons &= ~(1u << button);
+  } catch (...) {
+    a->error = std::current_exception();
+  }
+}
+void wheel(GLFWwindow *w, double x, double y) {
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  try {
+    int mods = mouse_modifiers(w);
+    int row, col;
+    selection_position(w, a->pointer_x, a->pointer_y, row, col);
+    auto state = a->engine->snapshot();
+    if (!(mods & 4) && !a->selecting && state.mouse_tracking && !state.view_offset) {
+      a->wheel_ticks = std::max(-4096.0, std::min(4096.0, a->wheel_ticks + y));
+      int ticks = static_cast<int>(a->wheel_ticks);
+      a->wheel_ticks -= ticks;
+      for (int i = 0; i < std::abs(ticks); ++i)
+        report_mouse(a, w, ticks > 0 ? 64 : 65, row, col, mods, 0);
+      a->wheel_horizontal = std::clamp(a->wheel_horizontal + x, -4096.0, 4096.0);
+      int horizontal = static_cast<int>(a->wheel_horizontal);
+      a->wheel_horizontal -= horizontal;
+      for (int i = 0; i < std::abs(horizontal); ++i)
+        report_mouse(a, w, horizontal > 0 ? 67 : 66, row, col, mods, 0);
+      return;
+    }
+    a->wheel_ticks = 0;
+    a->wheel_horizontal = 0;
+    a->wheel_rows = std::max(-4096.0, std::min(4096.0, a->wheel_rows + y * 3));
+    int rows = static_cast<int>(a->wheel_rows);
+    if (rows) {
+      a->wheel_rows -= rows;
+      if (state.alternate_screen && !(mods & 4)) {
+        auto arrow = ct::input::sequence(rows > 0 ? ct::input::Key::Up : ct::input::Key::Down,
+                                         0, state.application_cursor);
+        for (int i = 0; i < std::abs(rows); ++i)
+          queue(a, (const unsigned char *)arrow.data(), arrow.size());
+      } else a->engine->scroll_view(rows);
+      a->selecting = false;
+      a->dirty = true;
+    }
+  } catch (...) {
+    a->error = std::current_exception();
+  }
+}
+void focus_changed(GLFWwindow *w, int focused) {
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  try {
+    a->engine->focus(focused != 0);
+    std::string reports = a->engine->take_replies();
+    if (!reports.empty())
+      queue(a, (const unsigned char *)reports.data(), reports.size());
+  } catch (...) { a->error = std::current_exception(); }
+  if (!focused) {
+    a->selecting = false;
+    a->held_buttons = 0;
+  }
+}
+void resized(GLFWwindow *w, int width, int height) {
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  if (width <= 0 || height <= 0)
+    return;
+  if (a->decoding) {
+    a->pending_width = width; a->pending_height = height;
+    return;
+  }
+  try {
+    a->selecting = false;
+    a->engine->clear_selection();
+    float scale_x, scale_y;
+    glfwGetWindowContentScale(w, &scale_x, &scale_y);
+    int cw = std::clamp(int(BaseCellW * scale_x + 0.5f), 1, 64);
+    int ch = std::clamp(int(BaseCellH * scale_y + 0.5f), 1, 128);
+    if (cw != CellW || ch != CellH) {
+      CellW = cw; CellH = ch;
+      a->engine->set_cell_size(CellW, CellH);
+    }
+    int c = clamp_cols(width / CellW), r = clamp_rows(height / CellH);
+    auto old = a->engine->snapshot();
+    if (old.cols != c || old.rows != r)
+      a->engine->resize(c, r);
+    refresh_search(a, true);
+    struct winsize ws{(unsigned short)r, (unsigned short)c,
+                      (unsigned short)width, (unsigned short)height};
+    if (ioctl(a->pty, TIOCSWINSZ, &ws) < 0)
+      fail("TIOCSWINSZ");
+    a->dirty = true;
+  } catch (...) {
+    a->error = std::current_exception();
+  }
+}
+void scale_changed(GLFWwindow *window, float, float) {
+  int width, height;
+  glfwGetFramebufferSize(window, &width, &height);
+  resized(window, width, height);
+}
+void pump_decode(void *context, bool busy) {
+  auto *a = static_cast<App *>(context);
+  a->decoding = busy;
+  if (busy) {
+    // Keep OS input and GPU mouse encoding responsive without parsing the next
+    // PTY frame or presenting a partially decoded image.
+    uint64_t start = a->trace->begin();
+    glfwWaitEventsTimeout(0.001);
+    flush_input(a);
+    a->trace->record(start, "decode_input_pump", a->input.size());
+  } else if (a->pending_width && a->pending_height) {
+    resized(a->window, a->pending_width, a->pending_height);
+    a->pending_width = a->pending_height = 0;
+  }
+}
+} // namespace
+
+int main(int argc, char **argv) {
+  try {
+    Options o = options(argc, argv);
+    if (!o.face.empty()) {
+      auto face = ct::face_header(o.face);
+      CellW = face.width; CellH = face.height;
+    }
+    BaseCellW = CellW; BaseCellH = CellH;
+    ct::Theme theme = o.theme.empty() ? ct::default_theme() : ct::read_theme(o.theme);
+    Trace trace;
+    trace.open(std::getenv("CUDATERM_TRACE"));
+    struct winsize ws{(unsigned short)o.rows, (unsigned short)o.cols,
+                      (unsigned short)(o.cols * CellW),
+                      (unsigned short)(o.rows * CellH)};
+    Pty p;
+    p.child = forkpty(&p.fd, nullptr, nullptr, &ws);
+    if (p.child < 0)
+      fail("forkpty");
+    if (!p.child) {
+      if (!o.directory.empty() && chdir(o.directory.c_str()) < 0) {
+        std::perror("cudaterm: working directory");
+        _exit(126);
+      }
+      setenv("TERM", "xterm-256color", 1);
+      setenv("COLORTERM", "truecolor", 1);
+      execvp(o.command[0], o.command.data());
+      _exit(127);
+    }
+    int flags = fcntl(p.fd, F_GETFL, 0);
+    if (flags < 0 || fcntl(p.fd, F_SETFL, flags | O_NONBLOCK) < 0)
+      fail("fcntl");
+    Engine engine(o.cols, o.rows);
+    engine.set_cell_size(CellW, CellH);
+    if (!o.face.empty()) engine.load_face(o.face);
+    engine.set_theme(theme);
+    engine.set_background_opacity(o.opacity);
+    Graphics graphics;
+    // The compositor owns window decorations. Loading libdecor's GTK plugin
+    // adds a second UI toolkit (and fails on seatless headless compositors).
+    glfwInitHint(GLFW_WAYLAND_LIBDECOR, GLFW_WAYLAND_DISABLE_LIBDECOR);
+    if (!glfwInit())
+      throw std::runtime_error("glfwInit failed");
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, o.opacity < 1 ? GLFW_TRUE : GLFW_FALSE);
+    glfwWindowHintString(GLFW_WAYLAND_APP_ID, o.app_id.c_str());
+    glfwWindowHintString(GLFW_X11_CLASS_NAME, o.app_id.c_str());
+    glfwWindowHintString(GLFW_X11_INSTANCE_NAME, o.app_id.c_str());
+    GLFWwindow *&win = graphics.window;
+    win = glfwCreateWindow(o.cols * CellW, o.rows * CellH, o.title.c_str(), nullptr,
+                           nullptr);
+    if (!win)
+      throw std::runtime_error("glfwCreateWindow failed");
+    glfwMakeContextCurrent(win);
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK)
+      throw std::runtime_error("glewInit failed");
+    App app{&engine, p.fd};
+    app.window = win;
+    app.trace = &trace;
+    engine.set_decode_pump(pump_decode, &app);
+    glfwSetWindowUserPointer(win, &app);
+    glfwGetCursorPos(win, &app.pointer_x, &app.pointer_y);
+    glfwSetKeyCallback(win, key);
+    glfwSetCharCallback(win, character);
+    glfwSetMouseButtonCallback(win, mouse_button);
+    glfwSetScrollCallback(win, wheel);
+    glfwSetCursorPosCallback(win, pointer_moved);
+    glfwSetWindowFocusCallback(win, focus_changed);
+    glfwSetFramebufferSizeCallback(win, resized);
+    glfwSetWindowContentScaleCallback(win, scale_changed);
+    glfwSwapInterval(0);
+    int initial_w, initial_h;
+    glfwGetFramebufferSize(win, &initial_w, &initial_h);
+    resized(win, initial_w, initial_h);
+    if (app.error)
+      std::rethrow_exception(app.error);
+    GLuint &pbo = graphics.pbo;
+    size_t pbo_capacity = (size_t)o.cols * CellW * o.rows * CellH * 4;
+    glGenBuffers(1, &pbo);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, pbo_capacity, nullptr, GL_STREAM_DRAW);
+    glGenTextures(1, &graphics.texture);
+    glBindTexture(GL_TEXTURE_2D, graphics.texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    cudaGraphicsResource *&resource = graphics.resource;
+    check_cuda(cudaGraphicsGLRegisterBuffer(
+                   &resource, pbo, cudaGraphicsRegisterFlagsWriteDiscard),
+               "cudaGraphicsGLRegisterBuffer");
+    bool eof = false;
+    int status = 0;
+    int texture_w = 0, texture_h = 0;
+    PtyWaiter waiter;
+    waiter.worker = std::thread([&] {
+      pollfd f{p.fd, POLLIN, 0};
+      for (;;) {
+        std::unique_lock<std::mutex> lock(waiter.mutex);
+        waiter.condition.wait(lock, [&] {
+          return waiter.armed || waiter.stop.load(std::memory_order_relaxed);
+        });
+        if (waiter.stop.load(std::memory_order_relaxed))
+          return;
+        f.events = waiter.events;
+        lock.unlock();
+        int ready = poll(&f, 1, 100);
+        if (ready < 0) {
+          if (errno == EINTR)
+            continue;
+          break;
+        }
+        if (ready == 0)
+          continue;
+        lock.lock();
+        waiter.armed = false;
+        lock.unlock();
+        if (ready > 0)
+          glfwPostEmptyEvent();
+      }
+    });
+    auto next_frame = std::chrono::steady_clock::now();
+    auto sync_started = next_frame;
+    bool sync_active = false;
+    unsigned char buf[65536];
+    size_t pending = 0;
+    while (!glfwWindowShouldClose(win) && (!eof || p.child > 0 || pending)) {
+      if (app.error)
+        std::rethrow_exception(app.error);
+      pollfd f{p.fd, POLLIN, 0};
+      int ready = poll(&f, 1, 0);
+      if (ready < 0 && errno != EINTR)
+        fail("poll");
+      // A daemon may inherit the slave PTY after our direct child exits.
+      // Drain already queued output, then close without waiting for that daemon.
+      if (ready >= 0 && p.child < 0 && !pending && !(f.revents & POLLIN))
+        eof = true;
+      size_t drained = 0;
+      bool frame_complete = false;
+      if (!pending && !eof && f.revents & (POLLIN | POLLHUP | POLLERR)) {
+        while (drained < sizeof buf) {
+          ssize_t n = read(p.fd, buf + drained, sizeof buf - drained);
+          if (n > 0)
+            drained += (size_t)n;
+          else if (n < 0 && errno == EINTR)
+            continue;
+          else {
+            if (n == 0 || (n < 0 && errno == EIO))
+              eof = true;
+            else if (errno != EAGAIN)
+              fail("PTY read");
+            break;
+          }
+        }
+        pending = drained;
+      }
+      if (pending) {
+        uint64_t trace_start = trace.begin();
+        auto result = engine.feed_frame(buf, pending);
+        drained = result.consumed;
+        frame_complete = result.frame_complete;
+        pending -= drained;
+        std::memmove(buf, buf + drained, pending);
+        std::string replies = engine.take_replies();
+        std::string title;
+        if (engine.take_title(title)) glfwSetWindowTitle(win, title.c_str());
+        bool syncing = engine.synchronized_updates();
+        // Only an idle/abandoned update expires. Long, actively arriving
+        // browser uploads must keep the previously presented frame intact.
+        if (syncing) sync_started = std::chrono::steady_clock::now();
+        sync_active = syncing;
+        trace.record(trace_start, "pty_engine_feed", drained);
+        app.dirty = true;
+        app.selecting = false;
+        if (!replies.empty())
+          queue(&app, (const unsigned char *)replies.data(), replies.size());
+        refresh_search(&app, false);
+      }
+      flush_input(&app);
+      eof = eof || app.input_closed;
+      int wsx, wsy;
+      glfwGetFramebufferSize(win, &wsx, &wsy);
+      size_t needed = (size_t)wsx * wsy * 4;
+      if (needed && (needed > pbo_capacity || needed < pbo_capacity / 2)) {
+        check_cuda(cudaGraphicsUnregisterResource(resource),
+                   "cudaGraphicsUnregisterResource");
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, needed, nullptr, GL_STREAM_DRAW);
+        pbo_capacity = needed;
+        check_cuda(cudaGraphicsGLRegisterBuffer(
+                       &resource, pbo, cudaGraphicsRegisterFlagsWriteDiscard),
+                   "cudaGraphicsGLRegisterBuffer");
+      }
+      if (wsx > 0 && wsy > 0 && (texture_w != wsx || texture_h != wsy)) {
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, wsx, wsy, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, nullptr);
+        texture_w = wsx;
+        texture_h = wsy;
+      }
+      if (app.dirty && wsx > 0 && wsy > 0 &&
+          (!sync_active || (eof && !pending) || std::chrono::steady_clock::now() - sync_started >=
+                                   std::chrono::seconds(1)) &&
+          (frame_complete || std::chrono::steady_clock::now() >= next_frame)) {
+        glViewport(0, 0, wsx, wsy);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+        void *device = nullptr;
+        size_t bytes = 0;
+        uint64_t trace_start = trace.begin();
+        check_cuda(cudaGraphicsMapResources(1, &resource),
+                   "cudaGraphicsMapResources");
+        check_cuda(
+            cudaGraphicsResourceGetMappedPointer(&device, &bytes, resource),
+            "cudaGraphicsResourceGetMappedPointer");
+        trace.record(trace_start, "graphics_map_pointer", bytes);
+        trace_start = trace.begin();
+        engine.render((uint32_t *)device, wsx, wsy);
+        check_cuda(cudaGraphicsUnmapResources(1, &resource),
+                   "cudaGraphicsUnmapResources");
+        trace.record(trace_start, "engine_render_unmap", bytes);
+        glClear(GL_COLOR_BUFFER_BIT);
+        trace_start = trace.begin();
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, wsx, wsy, GL_RGBA,
+                        GL_UNSIGNED_BYTE, nullptr);
+        glEnable(GL_TEXTURE_2D);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex2f(-1.0f, -1.0f);
+        glTexCoord2f(1.0f, 1.0f);
+        glVertex2f(1.0f, -1.0f);
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex2f(1.0f, 1.0f);
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex2f(-1.0f, 1.0f);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+        glfwSwapBuffers(win);
+        trace.record(trace_start, "gl_texture_swap", needed);
+        app.dirty = false;
+        next_frame =
+            std::chrono::steady_clock::now() + std::chrono::microseconds(8333);
+      }
+      if (drained)
+        glfwPollEvents();
+      else {
+        waiter.arm(POLLIN | (app.input.empty() ? 0 : POLLOUT));
+        auto now = std::chrono::steady_clock::now();
+        double timeout = 0.1;
+        if (app.dirty && next_frame > now)
+          timeout = std::chrono::duration<double>(next_frame - now).count();
+        uint64_t trace_start = trace.begin();
+        glfwWaitEventsTimeout(std::max(0.0001, timeout));
+        trace.record(trace_start, "event_wait", 0);
+      }
+      if (p.child > 0) {
+        pid_t r = waitpid(p.child, &status, WNOHANG);
+        if (r == p.child)
+          p.child = -1;
+      }
+    }
+    if (!o.dump.empty()) {
+      FILE *out = std::fopen(o.dump.c_str(), "w");
+      if (!out)
+        fail("open dump");
+      {
+        auto s = engine.snapshot();
+        auto cells = engine.cells();
+        std::fprintf(out, "snapshot %d %d %d %d\n", s.cols, s.rows, s.row,
+                     s.col);
+        for (int y = 0; y < s.rows; ++y) {
+          for (int x = 0; x < s.cols; ++x)
+            std::fputc((cells[(size_t)y * s.cols + x].cp >= 32 &&
+                        cells[(size_t)y * s.cols + x].cp < 127)
+                           ? (int)cells[(size_t)y * s.cols + x].cp
+                           : ' ',
+                       out);
+          std::fputc('\n', out);
+        }
+        std::fclose(out);
+      }
+    }
+    return p.child > 0         ? 0
+           : WIFEXITED(status) ? WEXITSTATUS(status)
+                               : 128 + WTERMSIG(status);
+  } catch (const std::exception &e) {
+    std::fprintf(stderr, "cudaterm: %s\n", e.what());
+    return 1;
+  }
+}

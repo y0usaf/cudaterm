@@ -1,0 +1,50 @@
+{
+  "benchmark": "terminal-idle-parent-resources",
+  "command": [
+    "/nix/store/h8q9vhbxzpsla7m2hqgqygyw6wd0pjny-monstar-1.1.0/bin/monstar",
+    "--font",
+    "DejaVu Sans Mono",
+    "-o",
+    "font-size=17px",
+    "-o",
+    "adjust-cell-height=-6",
+    "-e"
+  ],
+  "terminal_resolved": "/nix/store/h8q9vhbxzpsla7m2hqgqygyw6wd0pjny-monstar-1.1.0/bin/monstar",
+  "samples": [
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000170581974089,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 45809664,
+      "nvidia_compute_memory_bytes": null
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000178712012712,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 44695552,
+      "nvidia_compute_memory_bytes": null
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.0002098319819197,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 46288896,
+      "nvidia_compute_memory_bytes": null
+    }
+  ],
+  "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+}

@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /nix/store/mqm2lxpmssgsp1a3gcsf1i56w98cw000-cuda12.9-cuda_sanitizer_api-12.9.79/bin/compute-sanitizer --tool "${CT_SANITOOL:-memcheck}" --error-exitcode 99 --log-file "${CT_SANI_LOG:-/home/y0usaf/dev/developing/cudaterm/bench/finix-graphics-memcheck-%p.log}" /home/y0usaf/dev/developing/cudaterm/result/bin/cudaterm-engine-host "$@"

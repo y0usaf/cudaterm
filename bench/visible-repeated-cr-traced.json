@@ -1,0 +1,68 @@
+{
+  "benchmark": "pty-write-to-compositor-capture",
+  "terminal": "/nix/store/dqiagkyhrvqasx3xllwbvbyms5ia706k-cudaterm-0.1.0/bin/cudaterm",
+  "command": [
+    "./result/bin/cudaterm",
+    "-e"
+  ],
+  "cols": 318,
+  "rows": 89,
+  "capture_dimensions": [
+    64,
+    16
+  ],
+  "capture_region": "40,40 64x16",
+  "sample_pixel": [
+    32,
+    0
+  ],
+  "load_lines": 3000,
+  "samples": [
+    {
+      "write_start_ns": 181789620423425,
+      "observed_ns": 181789648928982,
+      "duration_ns": 28505557,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181789649046362,
+      "observed_ns": 181789677566078,
+      "duration_ns": 28519716,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181789677679758,
+      "observed_ns": 181789704483387,
+      "duration_ns": 26803629,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181789704606057,
+      "observed_ns": 181789732742064,
+      "duration_ns": 28136007,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181789732835674,
+      "observed_ns": 181789761619250,
+      "duration_ns": 28783576,
+      "captures": 2
+    }
+  ],
+  "capture_duration_ns": [
+    13296859,
+    14277399,
+    12820241,
+    14342808,
+    11978432,
+    14508148,
+    12765140,
+    13050740,
+    12934820,
+    14722638,
+    12213721,
+    14427098,
+    12575171
+  ],
+  "limitations": "Includes capture overhead; not physical scanout or input latency."
+}

@@ -1,0 +1,223 @@
+{
+  "executable": "/nix/store/90jjksafw4niyaa72jjhx1dhkx26zgvl-cudaterm-0.1.0/bin/cudaterm",
+  "command": "cuobjdump --dump-resource-usage",
+  "architecture": "sm_89",
+  "functions": {
+    "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b8LineScanES7_S7_jNS6_9JoinLinesEE10Policy1000EPS7_SB_NS0_13ScanTileStateIS7_Lb0EEES8_NS0_8NullTypeEjS7_Lb0EEEvT0_T1_T2_iT3_T4_T5_": {
+      "REG": 56,
+      "STACK": 0,
+      "SHARED": 4112,
+      "LOCAL": 0
+    },
+    "_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b8LineScanELb0EEEEEvT_i": {
+      "REG": 10,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3std3__44plusIvEEE10Policy1000EPiSC_NS0_13ScanTileStateIiLb1EEES9_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_": {
+      "REG": 48,
+      "STACK": 0,
+      "SHARED": 7696,
+      "LOCAL": 0
+    },
+    "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3__47maximumIvEEE10Policy1000EPiSB_NS0_13ScanTileStateIiLb1EEES8_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_": {
+      "REG": 48,
+      "STACK": 0,
+      "SHARED": 7696,
+      "LOCAL": 0
+    },
+    "_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIiLb1EEEEEvT_i": {
+      "REG": 10,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN3cub17CUB_200802_SM_89011EmptyKernelIvEEvv": {
+      "REG": 4,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b15prepare_historyINS0_9PlainMetaEEEvPNS0_11DeviceStateEPKiPKT_": {
+      "REG": 32,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b15prepare_historyINS0_10StyledMetaEEEvPNS0_11DeviceStateEPKiPKT_": {
+      "REG": 32,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b20follow_output_kernelEPNS0_11DeviceStateE": {
+      "REG": 6,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b12mouse_kernelEPNS0_11DeviceStateEiiiiiPi": {
+      "REG": 29,
+      "STACK": 56,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b18scroll_view_kernelEPNS0_11DeviceStateEi": {
+      "REG": 10,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b13reset_repliesEPNS0_11DeviceStateE": {
+      "REG": 6,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b21commit_history_growthEPNS0_11DeviceStateEPNS_4CellEi": {
+      "REG": 12,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b19grow_history_kernelEPKNS0_11DeviceStateEPNS_4CellE": {
+      "REG": 24,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b18set_history_kernelEPNS0_11DeviceStateEPNS_4CellEi": {
+      "REG": 10,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b21resize_history_kernelEPKNS0_11DeviceStateEPNS_4CellEi": {
+      "REG": 20,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b13commit_resizeEPNS0_11DeviceStateEPNS_4CellES4_ii": {
+      "REG": 20,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b12resized_gridEPNS0_11DeviceStateEPNS_4CellES4_ii": {
+      "REG": 34,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b9init_gridEPNS_4CellES2_i": {
+      "REG": 12,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b20selected_text_kernelEPNS0_11DeviceStateE": {
+      "REG": 26,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b13select_kernelEPNS0_11DeviceStateEiiii": {
+      "REG": 26,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b27set_selection_output_kernelEPNS0_11DeviceStateEPh": {
+      "REG": 8,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b22clear_selection_kernelEPNS0_11DeviceStateE": {
+      "REG": 6,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b13render_kernelEPKNS0_11DeviceStateEPjii": {
+      "REG": 32,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b14repair_historyEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE": {
+      "REG": 20,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b12plain_repairEPNS0_11DeviceStateEPKi": {
+      "REG": 17,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b13plain_scatterEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE": {
+      "REG": 22,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b11plain_clearEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE": {
+      "REG": 19,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b12plain_commitEPNS0_11DeviceStateEPKhiPKiS6_S6_PNS0_9PlainMetaE": {
+      "REG": 36,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b14plain_advancesEPKNS0_11DeviceStateEPKhiPKiPiS7_": {
+      "REG": 14,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b14plain_classifyEPKNS0_11DeviceStateEPKhiPiS6_S6_": {
+      "REG": 12,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b11feed_kernelEPNS0_11DeviceStateEPKhmPKiS6_Pi": {
+      "REG": 48,
+      "STACK": 80,
+      "SHARED": 17576,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b12styled_paintEPNS0_11DeviceStateEPKhiPKNS0_8LineScanEPKiPKNS0_10StyledMetaE": {
+      "REG": 31,
+      "STACK": 80,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b13styled_commitEPNS0_11DeviceStateEPKhPKNS0_8LineScanEPKiPiPNS0_10StyledMetaESA_": {
+      "REG": 40,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b12styled_linesEPKNS0_11DeviceStateEPKhiPNS0_8LineScanEPi": {
+      "REG": 29,
+      "STACK": 160,
+      "SHARED": 0,
+      "LOCAL": 0
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_2414b41b11styled_initEPKNS0_11DeviceStateEiPiS4_": {
+      "REG": 12,
+      "STACK": 0,
+      "SHARED": 0,
+      "LOCAL": 0
+    }
+  }
+}

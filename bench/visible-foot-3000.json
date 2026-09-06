@@ -1,0 +1,184 @@
+{
+  "benchmark": "pty-write-to-compositor-capture",
+  "terminal": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+  "command": [
+    "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+    "-o",
+    "font=DejaVu Sans Mono:size=11",
+    "-o",
+    "line-height=16px",
+    "-e"
+  ],
+  "cols": 318,
+  "rows": 89,
+  "capture_dimensions": [
+    64,
+    16
+  ],
+  "capture_region": "40,40 64x16",
+  "sample_pixel": [
+    32,
+    0
+  ],
+  "load_lines": 3000,
+  "samples": [
+    {
+      "write_start_ns": 181487365976110,
+      "observed_ns": 181487398081741,
+      "duration_ns": 32105631,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487398207821,
+      "observed_ns": 181487431543100,
+      "duration_ns": 33335279,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487431658100,
+      "observed_ns": 181487464661609,
+      "duration_ns": 33003509,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487464811039,
+      "observed_ns": 181487497829389,
+      "duration_ns": 33018350,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487497959008,
+      "observed_ns": 181487527923953,
+      "duration_ns": 29964945,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487528049453,
+      "observed_ns": 181487560337953,
+      "duration_ns": 32288500,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487560451553,
+      "observed_ns": 181487578546605,
+      "duration_ns": 18095052,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487578665445,
+      "observed_ns": 181487597865866,
+      "duration_ns": 19200421,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487597954256,
+      "observed_ns": 181487628886009,
+      "duration_ns": 30931753,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487629018358,
+      "observed_ns": 181487648365299,
+      "duration_ns": 19346941,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487648478189,
+      "observed_ns": 181487692585381,
+      "duration_ns": 44107192,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487692701771,
+      "observed_ns": 181487720886298,
+      "duration_ns": 28184527,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487720998108,
+      "observed_ns": 181487766700288,
+      "duration_ns": 45702180,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487766829998,
+      "observed_ns": 181487796067294,
+      "duration_ns": 29237296,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487796187053,
+      "observed_ns": 181487842568413,
+      "duration_ns": 46381360,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487842700492,
+      "observed_ns": 181487870691720,
+      "duration_ns": 27991228,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487870811260,
+      "observed_ns": 181487896783780,
+      "duration_ns": 25972520,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487896890460,
+      "observed_ns": 181487940422923,
+      "duration_ns": 43532463,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181487940569313,
+      "observed_ns": 181487969997748,
+      "duration_ns": 29428435,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181487970125138,
+      "observed_ns": 181488013493012,
+      "duration_ns": 43367874,
+      "captures": 2
+    }
+  ],
+  "capture_duration_ns": [
+    14045339,
+    16272365,
+    20465339,
+    13188260,
+    16641765,
+    13478559,
+    18129533,
+    12963430,
+    18733481,
+    13526260,
+    18344592,
+    13060120,
+    16064276,
+    13233120,
+    18202422,
+    17182493,
+    18349842,
+    12271342,
+    17706823,
+    18515272,
+    17460703,
+    25513151,
+    27338348,
+    16383455,
+    28386816,
+    28272067,
+    16712805,
+    28832796,
+    27176229,
+    25086572,
+    16433825,
+    26116350,
+    28505146,
+    16671414,
+    25802461
+  ],
+  "limitations": "Includes capture overhead; not physical scanout or input latency."
+}

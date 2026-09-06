@@ -1,0 +1,31 @@
+--- a/src/engine.cu
++++ b/src/engine.cu
+@@ -8,6 +8,7 @@
+ #include <cub/block/block_scan.cuh>
+ #include <cub/device/device_scan.cuh>
+ #include <cuda_runtime.h>
++#include <cuda/atomic>
+ #include <fstream>
+ #include <stdexcept>
+ #ifndef CUDATERM_DATA_DIR
+--- a/src/search_kernels.cuh
++++ b/src/search_kernels.cuh
+@@ -37,12 +37,13 @@
+   return false;
+ }
+ __global__ void find_search(const DeviceState *s, SearchWork *q) {
+-  int token = blockIdx.x * blockDim.x + threadIdx.x;
+-  if (token >= q->total) return;
+-  unsigned rank = q->step > 0 ? (token - q->start + q->total) % q->total
+-                              : (q->start - token + q->total) % q->total;
++  unsigned rank = blockIdx.x * blockDim.x + threadIdx.x;
++  if (rank >= (unsigned)q->total) return;
++  auto bound = cuda::atomic_ref<unsigned, cuda::thread_scope_device>(q->rank);
++  if (rank >= bound.load(cuda::memory_order_relaxed)) return;
++  int token = (q->start + q->step * int(rank) + q->total) % q->total;
+   int er, ec;
+-  if (search_at(*s, *q, token, er, ec)) atomicMin(&q->rank, rank);
++  if (search_at(*s, *q, token, er, ec)) bound.fetch_min(rank, cuda::memory_order_relaxed);
+ }
+ __global__ void commit_search(DeviceState *s, SearchWork *q) {
+   s->selection_active = 0;

@@ -1,0 +1,27 @@
+{
+  "binary": "result/bin/cudaterm-engine-bench",
+  "binary_store": "/nix/store/xlhqbilc5gcbnk7zfs72x43h8v18x7z5-cudaterm-0.1.0",
+  "binary_sha256": "4f70e9cefc8279e7fe41d81a74fc26ce9a51f7f5b959736da29394bbc092bbea",
+  "launch_commands": [
+    "CUDA_INJECTION64_PATH=$PWD/bench/libwrap_profile.so result/bin/cudaterm-engine-bench --workload text --cols 318 --rows 89 --bytes 65536 --warmup 5 --repeats 20",
+    "CUDA_INJECTION64_PATH=$PWD/bench/libwrap_profile.so result/bin/cudaterm-engine-bench --workload ansi --cols 318 --rows 89 --bytes 65536 --warmup 5 --repeats 20",
+    "CUDA_INJECTION64_PATH=$PWD/bench/libwrap_profile.so result/bin/cudaterm-engine-bench --workload unicode --cols 318 --rows 89 --bytes 65536 --warmup 5 --repeats 20"
+  ],
+  "build_command": "nix develop . --command bash -c 'nvcc -Xcompiler -fPIC -I/nix/store/r90c9xdjq87006fapywlk4d2kxh24ynh-cuda-merged-12.9/include -I/nix/store/iy8y2pnnhcn5l0rmy2vca9lba67sihdq-cuda12.9-cuda_cupti-12.9.79-samples/samples/common -shared bench/wrap_profile.cpp -L/nix/store/r90c9xdjq87006fapywlk4d2kxh24ynh-cuda-merged-12.9/lib -lcupti -Xlinker --allow-shlib-undefined -o bench/libwrap_profile.so'",
+  "hash_paths": {
+    "cupti_library": "/nix/store/r90c9xdjq87006fapywlk4d2kxh24ynh-cuda-merged-12.9/lib/libcupti.so",
+    "sample_source": "/nix/store/iy8y2pnnhcn5l0rmy2vca9lba67sihdq-cuda12.9-cuda_cupti-12.9.79-samples/samples/cupti_trace_injection/cupti_trace_injection.cpp",
+    "injection_library": "bench/libwrap_profile.so"
+  },
+  "cupti_sha256": "5503ca1e1ca7c3b373b2066116bae15dd1ad8014d2d421cde640b197c6ff51e4",
+  "sample_sha256": "2fcc5cc819cc903f1715fb6615a406389c2f98e9c3b62d95bda54b2a4f0bf141",
+  "injection_sha256": "26b9b9ce3d3c0ae5a6280708d8816c6758278b1d77ebe515ce3beb6e1b16e13b",
+  "parser": "bench/parse_wrap_profile.py",
+  "raw_record_count": 1359,
+  "dropped_diagnostic_lines": 0,
+  "notes": "CUPTI vendor sample output; warmup and setup kernels are included. Timing is profiling evidence, not an acceptance benchmark.",
+  "reproduce_build_command": "nix develop . --command bash -c 'nvcc -Xcompiler -fPIC -I/nix/store/r90c9xdjq87006fapywlk4d2kxh24ynh-cuda-merged-12.9/include -I/nix/store/iy8y2pnnhcn5l0rmy2vca9lba67sihdq-cuda12.9-cuda_cupti-12.9.79-samples/samples/common -shared /nix/store/iy8y2pnnhcn5l0rmy2vca9lba67sihdq-cuda12.9-cuda_cupti-12.9.79-samples/samples/cupti_trace_injection/cupti_trace_injection.cpp -L/nix/store/r90c9xdjq87006fapywlk4d2kxh24ynh-cuda-merged-12.9/lib -lcupti -Xlinker --allow-shlib-undefined -o bench/libwrap_profile.so'",
+  "build_source_note": "Historical build used an unchanged copy of sample_source at bench/wrap_profile.cpp; redundant copy removed after byte-for-byte comparison.",
+  "run_resolved_binary_note": "Path resolved after collection; result could have changed during subsequent Nix rebuild. New and reference engine-bench hashes match; exact launch-time symlink resolution was not captured.",
+  "trace_completeness": "No dropped-record diagnostic lines found. This is not independent proof of complete activity collection."
+}

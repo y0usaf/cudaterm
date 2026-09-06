@@ -1,0 +1,6 @@
+this derivation will be built:
+  /nix/store/0n2h7ffbv0hw0hfy3ih36ydwwj88dcfp-cudaterm-sync-test.drv
+building '/nix/store/0n2h7ffbv0hw0hfy3ih36ydwwj88dcfp-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames
+PASS: inherited PTY closes with final output and direct child status
+PASS: Wayland Ctrl-Space reached the PTY during CUDA decode in 0.1 ms

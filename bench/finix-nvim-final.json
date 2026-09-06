@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "host": "/nix/store/fv9gqwbv3sj4jb8kqphbxnjf0rz2c3px-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "nvim": "/nix/store/3ms6b255arirq234hn3abwxfnj21lg2d-neovim-0.12.4/bin/nvim",
+  "reply_bytes": 69,
+  "checks": [
+    "installed Neovim TUI startup",
+    "three PTY resizes",
+    "UTF-8 editing and save",
+    "clean quit"
+  ],
+  "scope": "real editor PTY and CUDA parser; no desktop clipboard"
+}

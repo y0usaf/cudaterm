@@ -1,0 +1,15 @@
+--- a/src/wl_window.c
++++ b/src/wl_window.c
+@@ -1383,9 +1383,12 @@
+ 
+     if (surface == window->wl.surface)
+     {
++        window->wl.cursorPosX = wl_fixed_to_double(sx);
++        window->wl.cursorPosY = wl_fixed_to_double(sy);
+         window->wl.hovered = GLFW_TRUE;
+         _glfwSetCursorWayland(window, window->wl.currentCursor);
+         _glfwInputCursorEnter(window, GLFW_TRUE);
++        _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
+     }
+     else
+     {

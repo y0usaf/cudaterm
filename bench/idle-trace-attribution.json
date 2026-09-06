@@ -1,0 +1,15 @@
+{
+  "source": "bench/idle-profile-corrected.strace",
+  "source_sha256": "d36ba9f1d2f246702c82090b01d6062d9dc5a4d20ec942be3d9ee5ac9ec69c68",
+  "scope": "startup through shutdown; not a settled-idle measurement",
+  "terminal_pid": 2530,
+  "evidence": [
+    {"line": 421181, "tid": 3022, "fd": "3</dev/ptmx<char 5:2 @/dev/pts/81>", "call": "poll", "timeout_ms": 100, "stack": ["cudaterm(_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv+0xbb)", "libstdc++(execute_native_thread_routine+0x13)", "libc(start_thread+0x2e2)", "libc(__clone3+0x2b)"]},
+    {"line": 421190, "tid": 2530, "fd": "3</dev/ptmx<char 5:2 @/dev/pts/81>", "call": "poll", "timeout_ms": 0, "result": "Timeout", "stack": ["cudaterm(main+0x7b9)", "libc(__libc_start_call_main+0x74)"]},
+    {"line": 421181, "tid": 3022, "call": "poll", "count_observed": 12, "attribution": "application PTY waiter thread, based on cudaterm std::thread stack"},
+    {"line": 421190, "tid": 2530, "call": "ppoll", "timeout_ms": 100, "stack": ["libglfw(_glfwPollPOSIX+0x84)", "libglfw(handleEvents+0xf5)", "libglfw(_glfwWaitEventsTimeoutWayland+0x15)", "cudaterm(main+0xd2a)"], "attribution": "GLFW Wayland event wait"},
+    {"line": 200888, "tid": 2530, "fd": "56<UNIX-STREAM:[68960634->68945867]>", "call": "poll", "timeout_ms": -1, "stack": ["libdbus(socket_do_iteration+0x9f)", "libc(__poll+0x1d)"]},
+    {"line": 34594, "tid": 2530, "fd": "37<UNIX-STREAM:[68964527->68956765]>", "call": "ppoll", "timeout": "NULL", "stack": ["libwayland-client(wl_display_poll+0xac)", "libc(ppoll+0x45)"], "attribution": "Wayland client socket"}
+  ],
+  "conclusion": "The PTY wait and GLFW wait are separately identified by thread ID, file descriptor, and stack. fd 56 is DBus and fd 37 is Wayland. No driver attribution is made from this trace."
+}

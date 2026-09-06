@@ -1,0 +1,22 @@
+{
+  "decision": "Rejected coarse token index and single-token shortcut; production source restored to proven baseline.",
+  "baseline": "/nix/store/zvsnvj0fqij9rvwx009p446xvbg2zqzp-cudaterm-0.1.0",
+  "scope": "Shared active desktop GPU. Synthetic images, Python transport included. No desktop changes or restart.",
+  "experiments": [
+    {
+      "name": "8-byte coarse token index",
+      "paired": "bench/owners-final-paired.json",
+      "result": "No net noisy-image gain; solid total median 129.8 to 151.7 ms. Rejected.",
+      "shared_workspace_bytes": 47856
+    },
+    {
+      "name": "direct single-token resolution",
+      "paired": "bench/direct-token-paired.json",
+      "result": "Solid total median 145.7 to 146.2 ms; noisy 891.0 to 894.6 ms. No meaningful gain. Rejected."
+    }
+  ],
+  "checks": [
+    "nix build . and nix run .#graphics-test exited zero for all candidates (36 cases).",
+    "Initial coarse-index candidate also passed nix run .#sync-test, real browser pixel/input integration via nix develop, and focused CUDA memcheck/racecheck via nix develop. These do not certify later rejected variants."
+  ]
+}

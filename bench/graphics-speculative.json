@@ -1,0 +1,74 @@
+{
+  "binary": "/nix/store/c82w0g2afqh528h8pfi8ynn2sfyzwy3r-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "width": 1274,
+  "height": 1368,
+  "scope": "synthetic images, headless CUDA; shared desktop GPU; Python transport overhead included",
+  "cases": {
+    "solid": {
+      "raw_bytes": 6971328,
+      "compressed_bytes": 6798,
+      "pty_bytes": 9134,
+      "samples": [
+        {
+          "chunks_ms": 0.547219009604305,
+          "final_decode_commit_ms": 97.96145098516718,
+          "raster_and_host_copy_ms": 10.295423999195918
+        },
+        {
+          "chunks_ms": 0.907829002244398,
+          "final_decode_commit_ms": 98.10837000259198,
+          "raster_and_host_copy_ms": 10.213903995463625
+        },
+        {
+          "chunks_ms": 0.41003001388162374,
+          "final_decode_commit_ms": 98.53503899648786,
+          "raster_and_host_copy_ms": 7.16220898902975
+        },
+        {
+          "chunks_ms": 0.34304001019336283,
+          "final_decode_commit_ms": 98.03408998413943,
+          "raster_and_host_copy_ms": 6.52337001520209
+        }
+      ],
+      "memory": {
+        "device_bytes": 18171778,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      }
+    },
+    "grayscale_noise": {
+      "raw_bytes": 6971328,
+      "compressed_bytes": 2616904,
+      "pty_bytes": 3496919,
+      "samples": [
+        {
+          "chunks_ms": 54.04706799890846,
+          "final_decode_commit_ms": 519.3578869802877,
+          "raster_and_host_copy_ms": 7.448609016137198
+        },
+        {
+          "chunks_ms": 54.019257018808275,
+          "final_decode_commit_ms": 507.4570160068106,
+          "raster_and_host_copy_ms": 4.2989229841623455
+        },
+        {
+          "chunks_ms": 53.76288801198825,
+          "final_decode_commit_ms": 509.99736197991297,
+          "raster_and_host_copy_ms": 4.8044030263554305
+        },
+        {
+          "chunks_ms": 60.47652801498771,
+          "final_decode_commit_ms": 628.16249098978,
+          "raster_and_host_copy_ms": 4.747192986542359
+        }
+      ],
+      "memory": {
+        "device_bytes": 20213122,
+        "image_bytes": 6971328,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      }
+    }
+  }
+}

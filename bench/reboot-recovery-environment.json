@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-06",
+  "scope": "Post-shutdown environment checks; prior process identities are not reused.",
+  "checks": [
+    {
+      "command": "nvidia-smi --query-gpu=name,driver_version --format=csv,noheader",
+      "chunk_id": "5063db",
+      "wall_time_seconds": 0.00000178,
+      "exit_code": 9,
+      "original_token_count": 37,
+      "output": "NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.\n\n"
+    },
+    {
+      "command": "nix build path:/home/y0usaf/dev/developing/cudaterm --no-link",
+      "chunk_id": "807637",
+      "wall_time_seconds": 0,
+      "exit_code": 1,
+      "original_token_count": 48,
+      "output": "error:\n       … while fetching the input 'path:/home/y0usaf/dev/developing/cudaterm'\n\n       error: cannot connect to socket at '/nix/var/nix/daemon-socket/socket': Operation not permitted\n"
+    }
+  ],
+  "validation_status": "Nix daemon unavailable to sandbox; NVIDIA unavailable. CPU review can proceed. Candidate not accepted."
+}

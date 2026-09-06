@@ -1,0 +1,82 @@
+Date: 2026-09-05 EDT
+[09:50:34.456] weston 16.0.0
+               https://wayland.freedesktop.org
+               Bug reports to: https://gitlab.freedesktop.org/wayland/weston/issues/
+               Build: 16.0.0
+[09:50:34.456] Command line: /nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/bin/weston --backend=headless --renderer=gl --shell=desktop --socket=wayland-cuda --no-config --debug --modules=/nix/store/wcr1rgn0sykmj62846pimzpzmw8fbw1k-cudaterm-headless-seat/lib/seat.so --width=2800 --height=1600
+[09:50:34.456] OS: Linux, 7.2.0, #1-NixOS SMP PREEMPT_DYNAMIC Sun Aug 16 21:32:26 UTC 2026, x86_64
+[09:50:34.456] Flight recorder: enabled, scopes subscribed: log
+[09:50:34.456] Starting with no config file.
+WARNING: debug protocol has been enabled. This is a potential denial-of-service attack vector and information leak.
+[09:50:34.456] Output repaint window is 7 ms maximum.
+[09:50:34.456] Loading module '/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/lib/libweston-16/headless-backend.so'
+[09:50:34.459] Loading module '/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/lib/libweston-16/gl-renderer.so'
+[09:50:34.479] Using rendering device: /dev/dri/renderD129
+[09:50:34.479] EGL version: 1.5
+[09:50:34.479] EGL vendor: NVIDIA
+[09:50:34.479] EGL client APIs: OpenGL_ES OpenGL
+[09:50:34.479] EGL features:
+               EGL Wayland extension: yes
+               context priority: yes
+               buffer age: yes
+               partial update: yes
+               swap buffers with damage: yes
+               configless context: yes
+               surfaceless context: yes
+               dmabuf support: modifiers
+               fence sync: yes (native, wait)
+[09:50:34.495] GL version: OpenGL ES 3.2 NVIDIA 595.91.07
+[09:50:34.495] GLSL version: OpenGL ES GLSL ES 3.20
+[09:50:34.495] GL vendor: NVIDIA Corporation
+[09:50:34.495] GL renderer: NVIDIA GeForce RTX 4090/PCIe/SSE2
+[09:50:34.496] GL ES 3.2 - renderer features:
+               read-back format: ARGB8888
+               glReadPixels supports y-flip: no
+               glReadPixels supports PBO: yes
+               wl_shm 10 bpc formats: yes
+               wl_shm 16 bpc formats: yes
+               wl_shm half-float formats: yes
+               internal R and RG formats: yes
+               OES_EGL_image_external: yes
+               GPU timeline: yes
+               Texture immutability: yes
+               Required precision: yes
+               In-shader blending: no
+[09:50:34.496] Using GL renderer
+[09:50:34.496] Registered plugin API 'weston_windowed_output_api_headless_v2' of size 16
+[09:50:34.496] Color manager: no-op
+                 protocol support: no
+[09:50:34.496] Output 'headless' attempts EOTF mode SDR and colorimetry mode default.
+[09:50:34.496] Output 'headless' using color profile: stock sRGB color profile
+[09:50:34.496] Output 'headless' enabled with head(s) headless
+[09:50:34.496] Compositor capabilities:
+               arbitrary surface rotation: yes
+               screen capture uses y-flip: yes
+               cursor planes: no
+               arbitrary resolutions: no
+               view mask clipping: yes
+               explicit sync: yes
+               color operations: yes
+               color representation: yes
+               in-shader blending: no
+               presentation clock: CLOCK_MONOTONIC_RAW, id 4
+               presentation clock resolution: 0.000000001 s
+[09:50:34.496] Loading module '/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/lib/weston/desktop-shell.so'
+[09:50:34.496] Loading module '/nix/store/wcr1rgn0sykmj62846pimzpzmw8fbw1k-cudaterm-headless-seat/lib/seat.so'
+[09:50:34.497] Currently advertised debug scopes:
+               'log' - Weston and Wayland log
+               'scene-graph' - Scene graph details
+               'timeline' - Timeline event points
+               'libseat-debug' - libseat debug messages
+               'proto' - Wayland protocol dump for all clients.
+               'gl-renderer-ext' - Print GL-renderer extensions
+               'gl-renderer-paint-nodes' - Print GL-renderer debug information about paint nodes
+               'gl-shader-generator' - GL renderer shader compilation and cache.
+[09:50:34.498] launching '/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/libexec/weston-keyboard'
+[09:50:34.498] launching '/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/libexec/weston-desktop-shell'
+[09:50:39.875] libwayland: failed to read client connection (pid 13055)
+[09:50:48.000] libwayland: failed to read client connection (pid 13205)
+[09:50:50.681] libwayland: failed to read client connection (pid 13233)
+[09:50:51.735] libwayland: failed to read client connection (pid 13270)
+[09:50:51.826] caught signal 15
+[09:50:51.827] BUG: finalizing a layer with views still on it.

@@ -1,0 +1,14 @@
+{
+  "retained": true,
+  "provisional_performance": true,
+  "derivation": "/nix/store/hc2lx65rqjs6kvb9pk4nyamlxarpn70w-cudaterm-0.1.0.drv",
+  "binary": "/nix/store/zf0x89viaqc849jzc3bf2hxlyhcr8641-cudaterm-0.1.0",
+  "nix_command": "nix build . && nix flake check && nix run .#plain-test && nix run .#styled-test && nix run .#reference-test && nix run .#scrollback-test && nix run .#workspace-test",
+  "sanitizer_tools": [
+    "memcheck",
+    "synccheck"
+  ],
+  "sanitizer_kernel_filter": "kns=plain_scan_small",
+  "sanitizer_errors": 0,
+  "limitation": "Mixed round results; no overall terminal performance parity established."
+}
