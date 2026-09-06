@@ -1,0 +1,14 @@
+=== selection-test ===
+=== scrollback-test ===
+=== plain-test ===
+=== styled-test ===
+=== reference-test ===
+=== vt-test ===
+=== unicode-test ===
+this derivation will be built:
+  /nix/store/x4i70xar1mdgclkxpmrwsar5ij06nkpf-cudaterm-0.1.0.drv
+building '/nix/store/x4i70xar1mdgclkxpmrwsar5ij06nkpf-cudaterm-0.1.0.drv'...
+=== workspace-test ===
+this derivation will be built:
+  /nix/store/qpav3wy6kphdjb06is4ry1msqafpr89d-cudaterm-0.1.0.drv
+building '/nix/store/qpav3wy6kphdjb06is4ry1msqafpr89d-cudaterm-0.1.0.drv'...

@@ -1,0 +1,26 @@
+{
+  "input": "bench/reflow-feed-pair.json",
+  "input_sha256": "b2dccebccf4efae0f52b817084ced351cc2f214ff1ed59d2405eebd828eb1eb2",
+  "scope": "ANSI engine-feed samples from the serial functional build; 2 paired rounds, 40 samples per binary per round; CUDA engine feed only, excluding PTY/window/compositor/display latency",
+  "percentile_method": "linear interpolation at rank (n-1)*0.9",
+  "units": "microseconds",
+  "workload": "ansi",
+  "rounds": {
+    "before": {
+      "binary": "/nix/store/6vqjrx4nmz9h5kw9859mfj0bkma2ldiy-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "samples": [
+        {"round": 0, "n": 40, "min": 152.8, "median": 154.4695, "p90": 162.5759, "max": 169.75},
+        {"round": 1, "n": 40, "min": 151.95, "median": 158.44, "p90": 167.6791, "max": 169.909}
+      ],
+      "pooled": {"n": 80, "min": 151.95, "median": 156.22, "p90": 166.653, "max": 169.909}
+    },
+    "after": {
+      "binary": "/nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "samples": [
+        {"round": 0, "n": 40, "min": 152.85, "median": 160.6145, "p90": 304.541, "max": 2636.366},
+        {"round": 1, "n": 40, "min": 151.8, "median": 160.4295, "p90": 169.5009, "max": 175.92}
+      ],
+      "pooled": {"n": 80, "min": 151.8, "median": 160.4295, "p90": 174.935, "max": 2636.366}
+    }
+  }
+}

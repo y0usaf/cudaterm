@@ -1,0 +1,1 @@
+{"amdGuard":true,"desktop":{"environment":"cudaterm-finix","failedAssertions":[],"launcher":"cudaterm-finix --app-id=launcher -e ~/.config/scripts/tui-launcher.sh","systemDerivation":"/nix/store/3gkz91hwgzql0dwz6n3az4brqlcq8lgw-finix-system.drv","terminal":"cudaterm-finix"},"explicitOverride":"foot","framework":{"cudaterm":false,"terminal":"monstar"}}

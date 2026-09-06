@@ -1,0 +1,24 @@
+error:
+       … while evaluating the file '/home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix':
+
+       … in the condition of the assert statement
+         at /home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix:17:1:
+           16| assert override.config.user.defaults.terminal == "foot";
+           17| assert framework.config.user.defaults.terminal == "monstar";
+             | ^
+           18| {
+
+       … while evaluating the attribute 'value'
+         at /nix/store/z4wkdlk69gck09s64a8ghpn6h7bxhkyy-source/lib/modules.nix:1149:7:
+         1148|     // {
+         1149|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+             |       ^
+         1150|       inherit (res.defsFinal') highestPrio;
+
+       … while evaluating the option `user.defaults.terminal':
+
+       … while evaluating definitions from `<unknown-file>':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option `user.ui.cudaterm.enable' in `<unknown-file>' is already declared in `<unknown-file>'.

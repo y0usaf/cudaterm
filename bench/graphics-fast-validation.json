@@ -1,0 +1,22 @@
+{
+  "binary": "/nix/store/zvsnvj0fqij9rvwx009p446xvbg2zqzp-cudaterm-0.1.0",
+  "sha256": {
+    "src/engine.cu": "b09c75601515f8b752a556780603780d2ed25fb044de67aa60be7ce70c71c172",
+    "src/graphics.cuh": "5842ecbb97cf5d676756bd1f79d8ac1477747a4c54a77041b1ae7e219e5bd700",
+    "src/graphics_types.cuh": "654b8e45241f42f85d53c28c1e58762329221c43e58a15dd720e24d6c74235d2",
+    "src/inflate.cuh": "7c8746e7613921ba8dd843826ebed49c2491ff16522f73bb29330911821a3516",
+    "tests/test_graphics.py": "714f4ba9567d94d5602b487079b774edb43c1a8d7b729daf2d413a8e3a1e8309",
+    "bench/graphics_bench.py": "864b903b8755a8549050fa09ad19362262cf7685ade2cea697b8ec9ba9f3d1a1"
+  },
+  "production_image_decoding": "CUDA only",
+  "nix_build_and_flake_check": "passed",
+  "graphics_cases": 36,
+  "terminal_regressions": "passed",
+  "real_ekko_browser_and_sync_presentation": "passed",
+  "memcheck": "full 36-case suite on 32/128-thread variant, plus focused dense/noisy checks on final 128-thread build: zero errors",
+  "racecheck": "focused dense/noisy checks on final build: zero hazards",
+  "full_racecheck": "stopped during split-feed sweeps; not counted as passed",
+  "benchmark": "graphics-final-current.json",
+  "paired_benchmark": "graphics-final-comparison.json",
+  "memory_comparison": "graphics-fast-window/headless-window.json: decoder variant preserves 115.2 MiB RSS / 316 MiB NVIDIA process memory"
+}

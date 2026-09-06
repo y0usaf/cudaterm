@@ -1,0 +1,74 @@
+[
+  {
+    "round": 0,
+    "label": "before",
+    "path": "bench/graphics-final-0-before.json",
+    "binary": "/nix/store/ph69lq4s66awap1an7wkbpp40fpkkc5x-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "warm_medians_ms": {
+      "solid": {
+        "chunks_ms": 2.6052159955725074,
+        "final_decode_commit_ms": 41.18431798997335,
+        "raster_and_host_copy_ms": 8.44360698829405
+      },
+      "grayscale_noise": {
+        "chunks_ms": 982.5932609965093,
+        "final_decode_commit_ms": 942.1094020071905,
+        "raster_and_host_copy_ms": 4.787782992934808
+      }
+    }
+  },
+  {
+    "round": 0,
+    "label": "after",
+    "path": "bench/graphics-final-0-after.json",
+    "binary": "/nix/store/zvsnvj0fqij9rvwx009p446xvbg2zqzp-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "warm_medians_ms": {
+      "solid": {
+        "chunks_ms": 0.34224000410176814,
+        "final_decode_commit_ms": 41.09057699679397,
+        "raster_and_host_copy_ms": 7.456368999555707
+      },
+      "grayscale_noise": {
+        "chunks_ms": 54.62390699540265,
+        "final_decode_commit_ms": 264.67616599984467,
+        "raster_and_host_copy_ms": 6.231969979126006
+      }
+    }
+  },
+  {
+    "round": 1,
+    "label": "after",
+    "path": "bench/graphics-final-1-after.json",
+    "binary": "/nix/store/zvsnvj0fqij9rvwx009p446xvbg2zqzp-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "warm_medians_ms": {
+      "solid": {
+        "chunks_ms": 1.0528579878155142,
+        "final_decode_commit_ms": 48.19265700643882,
+        "raster_and_host_copy_ms": 12.375240999972448
+      },
+      "grayscale_noise": {
+        "chunks_ms": 62.29598500067368,
+        "final_decode_commit_ms": 283.008698024787,
+        "raster_and_host_copy_ms": 4.322703985963017
+      }
+    }
+  },
+  {
+    "round": 1,
+    "label": "before",
+    "path": "bench/graphics-final-1-before.json",
+    "binary": "/nix/store/ph69lq4s66awap1an7wkbpp40fpkkc5x-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "warm_medians_ms": {
+      "solid": {
+        "chunks_ms": 2.307596994796768,
+        "final_decode_commit_ms": 36.06447498896159,
+        "raster_and_host_copy_ms": 6.869058997835964
+      },
+      "grayscale_noise": {
+        "chunks_ms": 1023.6769680050202,
+        "final_decode_commit_ms": 981.8801119981799,
+        "raster_and_host_copy_ms": 4.192032996797934
+      }
+    }
+  }
+]

@@ -1,0 +1,1 @@
+{"desktop":{"failedAssertions":[],"launcher":"cudaterm-finix --app-id=launcher -e ~/.config/scripts/tui-launcher.sh","nvidia":true,"terminal":"cudaterm-finix"},"framework":{"cudaterm":false,"terminal":"monstar"}}

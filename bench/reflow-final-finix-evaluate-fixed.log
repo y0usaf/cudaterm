@@ -1,0 +1,27 @@
+error:
+       … while evaluating the file '/home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix':
+
+       … in the condition of the assert statement
+         at /home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix:15:4:
+           14|   failed = system: map (a: a.message) (builtins.filter (a: !a.assertion) system.config.assertions);
+           15| in assert failed desktop == [];
+             |    ^
+           16| assert builtins.elem "cudaterm requires the NVIDIA driver" (failed amd);
+
+       … while calling the 'map' builtin
+         at /home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix:14:20:
+           13|   override = desktop.extendModules { modules = [ { user.defaults.terminal = "foot"; } ]; };
+           14|   failed = system: map (a: a.message) (builtins.filter (a: !a.assertion) system.config.assertions);
+             |                    ^
+           15| in assert failed desktop == [];
+
+       … while evaluating the option `user.ui.cudaterm.package':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option `user.ui.cudaterm.package' is defined multiple times while it's expected to be unique.
+
+       Definition values:
+       - In `<unknown-file>': <derivation cudaterm-finix>
+       - In `<unknown-file>': <derivation cudaterm-finix>
+       Use `lib.mkForce value` or `lib.mkDefault value` to change the priority on any of these definitions.

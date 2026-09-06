@@ -1,0 +1,227 @@
+src/engine.cu(1913): warning #780-D: reference is to parameter "c" (declared at line 1814) -- under old for-init scoping rules it would have been variable "c" (declared at line 1905)
+      s.history_cols = c;
+                       ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+src/graphics.cuh(184): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+              ct::inflate::Workspace workspace;
+                                     ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+src/graphics.cuh(205): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+              FillJob jobs[MAX_ROWS + 4];
+                      ^
+
+src/engine.cu(1029): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+              FillJob jobs[MAX_ROWS + 4];
+                      ^
+
+src/engine.cu(1913): warning #780-D: reference is to parameter "c" (declared at line 1814) -- under old for-init scoping rules it would have been variable "c" (declared at line 1905)
+      s.history_cols = c;
+                       ^
+
+ptxas info    : 315 bytes gmem, 288 bytes cmem[4]
+ptxas info    : Compiling entry function '_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df7818LineScanES7_S7_jNS6_9JoinLinesEE10Policy1000EPS7_SB_NS0_13ScanTileStateIS7_Lb0EEES8_NS0_8NullTypeEjS7_Lb0EEEvT0_T1_T2_iT3_T4_T5_' for 'sm_89'
+ptxas info    : Function properties for _ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df7818LineScanES7_S7_jNS6_9JoinLinesEE10Policy1000EPS7_SB_NS0_13ScanTileStateIS7_Lb0EEES8_NS0_8NullTypeEjS7_Lb0EEEvT0_T1_T2_iT3_T4_T5_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 1 barriers, 4112 bytes smem, 404 bytes cmem[0]
+ptxas info    : Compile time = 110.870 ms
+ptxas info    : Compiling entry function '_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df7818LineScanELb0EEEEEvT_i' for 'sm_89'
+ptxas info    : Function properties for _ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df7818LineScanELb0EEEEEvT_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 380 bytes cmem[0]
+ptxas info    : Compile time = 0.792 ms
+ptxas info    : Compiling entry function '_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3std3__44plusIvEEE10Policy1000EPiSC_NS0_13ScanTileStateIiLb1EEES9_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_' for 'sm_89'
+ptxas info    : Function properties for _ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3std3__44plusIvEEE10Policy1000EPiSC_NS0_13ScanTileStateIiLb1EEES9_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 1 barriers, 7696 bytes smem, 388 bytes cmem[0]
+ptxas info    : Compile time = 31.035 ms
+ptxas info    : Compiling entry function '_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3__47maximumIvEEE10Policy1000EPiSB_NS0_13ScanTileStateIiLb1EEES8_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_' for 'sm_89'
+ptxas info    : Function properties for _ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3__47maximumIvEEE10Policy1000EPiSB_NS0_13ScanTileStateIiLb1EEES8_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 1 barriers, 7696 bytes smem, 388 bytes cmem[0]
+ptxas info    : Compile time = 31.554 ms
+ptxas info    : Compiling entry function '_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIiLb1EEEEEvT_i' for 'sm_89'
+ptxas info    : Function properties for _ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIiLb1EEEEEvT_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 364 bytes cmem[0]
+ptxas info    : Compile time = 0.780 ms
+ptxas info    : Compiling entry function '_ZN3cub17CUB_200802_SM_89011EmptyKernelIvEEvv' for 'sm_89'
+ptxas info    : Function properties for _ZN3cub17CUB_200802_SM_89011EmptyKernelIvEEvv
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
+ptxas info    : Compile time = 0.234 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78115prepare_historyINS0_9PlainMetaEEEvPNS0_11DeviceStateEPKiPKT_' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78115prepare_historyINS0_9PlainMetaEEEvPNS0_11DeviceStateEPKiPKT_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 4.091 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78115prepare_historyINS0_10StyledMetaEEEvPNS0_11DeviceStateEPKiPKT_' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78115prepare_historyINS0_10StyledMetaEEEvPNS0_11DeviceStateEPKiPKT_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 4.031 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78120follow_output_kernelEPNS0_11DeviceStateE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78120follow_output_kernelEPNS0_11DeviceStateE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 6 registers, used 0 barriers, 360 bytes cmem[0]
+ptxas info    : Compile time = 0.343 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112mouse_kernelEPNS0_11DeviceStateEiiiiiiiPi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112mouse_kernelEPNS0_11DeviceStateEiiiiiiiPi
+    56 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 29 registers, used 0 barriers, 56 bytes cumulative stack size, 400 bytes cmem[0]
+ptxas info    : Compile time = 9.419 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78118scroll_view_kernelEPNS0_11DeviceStateEi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78118scroll_view_kernelEPNS0_11DeviceStateEi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 364 bytes cmem[0]
+ptxas info    : Compile time = 0.828 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113reset_repliesEPNS0_11DeviceStateE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113reset_repliesEPNS0_11DeviceStateE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers, 360 bytes cmem[0]
+ptxas info    : Compile time = 0.436 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78121commit_history_growthEPNS0_11DeviceStateEPNS_4CellEi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78121commit_history_growthEPNS0_11DeviceStateEPNS_4CellEi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 1.015 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78119grow_history_kernelEPKNS0_11DeviceStateEPNS_4CellE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78119grow_history_kernelEPKNS0_11DeviceStateEPNS_4CellE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 24 registers, used 0 barriers, 368 bytes cmem[0]
+ptxas info    : Compile time = 2.031 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78118set_history_kernelEPNS0_11DeviceStateEPNS_4CellEi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78118set_history_kernelEPNS0_11DeviceStateEPNS_4CellEi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 0.378 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78121resize_history_kernelEPKNS0_11DeviceStateEPNS_4CellEi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78121resize_history_kernelEPKNS0_11DeviceStateEPNS_4CellEi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 20 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 2.462 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113commit_resizeEPNS0_11DeviceStateEPNS_4CellES4_ii' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113commit_resizeEPNS0_11DeviceStateEPNS_4CellES4_ii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 1.929 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112resized_gridEPNS0_11DeviceStateEPNS_4CellES4_ii' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112resized_gridEPNS0_11DeviceStateEPNS_4CellES4_ii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 3.079 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df7819init_gridEPNS_4CellES2_i' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df7819init_gridEPNS_4CellES2_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 0.742 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78120selected_text_kernelEPNS0_11DeviceStateE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78120selected_text_kernelEPNS0_11DeviceStateE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 360 bytes cmem[0]
+ptxas info    : Compile time = 8.426 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113select_kernelEPNS0_11DeviceStateEiiii' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113select_kernelEPNS0_11DeviceStateEiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 2.962 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78127set_selection_output_kernelEPNS0_11DeviceStateEPh' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78127set_selection_output_kernelEPNS0_11DeviceStateEPh
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers, 368 bytes cmem[0]
+ptxas info    : Compile time = 0.343 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78122clear_selection_kernelEPNS0_11DeviceStateE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78122clear_selection_kernelEPNS0_11DeviceStateE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 6 registers, used 0 barriers, 360 bytes cmem[0]
+ptxas info    : Compile time = 0.313 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113render_kernelEPKNS0_11DeviceStateEPjii' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113render_kernelEPKNS0_11DeviceStateEPjii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 10.309 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78114repair_historyEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78114repair_historyEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 20 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 2.678 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112plain_repairEPNS0_11DeviceStateEPKi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112plain_repairEPNS0_11DeviceStateEPKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 17 registers, used 0 barriers, 368 bytes cmem[0]
+ptxas info    : Compile time = 2.141 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113plain_scatterEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113plain_scatterEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, used 0 barriers, 408 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 3.889 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78111plain_clearEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78111plain_clearEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 19 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 2.437 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112plain_commitEPNS0_11DeviceStateEPKhiPKiS6_S6_PNS0_9PlainMetaE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112plain_commitEPNS0_11DeviceStateEPKhiPKiS6_S6_PNS0_9PlainMetaE
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 16.107 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78114plain_advancesEPKNS0_11DeviceStateEPKhiPKiPiS7_' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78114plain_advancesEPKNS0_11DeviceStateEPKhiPKiPiS7_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers, 400 bytes cmem[0]
+ptxas info    : Compile time = 1.926 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78116plain_scan_smallEPKNS0_11DeviceStateEPKhiPKiPiS8_' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78116plain_scan_smallEPKNS0_11DeviceStateEPKhiPKiPiS8_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 53 registers, used 1 barriers, 1184 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 31.595 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78114plain_classifyEPKNS0_11DeviceStateEPKhiPiS6_S6_S6_' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78114plain_classifyEPKNS0_11DeviceStateEPKhiPiS6_S6_S6_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 3.069 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78111feed_kernelEPNS0_11DeviceStateEPKhmPKiS6_Pi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78111feed_kernelEPNS0_11DeviceStateEPKhmPKiS6_Pi
+    80 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 80 bytes cumulative stack size, 17624 bytes smem, 400 bytes cmem[0], 64 bytes cmem[2]
+ptxas info    : Compile time = 656.923 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112styled_paintEPNS0_11DeviceStateEPKhiPKNS0_8LineScanEPKiPKNS0_10StyledMetaE' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112styled_paintEPNS0_11DeviceStateEPKhiPKNS0_8LineScanEPKiPKNS0_10StyledMetaE
+    80 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 31 registers, used 0 barriers, 80 bytes cumulative stack size, 400 bytes cmem[0]
+ptxas info    : Compile time = 21.870 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113styled_commitEPNS0_11DeviceStateEPKhPKNS0_8LineScanEPKiPiPNS0_10StyledMetaESA_' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78113styled_commitEPNS0_11DeviceStateEPKhPKNS0_8LineScanEPKiPiPNS0_10StyledMetaESA_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 15.687 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112styled_linesEPKNS0_11DeviceStateEPKhiPNS0_8LineScanEPi' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78112styled_linesEPKNS0_11DeviceStateEPKhiPNS0_8LineScanEPi
+    80 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 80 bytes cumulative stack size, 392 bytes cmem[0]
+ptxas info    : Compile time = 10.945 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78116graphics_executeEPNS0_11DeviceStateEPhS3_b' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78116graphics_executeEPNS0_11DeviceStateEPhS3_b
+    96 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 96 bytes cumulative stack size, 14560 bytes smem, 377 bytes cmem[0]
+ptxas info    : Compile time = 51.261 ms
+ptxas info    : Compiling entry function '_ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78115graphics_decodeEPNS0_11DeviceStateEPhS3_b' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct41_GLOBAL__N__774a0e00_9_engine_cu_c92df78115graphics_decodeEPNS0_11DeviceStateEPhS3_b
+    64 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, used 0 barriers, 64 bytes cumulative stack size, 5280 bytes smem, 377 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compile time = 667.317 ms
+ptxas info    : Compiling entry function '_ZN2ct12focus_kernelEPNS_41_GLOBAL__N__774a0e00_9_engine_cu_c92df78111DeviceStateEb' for 'sm_89'
+ptxas info    : Function properties for _ZN2ct12focus_kernelEPNS_41_GLOBAL__N__774a0e00_9_engine_cu_c92df78111DeviceStateEb
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 16 registers, used 0 barriers, 361 bytes cmem[0]
+ptxas info    : Compile time = 1.575 ms
+In file included from tmpxft_00000658_00000000-6_engine.cudafe1.stub.c:1:
+/tmp/nix-shell.BYm7Ck/tmpxft_00000658_00000000-6_engine.cudafe1.stub.c:12:299: warning: ‘using cub::CUB_200802_SM_890::Max = struct cuda::__4::maximum<>’ is deprecated: use cuda::maximum instead [-Wdeprecated-declarations]
+   12 | typedef int _ZN4cuda3std3__415__accumulator_tINS_3__47maximumIvEEiiEE;
+      |                                                                                                                                                                                                                                                                                                           ^  
+/nix/store/65p9w50l467h7q77fzf4s6k50cmsldad-cuda12.9-cuda_cccl-12.9.27/include/cub/thread/thread_operators.cuh:98:7: note: declared here
+   98 | using Max CCCL_DEPRECATED_BECAUSE("use cuda::maximum instead")                  = ::cuda::maximum<>;
+      |       ^~~

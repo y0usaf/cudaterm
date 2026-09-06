@@ -1,0 +1,182 @@
+{
+  "benchmark": "pty-write-to-compositor-capture",
+  "terminal": "/nix/store/h8q9vhbxzpsla7m2hqgqygyw6wd0pjny-monstar-1.1.0/bin/monstar",
+  "command": [
+    "/nix/store/h8q9vhbxzpsla7m2hqgqygyw6wd0pjny-monstar-1.1.0/bin/monstar",
+    "--font",
+    "DejaVu Sans Mono",
+    "-o",
+    "font-size=17px",
+    "-o",
+    "adjust-cell-height=-6",
+    "-e"
+  ],
+  "cols": 318,
+  "rows": 89,
+  "capture_dimensions": [
+    64,
+    16
+  ],
+  "capture_region": "40,40 64x16",
+  "sample_pixel": [
+    32,
+    0
+  ],
+  "load_lines": 0,
+  "samples": [
+    {
+      "write_start_ns": 183252645711663,
+      "observed_ns": 183252678727332,
+      "duration_ns": 33015669,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183252678847232,
+      "observed_ns": 183252698549952,
+      "duration_ns": 19702720,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252698659642,
+      "observed_ns": 183252716167465,
+      "duration_ns": 17507823,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252716261485,
+      "observed_ns": 183252735795455,
+      "duration_ns": 19533970,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252735917715,
+      "observed_ns": 183252764538731,
+      "duration_ns": 28621016,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183252764658921,
+      "observed_ns": 183252795684224,
+      "duration_ns": 31025303,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183252795800154,
+      "observed_ns": 183252815689833,
+      "duration_ns": 19889679,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252815779843,
+      "observed_ns": 183252833331996,
+      "duration_ns": 17552153,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252833455166,
+      "observed_ns": 183252853912785,
+      "duration_ns": 20457619,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252854047395,
+      "observed_ns": 183252884539268,
+      "duration_ns": 30491873,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183252884647128,
+      "observed_ns": 183252904541278,
+      "duration_ns": 19894150,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252904651147,
+      "observed_ns": 183252933383424,
+      "duration_ns": 28732277,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183252933506023,
+      "observed_ns": 183252950283168,
+      "duration_ns": 16777145,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252950398228,
+      "observed_ns": 183252970766097,
+      "duration_ns": 20367869,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252970875226,
+      "observed_ns": 183252987898950,
+      "duration_ns": 17023724,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183252987977850,
+      "observed_ns": 183253007774190,
+      "duration_ns": 19796340,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183253007877350,
+      "observed_ns": 183253036843806,
+      "duration_ns": 28966456,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183253036956726,
+      "observed_ns": 183253057059455,
+      "duration_ns": 20102729,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183253057152915,
+      "observed_ns": 183253087214829,
+      "duration_ns": 30061914,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183253087292139,
+      "observed_ns": 183253116827104,
+      "duration_ns": 29534965,
+      "captures": 2
+    }
+  ],
+  "capture_duration_ns": [
+    14539828,
+    17656863,
+    20255989,
+    12326202,
+    20573758,
+    19607480,
+    17395393,
+    19431310,
+    12695100,
+    15824026,
+    12769180,
+    18145473,
+    19777180,
+    17466063,
+    20363379,
+    14184458,
+    16196865,
+    19773560,
+    12464591,
+    16167576,
+    16666905,
+    20275049,
+    16933944,
+    19700070,
+    12406201,
+    16473005,
+    20006720,
+    12337301,
+    17641313,
+    12296231,
+    17159354
+  ],
+  "limitations": "Includes capture overhead; not physical scanout or input latency."
+}

@@ -1,0 +1,11 @@
+{
+  "retained": false,
+  "experiment_derivation": "/nix/store/zdyd9iq9wl309bsfq4w94x5fv2i5pw3h-cudaterm-0.1.0.drv",
+  "reason": "Fewer query-triggered swaps and small query median improvement, but both paired rounds substantially worsened text/ANSI PTY barriers. Headless 4KiB feeds did not reproduce the large slowdown. Trace read sizes changed; host/PTY scheduling interaction remains unresolved.",
+  "artifacts": [
+    "query-dirty-traced.json",
+    "query-dirty-pty-paired.json",
+    "query-dirty-headless.json",
+    "text-dirty-traced.json"
+  ]
+}

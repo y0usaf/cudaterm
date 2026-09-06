@@ -1,0 +1,226 @@
+{
+  "benchmark": "pty-throughput-csi6n",
+  "terminal": [
+    "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+    "-o",
+    "font=DejaVu Sans Mono:size=11",
+    "-o",
+    "line-height=16px",
+    "-e"
+  ],
+  "terminal_resolved": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+  "label": null,
+  "workload": "text",
+  "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+  "geometry": [
+    {
+      "cols": 318,
+      "rows": 89
+    },
+    {
+      "cols": 318,
+      "rows": 89
+    },
+    {
+      "cols": 318,
+      "rows": 89
+    }
+  ],
+  "sample_geometry": [
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ]
+  ],
+  "repeat": 3,
+  "warmup": 1,
+  "iterations": 5,
+  "payload_bytes": 65512,
+  "sample_barrier_ns": [
+    1638358,
+    623509,
+    261739,
+    252200,
+    281410,
+    1770027,
+    666999,
+    300240,
+    274230,
+    276049,
+    1710267,
+    564349,
+    275530,
+    277330,
+    279249
+  ],
+  "sample_launch_ns": [
+    254193422,
+    254686301,
+    254399872
+  ],
+  "barrier_throughput_bytes_per_second": [
+    39986376.60389243,
+    105069854.6452417,
+    250295141.3430937,
+    259762093.57652655,
+    232799118.7235706,
+    37011864.79076308,
+    98219037.80965188,
+    218198774.31388223,
+    238894358.74995443,
+    237320185.9090234,
+    38305130.13465149,
+    116084196.12686476,
+    237767212.2817842,
+    236223993.07683986,
+    234600661.05876833
+  ],
+  "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+  "settle_seconds": 0.2
+}

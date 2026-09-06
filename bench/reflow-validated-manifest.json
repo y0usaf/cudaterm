@@ -1,0 +1,156 @@
+{
+  "commands": [
+    {
+      "command": "nix build .",
+      "exit": 0,
+      "log": "bench/reflow-validated-build.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-reflow-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-reflow.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-appearance-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-appearance.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-charset-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-charset.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-csi-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-csi.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-engine-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-engine.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-mouse-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-mouse.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-plain-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-plain.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-reference-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-reference.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-scrollback-test",
+      "exit": 1,
+      "log": "bench/reflow-validated-scrollback.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-selection-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-selection.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-styled-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-styled.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-unicode-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-unicode.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-vt-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-vt.log"
+    },
+    {
+      "command": "nix develop . --command /nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-workspace-test",
+      "exit": 0,
+      "log": "bench/reflow-validated-workspace.log"
+    }
+  ],
+  "derivation_source": "/nix/store/5kws2yn5y5790wzdnv94c3x8q1z8pyij-source",
+  "source_hashes": {
+    "engine.cu": {
+      "derivation": "a1850fb7d6e488daac584925de9007172bd7e6df13545b0a292d1db531e72118",
+      "matches": true,
+      "working": "a1850fb7d6e488daac584925de9007172bd7e6df13545b0a292d1db531e72118"
+    },
+    "reflow.cuh": {
+      "derivation": "20a201abd12bbec16735962c949a04b1a372f9079e0ba55b541528a939209018",
+      "matches": true,
+      "working": "20a201abd12bbec16735962c949a04b1a372f9079e0ba55b541528a939209018"
+    },
+    "styled.cuh": {
+      "derivation": "e191d400faf6e53c90777627f2a4dd3ff9208ca8d1cfaebf98f4fbe57f9791dc",
+      "matches": true,
+      "working": "e191d400faf6e53c90777627f2a4dd3ff9208ca8d1cfaebf98f4fbe57f9791dc"
+    }
+  },
+  "store_path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0",
+  "test_executable_hashes": {
+    "appearance": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-appearance-test",
+      "sha256": "f0eac4e0ce7fb7f43a9def7dc13f584019fca636413b82abff59916b25938e17"
+    },
+    "charset": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-charset-test",
+      "sha256": "c31999014e829eaa118b79ad84fe491711a79965815b0df03b449b2ee1428408"
+    },
+    "csi": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-csi-test",
+      "sha256": "44d9761478cab3a42219944719d74880d626c0cb80d74fb7e59046fba1c70531"
+    },
+    "engine": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-engine-test",
+      "sha256": "2e7b9ad9a3789221fce94e9ec2783afd7fd1240692143e5b9d21142c7770a9a7"
+    },
+    "mouse": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-mouse-test",
+      "sha256": "eb09f43dac283c0031e243b6ceacbe1641dce2fa4694ad12af574757a1a6e636"
+    },
+    "plain": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-plain-test",
+      "sha256": "dba0f491f61ab63c925245ebe27b38136baefd49ebb77bfa8a96943a010acbf6"
+    },
+    "reference": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-reference-test",
+      "sha256": "626799af6c6a01d247053185a3f49bc4ce9eee04592564c5a2c81fdda858bb15"
+    },
+    "reflow": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-reflow-test",
+      "sha256": "427349bf363ce49992797cbf25f6bb630e0ae858907f3c0a8c7b81e3c6c5c4d9"
+    },
+    "scrollback": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-scrollback-test",
+      "sha256": "bd17bcecfc3f2c62839ad931733bb95e965d7061c1dfe59751eccb37f907cc12"
+    },
+    "selection": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-selection-test",
+      "sha256": "a04fe14e6d47a1b83fe583575627d29d5f6050ce593e2a84d6ed1ffac7c3caca"
+    },
+    "styled": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-styled-test",
+      "sha256": "8e57dd196c0129ef69f7ace807bbe97a8c1e16382c62919346eb181051e63cb8"
+    },
+    "unicode": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-unicode-test",
+      "sha256": "8640dc39d001ac044afec0b7edc8c54bac1aeece801882cb1278e4bd56927194"
+    },
+    "vt": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-vt-test",
+      "sha256": "5c2c4f5bd9d6ddbe2d600952aad11253bfa04520e4c75964980e2d1502e470bd"
+    },
+    "workspace": {
+      "path": "/nix/store/ydd3hapn2v3apnjpfq76lyc0kwglsix3-cudaterm-0.1.0/bin/cudaterm-workspace-test",
+      "sha256": "8e022440915d485b37507134b5393395df02fe6b2a5b073759957684075810e8"
+    }
+  }
+}

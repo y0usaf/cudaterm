@@ -1,0 +1,23 @@
+{
+  "status": "diagnostic_complete",
+  "terminal": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm",
+  "terminal_sha256": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00",
+  "weston": "/nix/store/bym3mrisbsrph2654wj5bhc1x5ijhv0q-weston-16.0.0/bin/weston",
+  "weston_sha256": "a0c3a6bc4ed40f3b3ea0d14fea0016b297315165a7538e831b89b8f2e3762477",
+  "seat": "/nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so",
+  "seat_sha256": "8c64db4d3b2eacc15acfae6fb58d63adf85f0728de0c7a9ef72579a20eb18818",
+  "command": "nix develop . --command python3 bench/idle_profile.py TERMINAL WESTON SEAT",
+  "legacy_invalid_runs": ["bench/idle-profile-0.json.legacy-invalid-python-repr", "bench/idle-profile-1.json.legacy-invalid-python-repr", "bench/idle-profile-2.json.legacy-invalid-python-repr"],
+  "corrected_command": "IDLE_STRACE=bench/idle-profile-corrected.strace nix develop . --command python3 bench/idle_profile.py TERMINAL WESTON SEAT",
+  "corrected_json": "bench/idle-profile-corrected.json",
+  "corrected_json_sha256": "75f86ea292d39d41606a6bbc08b954e6141930c36d9d6249673e79f62db061c8",
+  "strace_command": "IDLE_STRACE=bench/idle-profile-corrected.strace nix develop . --command python3 bench/idle_profile.py TERMINAL WESTON SEAT",
+  "strace_exit": 0,
+  "strace_raw": "bench/idle-profile-corrected.strace",
+  "observations": {
+    "terminal_pid": 2530,
+    "terminal_threads_wchan": {"poll_schedule_timeout.constprop.0": 44, "ptrace_stop": 11},
+    "terminal_strace_poll": {"pty_fd3_dev_ptmx": 12, "wayland_fd37": 14, "wayland_fd56": 5, "other": 4},
+    "interpretation": "The corrected trace targets the actual terminal PID. PTY fd 3 shows 12 poll calls with a 100 ms timeout, consistent with the PtyWaiter loop. Wayland socket polls account for the remaining terminal-thread waits. ptrace_stop samples are tracing artifacts, not application waits. This measures syscall timeout calls, not scheduler wakeups."
+  }
+}

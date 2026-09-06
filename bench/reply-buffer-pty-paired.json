@@ -1,0 +1,5128 @@
+{
+  "runs": [
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 20,
+      "payload_bytes": 0,
+      "requested_payload_bytes": 0,
+      "sample_barrier_ns": [
+        115619,
+        53480,
+        48920,
+        55790,
+        57700,
+        54590,
+        57910,
+        55600,
+        52310,
+        180859,
+        48320,
+        42320,
+        43200,
+        163810,
+        48190,
+        45470,
+        42400,
+        42000,
+        43590,
+        42960,
+        930648,
+        58310,
+        50540,
+        49750,
+        47850,
+        48660,
+        48000,
+        46910,
+        45090,
+        44390,
+        45810,
+        44030,
+        44409,
+        188030,
+        52180,
+        46590,
+        45740,
+        47150,
+        44310,
+        44340,
+        974249,
+        1560748,
+        69679,
+        49310,
+        47020,
+        45620,
+        43880,
+        47260,
+        43030,
+        42340,
+        41490,
+        41650,
+        41760,
+        241489,
+        50700,
+        43240,
+        43850,
+        42940,
+        41450,
+        42250
+      ],
+      "sample_launch_ns": [
+        257011637,
+        266678293,
+        278516575
+      ],
+      "barrier_throughput_bytes_per_second": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "0",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "20",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 20,
+      "payload_bytes": 0,
+      "requested_payload_bytes": 0,
+      "sample_barrier_ns": [
+        906989,
+        57280,
+        84759,
+        45400,
+        42070,
+        41630,
+        40900,
+        40880,
+        37910,
+        38830,
+        38150,
+        38800,
+        40550,
+        186009,
+        47060,
+        41180,
+        38670,
+        39160,
+        39330,
+        38600,
+        1060109,
+        58290,
+        47090,
+        42800,
+        42079,
+        40220,
+        40950,
+        42470,
+        39870,
+        40280,
+        39120,
+        41960,
+        40560,
+        218350,
+        49180,
+        42250,
+        41299,
+        39620,
+        46210,
+        40010,
+        966448,
+        55710,
+        52330,
+        43160,
+        42020,
+        40580,
+        39820,
+        42100,
+        40130,
+        39190,
+        40610,
+        38889,
+        39610,
+        209330,
+        51600,
+        40890,
+        39060,
+        40310,
+        39180,
+        39280
+      ],
+      "sample_launch_ns": [
+        275180300,
+        274390401,
+        274836410
+      ],
+      "barrier_throughput_bytes_per_second": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "0",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "20",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        2946396,
+        343709,
+        307210,
+        534939,
+        304390,
+        1612387,
+        437540,
+        385159,
+        2161247,
+        471719,
+        1563817,
+        334840,
+        1866417,
+        321790,
+        301609
+      ],
+      "sample_launch_ns": [
+        271399376,
+        278594405,
+        270809877
+      ],
+      "barrier_throughput_bytes_per_second": [
+        22234621.55121036,
+        190603097.38761568,
+        213248266.6579864,
+        122466299.89587598,
+        215223890.40375835,
+        40630444.17996424,
+        149728024.86629793,
+        170090793.6722237,
+        30312129.98791901,
+        138879290.42501998,
+        41892369.75937722,
+        195651654.52156255,
+        35100408.96541341,
+        203586189.7510799,
+        217208372.4292047
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        2811436,
+        322829,
+        310590,
+        309649,
+        315070,
+        1583298,
+        334439,
+        1886987,
+        327780,
+        296530,
+        1569907,
+        426310,
+        342289,
+        455549,
+        1482218
+      ],
+      "sample_launch_ns": [
+        275950519,
+        279172674,
+        277965616
+      ],
+      "barrier_throughput_bytes_per_second": [
+        23301970.95007676,
+        202930963.4512389,
+        210927589.4265752,
+        211568582.4917891,
+        207928396.8641889,
+        41376923.35871074,
+        195886245.32425943,
+        34717780.249678455,
+        199865763.62194154,
+        220928742.4543891,
+        41729860.431223,
+        153672210.3633506,
+        191393822.1795033,
+        143808898.7134205,
+        44198626.65275958
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1606508,
+        319329,
+        311580,
+        308769,
+        2133257,
+        1679848,
+        1979937,
+        500679,
+        464619,
+        451700,
+        1546567,
+        312780,
+        313169,
+        1900127,
+        303470
+      ],
+      "sample_launch_ns": [
+        279340644,
+        279190254,
+        271264776
+      ],
+      "barrier_throughput_bytes_per_second": [
+        40782865.69379051,
+        205173974.17710263,
+        210276654.47076192,
+        212190990.67587742,
+        30712661.437417056,
+        39002338.30679919,
+        33090951.883822568,
+        130858294.4361557,
+        141014465.61591324,
+        145047597.96324995,
+        42363505.7517715,
+        209469914.95619926,
+        209209723.8232392,
+        34480853.1219229,
+        215896134.7085379
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1497538,
+        489719,
+        2006427,
+        339330,
+        424429,
+        1693757,
+        1584348,
+        449619,
+        430799,
+        475940,
+        1512658,
+        2129447,
+        473729,
+        477879,
+        495499
+      ],
+      "sample_launch_ns": [
+        279907443,
+        278969614,
+        270420127
+      ],
+      "barrier_throughput_bytes_per_second": [
+        43750475.780915074,
+        133786926.78862776,
+        32654066.15839998,
+        193080482.1265435,
+        154367397.13827282,
+        38682054.15534814,
+        41353288.54519335,
+        145718930.91706535,
+        152084846.99360955,
+        137660209.27007607,
+        43313161.33587367,
+        30767612.436468247,
+        138302700.4890982,
+        137101651.25481555,
+        132226301.16306995
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 20,
+      "payload_bytes": 0,
+      "requested_payload_bytes": 0,
+      "sample_barrier_ns": [
+        910498,
+        54710,
+        45070,
+        43080,
+        42510,
+        41850,
+        39980,
+        40260,
+        39250,
+        38940,
+        40390,
+        39720,
+        38420,
+        162639,
+        48480,
+        42960,
+        41260,
+        43130,
+        40230,
+        40660,
+        947558,
+        85600,
+        107890,
+        56610,
+        48490,
+        46100,
+        43580,
+        43050,
+        40150,
+        44100,
+        42450,
+        41149,
+        40030,
+        183160,
+        48830,
+        43330,
+        41310,
+        41770,
+        43140,
+        41660,
+        924889,
+        57039,
+        45110,
+        42930,
+        42130,
+        47660,
+        43990,
+        43140,
+        39380,
+        39080,
+        38410,
+        39010,
+        38890,
+        159469,
+        45250,
+        41070,
+        38390,
+        40170,
+        40270,
+        39550
+      ],
+      "sample_launch_ns": [
+        266064884,
+        275055971,
+        266969013
+      ],
+      "barrier_throughput_bytes_per_second": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "0",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "20",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 20,
+      "payload_bytes": 0,
+      "requested_payload_bytes": 0,
+      "sample_barrier_ns": [
+        914009,
+        61140,
+        51360,
+        48010,
+        47839,
+        47350,
+        47510,
+        47210,
+        45260,
+        44440,
+        45420,
+        43910,
+        46150,
+        168000,
+        52480,
+        47949,
+        45910,
+        45710,
+        44660,
+        51070,
+        2354507,
+        63310,
+        48230,
+        47660,
+        46540,
+        45229,
+        45370,
+        46600,
+        42250,
+        42010,
+        41990,
+        42950,
+        42270,
+        187700,
+        52500,
+        43960,
+        41709,
+        42300,
+        42480,
+        42020,
+        955139,
+        78270,
+        54759,
+        50460,
+        53770,
+        50940,
+        47130,
+        51620,
+        147340,
+        84300,
+        52980,
+        48810,
+        48679,
+        186780,
+        53970,
+        46890,
+        46590,
+        46000,
+        44690,
+        44160
+      ],
+      "sample_launch_ns": [
+        275368880,
+        276502228,
+        274550581
+      ],
+      "barrier_throughput_bytes_per_second": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "0",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "20",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1518788,
+        401649,
+        387710,
+        2036466,
+        347260,
+        1464018,
+        411899,
+        443570,
+        389649,
+        1917657,
+        1494968,
+        2318506,
+        710839,
+        466929,
+        405190
+      ],
+      "sample_launch_ns": [
+        278675885,
+        280021092,
+        279413174
+      ],
+      "barrier_throughput_bytes_per_second": [
+        43134394.00363974,
+        163107588.96449387,
+        168971654.071342,
+        32169454.33903635,
+        188654034.44105282,
+        44748083.69842447,
+        159048698.83150968,
+        147692585.16130486,
+        168130804.90390068,
+        34162522.286310844,
+        43821673.77495705,
+        28256127.00592537,
+        92161516.18017583,
+        140303986.2591529,
+        161682173.79500976
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1523467,
+        418010,
+        411319,
+        440159,
+        1967027,
+        1476897,
+        419990,
+        440429,
+        383529,
+        2042727,
+        1506588,
+        439119,
+        346960,
+        2051706,
+        385710
+      ],
+      "sample_launch_ns": [
+        269734309,
+        279903922,
+        278826975
+      ],
+      "barrier_throughput_bytes_per_second": [
+        43001916.02443637,
+        156723523.36068514,
+        159272973.045252,
+        148837124.76627764,
+        33305084.271847818,
+        44357866.5269142,
+        155984666.3015786,
+        148745881.8560994,
+        170813680.32143593,
+        32070854.304074895,
+        43483686.31636519,
+        149189627.41307026,
+        188817154.71524096,
+        31930500.76375465,
+        169847813.1238495
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1445267,
+        1714558,
+        705489,
+        326739,
+        462550,
+        1557288,
+        481499,
+        2129357,
+        327510,
+        461439,
+        1566088,
+        338360,
+        1988006,
+        306650,
+        300500
+      ],
+      "sample_launch_ns": [
+        279575843,
+        271068336,
+        270550207
+      ],
+      "barrier_throughput_bytes_per_second": [
+        45332800.098528504,
+        38212763.87267156,
+        92868917.87115036,
+        200520905.0648989,
+        141645227.54296833,
+        42071858.25614787,
+        136070895.26665685,
+        30768912.869002238,
+        200048853.47012305,
+        141986264.70671096,
+        41835452.413912885,
+        193633999.2906963,
+        32956640.97593267,
+        213657263.98173815,
+        218029950.08319467
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/z96l8a0ghpg6rnbdm16cjc59n23l97hq-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "requested_payload_bytes": 65536,
+      "sample_barrier_ns": [
+        1436538,
+        461859,
+        482249,
+        2053137,
+        349249,
+        1771757,
+        525180,
+        392799,
+        1981647,
+        505819,
+        2743126,
+        524479,
+        635449,
+        493419,
+        1837258
+      ],
+      "sample_launch_ns": [
+        271611546,
+        281989940,
+        270863787
+      ],
+      "barrier_throughput_bytes_per_second": [
+        45608260.9718643,
+        141857146.8781598,
+        135859276.01716125,
+        31911168.12955005,
+        187596814.87992808,
+        36979111.69533971,
+        124753417.87577592,
+        166797776.98008397,
+        33062397.08686764,
+        129528546.77265978,
+        23884429.661634207,
+        124920158.86241394,
+        103105048.55621773,
+        132783699.0468547,
+        35660750.96693007
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/a48z1dlnfp5nbjd11gkz8xa80nw95fhb-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--payload-bytes",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    }
+  ]
+}

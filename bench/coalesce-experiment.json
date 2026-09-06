@@ -1,0 +1,22 @@
+{
+  "retained": false,
+  "derivation": "/nix/store/3358c1q7d4wl81lfppvsjad15a5nfjww-cudaterm-0.1.0.drv",
+  "executable": "/nix/store/2fcjw8yhj1gym8igjanf4s103z35bgc7-cudaterm-0.1.0/bin/cudaterm",
+  "reason": "Performance validation incomplete under concurrent desktop load; no clean capture or small-query comparison completed.",
+  "parameters": {
+    "minimum_bytes": 4096,
+    "wait_budget_us": 50,
+    "max_bytes": 65536
+  },
+  "correctness": "Nix build/flake check and 8192-byte immediate-EOF output dump passed",
+  "observed_load": {
+    "gpu_utilization_percent": 31,
+    "gpu_sm_mhz": 705,
+    "cpu_process_percent": [
+      620,
+      296,
+      111
+    ]
+  },
+  "latency_attempt": "baseline terminal exited 1; only accessibility bus warning on stderr; child error unavailable"
+}

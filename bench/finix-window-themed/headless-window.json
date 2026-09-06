@@ -1,0 +1,62 @@
+{
+  "terminal": "/nix/store/m4bvxi47rkw7hcs7j18mjw901li6iymr-cudaterm-finix/bin/cudaterm-finix",
+  "scope": "private headless Weston, no user desktop",
+  "samples": {
+    "current": {
+      "benchmark": "terminal-idle-parent-resources",
+      "command": [
+        "/home/y0usaf/finix/result-cudaterm-preview/bin/cudaterm-finix",
+        "--cols",
+        "318",
+        "--rows",
+        "58",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/m4bvxi47rkw7hcs7j18mjw901li6iymr-cudaterm-finix/bin/cudaterm-finix",
+      "samples": [
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 58
+          },
+          "elapsed_seconds": 1.0014126820024103,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 123392000,
+          "pss_bytes": 84727808,
+          "private_bytes": 77586432,
+          "nvidia_compute_memory_bytes": 325058560
+        },
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 58
+          },
+          "elapsed_seconds": 1.0013389920059126,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 123375616,
+          "pss_bytes": 84768768,
+          "private_bytes": 77656064,
+          "nvidia_compute_memory_bytes": 325058560
+        },
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 58
+          },
+          "elapsed_seconds": 1.0018794010102283,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 123465728,
+          "pss_bytes": 84804608,
+          "private_bytes": 77660160,
+          "nvidia_compute_memory_bytes": 325058560
+        }
+      ],
+      "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+    }
+  },
+  "presentation": "passed",
+  "ekko": "/home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko"
+}

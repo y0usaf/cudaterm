@@ -1,0 +1,70 @@
+{
+  "build": {
+    "command": "nix build .",
+    "status": 0,
+    "store_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0",
+    "nix_hash": "sha256-mQvLqJsn+CKlkGYHjaoC3T2F+nj5W35OEbUHSXsLLpM="
+  },
+  "flake_check": {
+    "command": "nix flake check",
+    "status": 0
+  },
+  "gpu_tests": {
+    "command": "nix develop . --command bash -c 'set -e; for name in selection scrollback plain styled reference vt unicode workspace engine mouse charset appearance; do /nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm-${name}-test; done'",
+    "status": 0,
+    "tests": [
+      "selection-test",
+      "scrollback-test",
+      "plain-test",
+      "styled-test",
+      "reference-test",
+      "vt-test",
+      "unicode-test",
+      "workspace-test",
+      "engine-test",
+      "mouse-test",
+      "charset-test",
+      "appearance-test"
+    ]
+  },
+  "source_sha256": {
+    "src/engine.cu": "e6202ef11835b21509bcf0dac6c946ab1c698d1155cbc844699729b6b92f857e",
+    "src/engine.cuh": "83ffb9289708795b178f60bfcdd2472507866be57da9ea63e2954fb57e1a14bd",
+    "src/styled.cuh": "d30f3dab38a9cc7d167c20026f8d8ba3da711cb91392d31ea1f7424d9562d23e",
+    "tests/selection_test.cu": "e5bb8a339ccc3fb9407fc39a528f6e6b2595c0aa466a3968a8b3e865f88acdb5"
+  },
+  "logs": [
+    "bench/wrap-copy-final-build.log",
+    "bench/wrap-copy-final-flake.log",
+    "bench/wrap-copy-final-gpu.log"
+  ],
+  "nix_source": "/nix/store/72qcvhafj9z5a1rlvby7slkr2rzv9rrr-source",
+  "source_matches_nix_input": {
+    "src/engine.cu": true,
+    "src/engine.cuh": true,
+    "src/styled.cuh": true,
+    "tests/selection_test.cu": true
+  },
+  "additional_checks": {
+    "private_weston_sync_clipboard": {
+      "status": 0,
+      "log": "bench/wrap-copy-final-window.log"
+    },
+    "selection_memcheck": {
+      "status": 0,
+      "errors": 0,
+      "log": "bench/wrap-copy-final-memcheck.log"
+    },
+    "selection_racecheck": {
+      "status": 0,
+      "hazards": 0,
+      "log": "bench/wrap-copy-final-racecheck.log"
+    },
+    "graphics_36_cases": {
+      "status": 0,
+      "log": "bench/wrap-copy-final-graphics.log"
+    }
+  },
+  "performance_evidence": "bench/wrap-copy-headless-paired.json",
+  "memory_evidence": "bench/wrap-copy-final-memory.json"
+}

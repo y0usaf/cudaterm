@@ -1,0 +1,111 @@
+{
+  "bench/finix-nvim-final.json": {
+    "status": "passed",
+    "host": "/nix/store/fv9gqwbv3sj4jb8kqphbxnjf0rz2c3px-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "nvim": "/nix/store/3ms6b255arirq234hn3abwxfnj21lg2d-neovim-0.12.4/bin/nvim",
+    "reply_bytes": 69,
+    "checks": [
+      "installed Neovim TUI startup",
+      "three PTY resizes",
+      "UTF-8 editing and save",
+      "clean quit"
+    ],
+    "scope": "real editor PTY and CUDA parser; no desktop clipboard"
+  },
+  "bench/finix-interactive-final.json": {
+    "calls": 104,
+    "ended": 1,
+    "maximum_ms": 1.742537,
+    "mouse_bytes": 936,
+    "binary": "/nix/store/fv9gqwbv3sj4jb8kqphbxnjf0rz2c3px-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "upload_ms": 218.4018970001489,
+    "scope": "GPU snapshot and mouse reports during CUDA decode; no desktop input injection"
+  },
+  "bench/finix-module-final.json": {
+    "amdGuard": true,
+    "desktop": {
+      "environment": "cudaterm-finix",
+      "failedAssertions": [],
+      "launcher": "cudaterm-finix --app-id=launcher -e ~/.config/scripts/tui-launcher.sh",
+      "systemDerivation": "/nix/store/3gkz91hwgzql0dwz6n3az4brqlcq8lgw-finix-system.drv",
+      "terminal": "cudaterm-finix"
+    },
+    "explicitOverride": "foot",
+    "framework": {
+      "cudaterm": false,
+      "terminal": "monstar"
+    }
+  },
+  "bench/finix-window-configured/headless-window.json": {
+    "terminal": "/nix/store/c38fmnv5lm00h09bknxxkbzbqldjx39w-cudaterm-finix/bin/cudaterm-finix",
+    "scope": "private headless Weston, no user desktop",
+    "samples": {
+      "current": {
+        "benchmark": "terminal-idle-parent-resources",
+        "command": [
+          "./result-finix/bin/cudaterm-finix",
+          "--cols",
+          "254",
+          "--rows",
+          "58",
+          "-e"
+        ],
+        "terminal_resolved": "/nix/store/c38fmnv5lm00h09bknxxkbzbqldjx39w-cudaterm-finix/bin/cudaterm-finix",
+        "samples": [
+          {
+            "geometry": {
+              "cols": 254,
+              "rows": 58
+            },
+            "elapsed_seconds": 1.0014762920036446,
+            "cpu_seconds": 0.0,
+            "cpu_percent_one_core": 0.0,
+            "rss_bytes": 121192448,
+            "pss_bytes": 82382848,
+            "private_bytes": 75350016,
+            "nvidia_compute_memory_bytes": 327155712
+          },
+          {
+            "geometry": {
+              "cols": 254,
+              "rows": 58
+            },
+            "elapsed_seconds": 1.0018892410153057,
+            "cpu_seconds": 0.0,
+            "cpu_percent_one_core": 0.0,
+            "rss_bytes": 121139200,
+            "pss_bytes": 82333696,
+            "private_bytes": 75317248,
+            "nvidia_compute_memory_bytes": 327155712
+          },
+          {
+            "geometry": {
+              "cols": 254,
+              "rows": 58
+            },
+            "elapsed_seconds": 1.0014783520018682,
+            "cpu_seconds": 0.0,
+            "cpu_percent_one_core": 0.0,
+            "rss_bytes": 121040896,
+            "pss_bytes": 82232320,
+            "private_bytes": 75214848,
+            "nvidia_compute_memory_bytes": 327155712
+          }
+        ],
+        "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+      }
+    },
+    "presentation": "passed",
+    "ekko": "/home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko"
+  },
+  "terminal": "/nix/store/fv9gqwbv3sj4jb8kqphbxnjf0rz2c3px-cudaterm-0.1.0",
+  "configured_package": "/nix/store/hxq2lahxjkfc36qc4f1fkf0zbif612mp-cudaterm-finix",
+  "validation_log": "bench/finix-validation-final.log",
+  "sync_log": "bench/finix-sync-clipboard.log",
+  "graphics_log": "bench/finix-graphics-final.log",
+  "sanitizer_logs": [
+    "bench/finix-concurrent-memcheck.log",
+    "bench/finix-concurrent-racecheck.log",
+    "bench/finix-appearance-memcheck.log"
+  ]
+}

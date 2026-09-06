@@ -1,0 +1,1 @@
+{"test": "window-selection-clipboard", "status": "passed", "terminal": "/nix/store/6xyjdmb62x2lnbfi697v6yyxhg9wjhzx-cudaterm-0.1.0/bin/cudaterm", "backend": "X11/Xwayland", "rapid": true, "text": "COPY é中 é"}

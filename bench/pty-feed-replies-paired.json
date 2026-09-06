@@ -1,0 +1,2932 @@
+{
+  "runs": [
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "sample_barrier_ns": [
+        1567808,
+        420049,
+        353389,
+        1986407,
+        403400,
+        1579998,
+        494149,
+        417149,
+        2085217,
+        338560,
+        2745325,
+        416750,
+        383239,
+        449830,
+        462889
+      ],
+      "sample_launch_ns": [
+        279409184,
+        282254810,
+        278025926
+      ],
+      "barrier_throughput_bytes_per_second": [
+        41785728.86475895,
+        155962756.72600102,
+        185382114.32727107,
+        32980149.586665776,
+        162399603.37134358,
+        41463343.6244856,
+        132575397.29919519,
+        157047002.3900333,
+        31417353.685491726,
+        193501890.35916823,
+        23863112.746214017,
+        157197360.5278944,
+        170942936.39217302,
+        145637240.73538893,
+        141528530.59804833
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "sample_barrier_ns": [
+        1607528,
+        328409,
+        307780,
+        1958437,
+        311249,
+        1570158,
+        416179,
+        1796188,
+        421089,
+        385309,
+        1497038,
+        1889847,
+        362339,
+        380310,
+        407079
+      ],
+      "sample_launch_ns": [
+        270128987,
+        271091306,
+        280806162
+      ],
+      "barrier_throughput_bytes_per_second": [
+        40753255.93084537,
+        199482961.7945915,
+        212853336.79901227,
+        33451165.393627673,
+        210480997.52930933,
+        41723189.64078774,
+        157413036.21758908,
+        36472796.83418439,
+        155577561.98808327,
+        170024577.67661798,
+        43761080.21306072,
+        34665240.096155934,
+        180803060.11773506,
+        172259472.53556308,
+        160931907.5658533
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "sample_barrier_ns": [
+        1462557,
+        346360,
+        1971457,
+        575509,
+        576389,
+        1447178,
+        468379,
+        492829,
+        2008567,
+        416999,
+        3114885,
+        346590,
+        305729,
+        293860,
+        1750707
+      ],
+      "sample_launch_ns": [
+        270831567,
+        270843727,
+        277955906
+      ],
+      "barrier_throughput_bytes_per_second": [
+        44796886.5486952,
+        189161566.00069293,
+        33233288.88228351,
+        113843571.51669218,
+        113669761.220287,
+        45272938.09054588,
+        139882445.62629837,
+        132942663.68253492,
+        32619275.334106356,
+        157117882.7766973,
+        21033842.34088899,
+        189036036.81583428,
+        214300900.47067827,
+        222956509.90267473,
+        37423737.95272424
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "sample_barrier_ns": [
+        1467868,
+        492019,
+        595640,
+        2045816,
+        485840,
+        1467098,
+        323699,
+        513779,
+        1971937,
+        462790,
+        1589958,
+        434959,
+        597419,
+        2103607,
+        480899
+      ],
+      "sample_launch_ns": [
+        278734075,
+        281122651,
+        269558668
+      ],
+      "barrier_throughput_bytes_per_second": [
+        44634803.67444484,
+        133161524.25007977,
+        109995970.72056948,
+        32025362.98474545,
+        134855096.32800922,
+        44658230.05688781,
+        202404085.27675402,
+        127521755.46295197,
+        33225199.385173056,
+        141571771.21372545,
+        41207377.80494831,
+        150630289.29163438,
+        109668423.66915013,
+        31145551.426668573,
+        136240665.91945502
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "unicode",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65520,
+      "sample_barrier_ns": [
+        1605908,
+        506460,
+        339719,
+        2195217,
+        589389,
+        1565728,
+        491849,
+        335850,
+        2066217,
+        461389,
+        1597688,
+        522209,
+        324959,
+        2002067,
+        346520
+      ],
+      "sample_launch_ns": [
+        279554694,
+        279296134,
+        279510633
+      ],
+      "barrier_throughput_bytes_per_second": [
+        40799348.40601081,
+        129368558.22769815,
+        192865279.83421594,
+        29846707.637559295,
+        111165970.18268071,
+        41846348.79110548,
+        133211615.7601215,
+        195087092.4519875,
+        31710125.31597601,
+        142005986.27188772,
+        41009258.378356725,
+        125467006.50505832,
+        201625435.82421166,
+        32726177.49555834,
+        189079995.3826619
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "unicode",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "unicode",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65520,
+      "sample_barrier_ns": [
+        3018215,
+        637459,
+        427299,
+        437300,
+        488159,
+        1448188,
+        2082577,
+        474169,
+        669599,
+        358369,
+        1678107,
+        2108407,
+        448169,
+        347650,
+        324399
+      ],
+      "sample_launch_ns": [
+        279151114,
+        279126144,
+        270896756
+      ],
+      "barrier_throughput_bytes_per_second": [
+        21708195.075566188,
+        102783080.95108862,
+        153335252.36426952,
+        149828493.02538303,
+        134218564.03343993,
+        45242744.72651341,
+        31461021.609285034,
+        138178581.89801526,
+        97849608.49702583,
+        182828313.8329487,
+        39043994.214910015,
+        31075594.03853241,
+        146194850.60323226,
+        188465410.6141234,
+        201973495.6026375
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 0,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "unicode",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "sample_barrier_ns": [
+        1487537,
+        432980,
+        413409,
+        428269,
+        2075107,
+        1515167,
+        433420,
+        394599,
+        429079,
+        2018957,
+        1576027,
+        349780,
+        332159,
+        1865227,
+        291810
+      ],
+      "sample_launch_ns": [
+        271585376,
+        279808874,
+        279119504
+      ],
+      "barrier_throughput_bytes_per_second": [
+        44040585.20897295,
+        151304910.15751305,
+        158467764.36894214,
+        152969278.65430373,
+        31570420.224113744,
+        43237478.11297368,
+        151151308.19989848,
+        166021708.11380666,
+        152680508.71750888,
+        32448437.485295627,
+        41567815.7798058,
+        187294871.06181028,
+        197230844.2643433,
+        35122802.74733317,
+        224502244.6112196
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "text",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65512,
+      "sample_barrier_ns": [
+        1890517,
+        406949,
+        383100,
+        2097007,
+        388099,
+        1474627,
+        476280,
+        1864007,
+        410509,
+        407610,
+        1537338,
+        414779,
+        408460,
+        469259,
+        1885367
+      ],
+      "sample_launch_ns": [
+        279245944,
+        270475417,
+        278783754
+      ],
+      "barrier_throughput_bytes_per_second": [
+        34652954.72085149,
+        160983317.31986073,
+        171004959.54058993,
+        31240715.93466307,
+        168802290.13731033,
+        44426149.79923736,
+        137549340.7239439,
+        35145790.76151538,
+        159587244.12863055,
+        160722259.02210447,
+        42613920.946467206,
+        157944351.08816984,
+        160387798.07080254,
+        139607338.37816644,
+        34747611.47299173
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "text",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "sample_barrier_ns": [
+        2562726,
+        313410,
+        300029,
+        297170,
+        293879,
+        1572657,
+        372230,
+        461479,
+        2120687,
+        449139,
+        2708436,
+        573309,
+        430440,
+        307459,
+        302760
+      ],
+      "sample_launch_ns": [
+        276386908,
+        278081985,
+        280364242
+      ],
+      "barrier_throughput_bytes_per_second": [
+        25565745.22598202,
+        209048849.74952936,
+        218372224.01834488,
+        220473129.85833025,
+        222942095.2160583,
+        41660705.4176467,
+        176014829.54087526,
+        141973957.64487657,
+        30894705.34784247,
+        145874662.40963265,
+        24190344.53832396,
+        114280431.66948365,
+        152211690.36334914,
+        213095079.3439125,
+        216402430.96842384
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "ansi",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65518,
+      "sample_barrier_ns": [
+        1583627,
+        325930,
+        309929,
+        323900,
+        2016517,
+        1551558,
+        310430,
+        298589,
+        1914997,
+        450840,
+        1583258,
+        429019,
+        298380,
+        294879,
+        1993807
+      ],
+      "sample_launch_ns": [
+        272413655,
+        270871557,
+        271224266
+      ],
+      "barrier_throughput_bytes_per_second": [
+        41372116.03489963,
+        201018623.630841,
+        211396803.7840925,
+        202278481.01265824,
+        32490675.754283253,
+        42227232.24010962,
+        211055632.50974455,
+        219425363.96183383,
+        34213108.427846104,
+        145324283.55957767,
+        41381758.37418791,
+        152715847.0836956,
+        219579060.25873047,
+        222186049.19305885,
+        32860753.322663628
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "ansi",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "unicode",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65520,
+      "sample_barrier_ns": [
+        1568447,
+        468270,
+        343399,
+        2012597,
+        445689,
+        1540738,
+        310720,
+        316229,
+        1763917,
+        298700,
+        1492778,
+        623249,
+        453269,
+        1869867,
+        336220
+      ],
+      "sample_launch_ns": [
+        271376106,
+        270374238,
+        278830614
+      ],
+      "barrier_throughput_bytes_per_second": [
+        41773805.55415644,
+        139919277.33999616,
+        190798458.935524,
+        32554952.630854562,
+        147008339.89620566,
+        42525075.64556725,
+        210865087.53861997,
+        207191623.79161936,
+        37144604.87653331,
+        219350518.91529962,
+        43891322.08540051,
+        105126522.4653389,
+        144549925.09966487,
+        35039925.299499914,
+        194872404.9729344
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "after",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/ql0nryf91d4y1bp9cz7sb8j4r56apk9f-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "unicode",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    },
+    {
+      "benchmark": "pty-throughput-csi6n",
+      "terminal": [
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+      "label": null,
+      "workload": "unicode",
+      "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+      "geometry": [
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        },
+        {
+          "cols": 318,
+          "rows": 89
+        }
+      ],
+      "sample_geometry": [
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ],
+        [
+          {
+            "cols": 318,
+            "rows": 89
+          },
+          {
+            "cols": 318,
+            "rows": 89
+          }
+        ]
+      ],
+      "repeat": 3,
+      "warmup": 1,
+      "iterations": 5,
+      "payload_bytes": 65520,
+      "sample_barrier_ns": [
+        1527837,
+        462849,
+        511200,
+        1650457,
+        617749,
+        1635337,
+        515039,
+        494200,
+        2551876,
+        493459,
+        1490718,
+        345449,
+        642069,
+        2366677,
+        486809
+      ],
+      "sample_launch_ns": [
+        281971830,
+        273337983,
+        279019955
+      ],
+      "barrier_throughput_bytes_per_second": [
+        42884155.83599559,
+        141558045.92858577,
+        128169014.08450705,
+        39698095.739543654,
+        106062494.63778979,
+        40065136.421422616,
+        127213667.31451404,
+        132577903.68271954,
+        25675228.73368455,
+        132776988.56439948,
+        43951974.82018732,
+        189666202.53640914,
+        102045107.3015517,
+        27684386.166764624,
+        134590773.79423964
+      ],
+      "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+      "settle_seconds": 0.2,
+      "round": 1,
+      "variant": "before",
+      "command": [
+        "python3",
+        "bench/pty_throughput.py",
+        "--terminal",
+        "/nix/store/pgij1nh60nvbm07430zfjlcr5l1spnps-cudaterm-0.1.0/bin/cudaterm",
+        "--terminal-arg=-e",
+        "--workload",
+        "unicode",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--iterations",
+        "5",
+        "--expected-cols",
+        "318",
+        "--expected-rows",
+        "89",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "benchmark": "pty-throughput-csi6n",
+  "terminal": [
+    "./result/bin/cudaterm",
+    "-e"
+  ],
+  "terminal_resolved": "/nix/store/90jjksafw4niyaa72jjhx1dhkx26zgvl-cudaterm-0.1.0/bin/cudaterm",
+  "label": null,
+  "workload": "ansi",
+  "host": "Linux-7.2.0-x86_64-with-glibc2.42",
+  "geometry": [
+    {
+      "cols": 318,
+      "rows": 89
+    },
+    {
+      "cols": 318,
+      "rows": 89
+    },
+    {
+      "cols": 318,
+      "rows": 89
+    }
+  ],
+  "sample_geometry": [
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ],
+    [
+      {
+        "cols": 318,
+        "rows": 89
+      },
+      {
+        "cols": 318,
+        "rows": 89
+      }
+    ]
+  ],
+  "repeat": 3,
+  "warmup": 1,
+  "iterations": 5,
+  "payload_bytes": 65518,
+  "sample_barrier_ns": [
+    2792186,
+    660399,
+    578539,
+    483199,
+    477210,
+    1504428,
+    484509,
+    453650,
+    2055787,
+    473949,
+    1445727,
+    450240,
+    394939,
+    474189,
+    2042847
+  ],
+  "sample_launch_ns": [
+    276603278,
+    278794124,
+    278767545
+  ],
+  "barrier_throughput_bytes_per_second": [
+    23464769.1808497,
+    99209720.18431282,
+    113247335.09754744,
+    135592168.03014907,
+    137293853.85888812,
+    43550106.75153613,
+    135225558.24556407,
+    144424115.50754988,
+    31870033.22815058,
+    138238502.45490548,
+    45318376.15262079,
+    145517945.98436388,
+    165893973.49970502,
+    138168536.1743946,
+    32071907.489890333
+  ],
+  "protocol": "payload followed by CSI 6 n; wait for CSI row;column R",
+  "settle_seconds": 0.2
+}

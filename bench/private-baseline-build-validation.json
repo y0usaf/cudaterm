@@ -1,0 +1,39 @@
+{
+  "binaries": {
+    "cudaterm": {
+      "fixed_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm",
+      "fixed_sha256": "b7d7992443661dd95befd0afc402972425763f16db80035fb771de37b8146c64",
+      "matches_fixed": true,
+      "new_path": "/nix/store/xlhqbilc5gcbnk7zfs72x43h8v18x7z5-cudaterm-0.1.0/bin/cudaterm",
+      "new_sha256": "b7d7992443661dd95befd0afc402972425763f16db80035fb771de37b8146c64"
+    },
+    "cudaterm-engine-bench": {
+      "fixed_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "fixed_sha256": "4f70e9cefc8279e7fe41d81a74fc26ce9a51f7f5b959736da29394bbc092bbea",
+      "matches_fixed": true,
+      "new_path": "/nix/store/xlhqbilc5gcbnk7zfs72x43h8v18x7z5-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "new_sha256": "4f70e9cefc8279e7fe41d81a74fc26ce9a51f7f5b959736da29394bbc092bbea"
+    },
+    "cudaterm-engine-host": {
+      "fixed_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm-engine-host",
+      "fixed_sha256": "7a1d41e002d263e3d4f84e226717b1ea94f00dc8fa9df7088463be7199005273",
+      "matches_fixed": true,
+      "new_path": "/nix/store/xlhqbilc5gcbnk7zfs72x43h8v18x7z5-cudaterm-0.1.0/bin/cudaterm-engine-host",
+      "new_sha256": "7a1d41e002d263e3d4f84e226717b1ea94f00dc8fa9df7088463be7199005273"
+    }
+  },
+  "commands": [
+    {
+      "command": "nix build .",
+      "exit": 0,
+      "log": "bench/private-baseline-nix-build.log"
+    },
+    {
+      "command": "nix flake check",
+      "exit": 0,
+      "log": "bench/private-baseline-flake-check.log"
+    }
+  ],
+  "fixed_store_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0",
+  "new_store_path": "/nix/store/xlhqbilc5gcbnk7zfs72x43h8v18x7z5-cudaterm-0.1.0"
+}

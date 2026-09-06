@@ -1,0 +1,398 @@
+{
+  "status": "completed",
+  "command": "nix develop . --command <binary>/bin/cudaterm-memory-probe --egl",
+  "before_binary": "/nix/store/pqajw1ksh35f4l6l8k1pqjglm8z6614x-cudaterm-0.1.0/bin/cudaterm-memory-probe",
+  "after_binary": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm-memory-probe",
+  "order": [
+    "before-0",
+    "after-0",
+    "after-1",
+    "before-1",
+    "before-2",
+    "after-2"
+  ],
+  "files": {
+    "before-0": "bench/wrap-copy-memory-before-0.jsonl",
+    "before-1": "bench/wrap-copy-memory-before-1.jsonl",
+    "before-2": "bench/wrap-copy-memory-before-2.jsonl",
+    "after-0": "bench/wrap-copy-memory-after-0.jsonl",
+    "after-1": "bench/wrap-copy-memory-after-1.jsonl",
+    "after-2": "bench/wrap-copy-memory-after-2.jsonl"
+  },
+  "gpu_note": "nvidia_compute_mib values of -1 mean unknown/unobservable; none occurred in the measured CUDA stages.",
+  "distributions": {
+    "before": {
+      "engine": {
+        "rss_kib": {
+          "samples": [
+            116688,
+            116688,
+            116688
+          ],
+          "min": 116688,
+          "median": 116688,
+          "max": 116688,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75725,
+            75400,
+            75400
+          ],
+          "min": 75400,
+          "median": 75400,
+          "max": 75725,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69280,
+            69192,
+            69192
+          ],
+          "min": 69192,
+          "median": 69192,
+          "max": 69280,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            238,
+            238,
+            238
+          ],
+          "min": 238,
+          "median": 238,
+          "max": 238,
+          "unknown_count": 0
+        }
+      },
+      "text_64k": {
+        "rss_kib": {
+          "samples": [
+            116816,
+            116816,
+            116816
+          ],
+          "min": 116816,
+          "median": 116816,
+          "max": 116816,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75763,
+            75438,
+            75438
+          ],
+          "min": 75438,
+          "median": 75438,
+          "max": 75763,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69280,
+            69192,
+            69192
+          ],
+          "min": 69192,
+          "median": 69192,
+          "max": 69280,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            280,
+            280,
+            280
+          ],
+          "min": 280,
+          "median": 280,
+          "max": 280,
+          "unknown_count": 0
+        }
+      },
+      "raster": {
+        "rss_kib": {
+          "samples": [
+            116816,
+            116816,
+            116816
+          ],
+          "min": 116816,
+          "median": 116816,
+          "max": 116816,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75763,
+            75438,
+            75438
+          ],
+          "min": 75438,
+          "median": 75438,
+          "max": 75763,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69280,
+            69192,
+            69192
+          ],
+          "min": 69192,
+          "median": 69192,
+          "max": 69280,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            294,
+            294,
+            294
+          ],
+          "min": 294,
+          "median": 294,
+          "max": 294,
+          "unknown_count": 0
+        }
+      },
+      "engine_destroyed": {
+        "rss_kib": {
+          "samples": [
+            116816,
+            116816,
+            116816
+          ],
+          "min": 116816,
+          "median": 116816,
+          "max": 116816,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75763,
+            75438,
+            75438
+          ],
+          "min": 75438,
+          "median": 75438,
+          "max": 75763,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69280,
+            69192,
+            69192
+          ],
+          "min": 69192,
+          "median": 69192,
+          "max": 69280,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            226,
+            226,
+            226
+          ],
+          "min": 226,
+          "median": 226,
+          "max": 226,
+          "unknown_count": 0
+        }
+      }
+    },
+    "after": {
+      "engine": {
+        "rss_kib": {
+          "samples": [
+            117284,
+            117284,
+            117284
+          ],
+          "min": 117284,
+          "median": 117284,
+          "max": 117284,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75289,
+            76321,
+            75996
+          ],
+          "min": 75289,
+          "median": 75996,
+          "max": 76321,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69376,
+            69876,
+            69788
+          ],
+          "min": 69376,
+          "median": 69788,
+          "max": 69876,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            238,
+            238,
+            238
+          ],
+          "min": 238,
+          "median": 238,
+          "max": 238,
+          "unknown_count": 0
+        }
+      },
+      "text_64k": {
+        "rss_kib": {
+          "samples": [
+            117412,
+            117412,
+            117412
+          ],
+          "min": 117412,
+          "median": 117412,
+          "max": 117412,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75327,
+            76359,
+            76034
+          ],
+          "min": 75327,
+          "median": 76034,
+          "max": 76359,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69376,
+            69876,
+            69788
+          ],
+          "min": 69376,
+          "median": 69788,
+          "max": 69876,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            280,
+            280,
+            280
+          ],
+          "min": 280,
+          "median": 280,
+          "max": 280,
+          "unknown_count": 0
+        }
+      },
+      "raster": {
+        "rss_kib": {
+          "samples": [
+            117412,
+            117412,
+            117412
+          ],
+          "min": 117412,
+          "median": 117412,
+          "max": 117412,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75327,
+            76359,
+            76034
+          ],
+          "min": 75327,
+          "median": 76034,
+          "max": 76359,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69376,
+            69876,
+            69788
+          ],
+          "min": 69376,
+          "median": 69788,
+          "max": 69876,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            294,
+            294,
+            294
+          ],
+          "min": 294,
+          "median": 294,
+          "max": 294,
+          "unknown_count": 0
+        }
+      },
+      "engine_destroyed": {
+        "rss_kib": {
+          "samples": [
+            117412,
+            117412,
+            117412
+          ],
+          "min": 117412,
+          "median": 117412,
+          "max": 117412,
+          "unknown_count": 0
+        },
+        "pss_kib": {
+          "samples": [
+            75327,
+            76359,
+            76034
+          ],
+          "min": 75327,
+          "median": 76034,
+          "max": 76359,
+          "unknown_count": 0
+        },
+        "private_kib": {
+          "samples": [
+            69376,
+            69876,
+            69788
+          ],
+          "min": 69376,
+          "median": 69788,
+          "max": 69876,
+          "unknown_count": 0
+        },
+        "nvidia_compute_mib": {
+          "samples": [
+            226,
+            226,
+            226
+          ],
+          "min": 226,
+          "median": 226,
+          "max": 226,
+          "unknown_count": 0
+        }
+      }
+    }
+  },
+  "scope": "Three headless EGL probe processes per binary; stage snapshots, not workload peak or repeated in-process lifecycle soak."
+}

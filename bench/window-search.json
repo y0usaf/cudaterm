@@ -1,0 +1,44 @@
+{
+  "status": "pass",
+  "command": "nix run .#window-search-test",
+  "log": "bench/search-review-final-window.log",
+  "manifest_provenance": "manually assembled from the passing wrapper run; the fixture does not emit this JSON",
+  "wrapper": {
+    "path": "/nix/store/f29cpbiac13f9mnq0akik67ycsl2k9df-cudaterm-window-search-test",
+    "sha256": "c5fd1be4aaa5f78979568e7415fbe6bdfb4f997691bd6d783e603e79f1afc1cc",
+    "application_path": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm",
+    "application_sha256": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00"
+  },
+  "application": {
+    "path": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm",
+    "sha256": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00"
+  },
+  "seat_module": {
+    "path": "/nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so",
+    "sha256": "8c64db4d3b2eacc15acfae6fb58d63adf85f0728de0c7a9ef72579a20eb18818"
+  },
+  "checks": [
+    "wrapped UTF-8 history sentinel search",
+    "local query paste never reaches child before close",
+    "Enter next and Shift-Enter previous",
+    "no-match query interaction",
+    "active match copy",
+    "Escape close and normal input after close",
+    "bracketed UTF-8 paste after close"
+  ],
+  "viewport_capture": {
+    "before": "bench/window-search-before.png",
+    "active": "bench/window-search-active.png",
+    "restored": "bench/window-search-restored.png",
+    "marker_pixels": 128,
+    "before_visible": true,
+    "active_absent": true,
+    "restored_visible_same_coordinates": true,
+    "child_geometry": {"columns": 80, "rows": 32}
+  },
+  "trace_markers_compiled": ["search_open", "search_found", "search_missing", "search_copy"],
+  "trace": "bench/window-search-search.csv",
+  "trace_sha256": "61a79517d32a3ce3242b18067e381d0b881badb88d4bfb31a0fd75ab03bec0ec",
+  "run_log_sha256": "d3fdb5a7c40aee1a107c2248db24c1f710289c11cb68005db3f46a05f7d181e3",
+  "prompt_viewport_direct_capture": true
+}

@@ -1,0 +1,12 @@
+selection-test exit=0
+scrollback-test exit=0
+plain-test exit=0
+styled-test exit=0
+reference-test exit=0
+vt-test exit=0
+unicode-test exit=0
+workspace-test exit=0
+engine-test exit=0
+mouse-test exit=0
+charset-test exit=0
+appearance-test exit=0

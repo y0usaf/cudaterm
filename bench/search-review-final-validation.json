@@ -1,0 +1,23 @@
+{
+  "build": {"command": "nix build .", "exit": 0, "store": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0", "log": "bench/search-review-final-build.log"},
+  "focused": {"command": "nix develop . --command /nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm-search-test", "exit": 0, "log": "bench/search-review-final-search.log"},
+  "sanitizers": {
+    "memcheck": {"command": "nix develop . --command /nix/store/mqm2lxpmssgsp1a3gcsf1i56w98cw000-cuda12.9-cuda_sanitizer_api-12.9.79/bin/compute-sanitizer --tool memcheck /nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm-search-test", "exit": 0, "log": "bench/search-review-final-memcheck.log"},
+    "racecheck": {"command": "nix develop . --command /nix/store/mqm2lxpmssgsp1a3gcsf1i56w98cw000-cuda12.9-cuda_sanitizer_api-12.9.79/bin/compute-sanitizer --tool racecheck /nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm-search-test", "exit": 0, "log": "bench/search-review-final-racecheck.log"}
+  },
+  "window": {"command": "nix run .#window-search-test", "exit": 0, "log": "bench/search-review-final-window.log", "artifact": "bench/window-search.json"},
+  "flake_check": {"command": "nix flake check", "exit": 0, "log": "bench/search-review-final-flake-check.log"},
+  "finix": {
+    "build_command": "nix build --impure --file nix/finix-preview.nix --out-link result-finix", "build_exit": 0, "build_log": "bench/search-review-final-finix-build.log",
+    "eval_command": "nix eval --impure --json --file nix/finix-evaluate.nix", "eval_exit": 0, "eval_log": "bench/search-review-final-finix-eval.log", "path": "/nix/store/6rqkry00nnhd2kl1an2dbc94syyl3hyz-cudaterm-finix"
+  },
+  "hashes": {
+    "app": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00",
+    "engine_host": "73ff1df0549ccd3a479b5255811729d3550a4473ec24b806cc50214576c027b9",
+    "search_test": "f98243b6a697b6a4fa9919f7cdf849eeb32811d508555fae09f71a7cdbac2209",
+    "src_engine": "e942843c529b2799053801c1304ce14e8480dca8e800265bb2fd901a3286e95d",
+    "src_search_kernels": "d614d0baf85a5e4ca0c35fd7e64d7e1431b518efafaa42bb826221b1387fd923",
+    "tests_search": "a986ddcd4ac08fb777ae39358da22604550a605c23117df4a5781d6ae275129a"
+  },
+  "transferred_unchanged_evidence": {"gpu_suites": 15, "graphics": 38, "lifecycle_cycles": 90, "app_hash": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00", "engine_host_hash": "73ff1df0549ccd3a479b5255811729d3550a4473ec24b806cc50214576c027b9"}
+}

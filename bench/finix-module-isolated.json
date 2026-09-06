@@ -1,0 +1,1 @@
+{"desktopLauncher":"cudaterm-finix --app-id=launcher -e ~/.config/scripts/tui-launcher.sh","desktopTerminal":"cudaterm-finix","frameworkTerminal":"monstar","scope":"actual terminal/default modules; isolated module evaluation, not a full system build","status":"passed"}

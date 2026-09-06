@@ -1,0 +1,1 @@
+{"benchmark":"engine-feed","workload":"ansi","cols":318,"rows":89,"requested_bytes":65536,"bytes":65518,"warmup":1,"repeats":5,"samples":[{"duration_ns":2928346,"ns_per_byte":44.6953},{"duration_ns":1543708,"ns_per_byte":23.5616},{"duration_ns":1311298,"ns_per_byte":20.0143},{"duration_ns":1574517,"ns_per_byte":24.0318},{"duration_ns":1538878,"ns_per_byte":23.4879}]}

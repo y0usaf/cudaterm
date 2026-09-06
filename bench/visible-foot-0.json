@@ -1,0 +1,180 @@
+{
+  "benchmark": "pty-write-to-compositor-capture",
+  "terminal": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+  "command": [
+    "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+    "-o",
+    "font=DejaVu Sans Mono:size=11",
+    "-o",
+    "line-height=16px",
+    "-e"
+  ],
+  "cols": 318,
+  "rows": 89,
+  "capture_dimensions": [
+    64,
+    16
+  ],
+  "capture_region": "40,40 64x16",
+  "sample_pixel": [
+    32,
+    0
+  ],
+  "load_lines": 0,
+  "samples": [
+    {
+      "write_start_ns": 181482678993622,
+      "observed_ns": 181482696763434,
+      "duration_ns": 17769812,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482696880994,
+      "observed_ns": 181482714508287,
+      "duration_ns": 17627293,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482714621047,
+      "observed_ns": 181482732022541,
+      "duration_ns": 17401494,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482732132861,
+      "observed_ns": 181482751784261,
+      "duration_ns": 19651400,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482751910730,
+      "observed_ns": 181482772324009,
+      "duration_ns": 20413279,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482772453659,
+      "observed_ns": 181482789855852,
+      "duration_ns": 17402193,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482789944282,
+      "observed_ns": 181482821965003,
+      "duration_ns": 32020721,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181482822068913,
+      "observed_ns": 181482851492458,
+      "duration_ns": 29423545,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181482851597988,
+      "observed_ns": 181482880844354,
+      "duration_ns": 29246366,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181482880957213,
+      "observed_ns": 181482909705760,
+      "duration_ns": 28748547,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181482909795399,
+      "observed_ns": 181482928907510,
+      "duration_ns": 19112111,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482929010190,
+      "observed_ns": 181482946148894,
+      "duration_ns": 17138704,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482946255324,
+      "observed_ns": 181482965637424,
+      "duration_ns": 19382100,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181482965752404,
+      "observed_ns": 181482998084705,
+      "duration_ns": 32332301,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181482998196665,
+      "observed_ns": 181483015014649,
+      "duration_ns": 16817984,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181483015129809,
+      "observed_ns": 181483034649939,
+      "duration_ns": 19520130,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181483034773009,
+      "observed_ns": 181483064349824,
+      "duration_ns": 29576815,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181483064466563,
+      "observed_ns": 181483083811174,
+      "duration_ns": 19344611,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 181483083923454,
+      "observed_ns": 181483114271357,
+      "duration_ns": 30347903,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 181483114386427,
+      "observed_ns": 181483143285333,
+      "duration_ns": 28898906,
+      "captures": 2
+    }
+  ],
+  "capture_duration_ns": [
+    15736416,
+    17078184,
+    19693230,
+    17663493,
+    17531813,
+    17309194,
+    19554031,
+    20312449,
+    17304763,
+    13164420,
+    18749651,
+    12698241,
+    16635844,
+    12520321,
+    16632695,
+    12546771,
+    16092736,
+    19027151,
+    16966364,
+    19288390,
+    12741270,
+    19497201,
+    16724075,
+    19401090,
+    13061500,
+    16415005,
+    19234101,
+    12747330,
+    17456893,
+    12706911,
+    16097235
+  ],
+  "limitations": "Includes capture overhead; not physical scanout or input latency."
+}

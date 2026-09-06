@@ -1,0 +1,34 @@
+--- a/src/main.cu
++++ b/src/main.cu
+@@ -715,6 +715,7 @@
+       size_t drained = 0;
+       if (!eof && f.revents & (POLLIN | POLLHUP | POLLERR)) {
+         unsigned char buf[65536];
++        std::chrono::steady_clock::time_point coalesce_until{};
+         while (drained < sizeof buf) {
+           ssize_t n = read(p.fd, buf + drained, sizeof buf - drained);
+           if (n > 0)
+@@ -722,6 +723,23 @@
+           else if (n < 0 && errno == EINTR)
+             continue;
+           else {
++            if (n < 0 && errno == EAGAIN && drained >= 4096) {
++              auto now = std::chrono::steady_clock::now();
++              if (coalesce_until == std::chrono::steady_clock::time_point{})
++                coalesce_until = now + std::chrono::microseconds(50);
++              if (now < coalesce_until) {
++                timespec timeout{0, std::chrono::duration_cast<
++                                        std::chrono::nanoseconds>(
++                                        coalesce_until - now).count()};
++                pollfd pending{p.fd, POLLIN, 0};
++                int more = ppoll(&pending, 1, &timeout, nullptr);
++                if (more > 0 || (more < 0 && errno == EINTR))
++                  continue;
++                if (more < 0)
++                  fail("PTY coalescing poll");
++              }
++              break;
++            }
+             if (n == 0 || (n < 0 && errno == EIO))
+               eof = true;
+             else if (errno != EAGAIN)

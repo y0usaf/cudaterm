@@ -1,0 +1,82 @@
+--- a/src/engine.cu
++++ b/src/engine.cu
+@@ -8,6 +8,7 @@
+ #include <cub/block/block_scan.cuh>
+ #include <cub/device/device_scan.cuh>
+ #include <cuda_runtime.h>
++#include <cuda/atomic>
+ #include <fstream>
+ #include <stdexcept>
+ #ifndef CUDATERM_DATA_DIR
+@@ -2503,22 +2504,25 @@
+ SearchMatch Engine::search(const std::string &query, SearchDirection direction, bool restart) {
+   auto decoded = search_decode(query, 256);
+   if (decoded.empty()) { clear_search(); return {false,false,0,0,0,0,snapshot().view_offset}; }
+-  auto s = snapshot();
+   if (!restart && p->search_query == query && p->search_generation != p->content_generation)
+-    return {false,true,0,0,0,0,s.view_offset};
+-  int history = s.alternate_screen ? 0 : s.history_rows;
++    return {false,true,0,0,0,0,snapshot().view_offset};
+   SearchWork work{};
+   std::copy(decoded.begin(), decoded.end(), work.query);
+-  work.length = decoded.size(); work.total = (history + s.rows) * s.cols * 4;
++  work.length = decoded.size();
+   work.step = direction == SearchDirection::Forward ? 1 : -1;
+   if (!restart && p->search_query == query && p->search_token >= 0)
+-    work.start = (p->search_token + work.step + work.total) % work.total;
+-  else work.start = work.step > 0 ? (history - s.view_offset) * s.cols * 4
+-                                  : (history - s.view_offset + s.rows) * s.cols * 4 - 1;
+-  work.rank = 0xffffffffu;
++    work.token = p->search_token;
++  else work.token = -1;
+   if (!p->search_work) ck(cudaMalloc(&p->search_work, sizeof(SearchWork)));
+   ck(cudaMemcpy(p->search_work, &work, sizeof(work), cudaMemcpyHostToDevice));
+-  find_search<<<(work.total + 255) / 256, 256>>>(p->d, p->search_work);
++  initialize_search<<<1, 1>>>(p->d, p->search_work);
++  ck(cudaGetLastError());
++  int search_threads = (p->history_capacity + MAX_ROWS) * p->history_cols * 4;
++  int search_blocks = (search_threads + 255) / 256;
++  if (work.length >= 32)
++    find_search_pruned<<<search_blocks, 256>>>(p->d, p->search_work);
++  else
++    find_search<<<search_blocks, 256>>>(p->d, p->search_work);
+   ck(cudaGetLastError());
+   commit_search<<<1, 1>>>(p->d, p->search_work);
+   ck(cudaGetLastError());
+--- a/src/search_kernels.cuh
++++ b/src/search_kernels.cuh
+@@ -36,6 +36,18 @@
+   }
+   return false;
+ }
++__global__ void initialize_search(const DeviceState *s, SearchWork *q) {
++  int history = s->alt_active ? 0 : s->history_count;
++  q->total = (history + s->rows) * s->cols * 4;
++  if (q->token >= 0)
++    q->start = (q->token + q->step + q->total) % q->total;
++  else if (q->step > 0)
++    q->start = (history - s->view_offset) * s->cols * 4;
++  else
++    q->start = (history - s->view_offset + s->rows) * s->cols * 4 - 1;
++  q->rank = 0xffffffffu;
++  q->match = {false, false, 0, 0, 0, 0, s->view_offset};
++}
+ __global__ void find_search(const DeviceState *s, SearchWork *q) {
+   int token = blockIdx.x * blockDim.x + threadIdx.x;
+   if (token >= q->total) return;
+@@ -44,6 +56,15 @@
+   int er, ec;
+   if (search_at(*s, *q, token, er, ec)) atomicMin(&q->rank, rank);
+ }
++__global__ void find_search_pruned(const DeviceState *s, SearchWork *q) {
++  unsigned rank = blockIdx.x * blockDim.x + threadIdx.x;
++  if (rank >= (unsigned)q->total) return;
++  auto bound = cuda::atomic_ref<unsigned, cuda::thread_scope_device>(q->rank);
++  if (rank >= bound.load(cuda::memory_order_relaxed)) return;
++  int token = (q->start + q->step * int(rank) + q->total) % q->total;
++  int er, ec;
++  if (search_at(*s, *q, token, er, ec)) bound.fetch_min(rank, cuda::memory_order_relaxed);
++}
+ __global__ void commit_search(DeviceState *s, SearchWork *q) {
+   s->selection_active = 0;
+   q->match = {false, false, 0, 0, 0, 0, s->view_offset};

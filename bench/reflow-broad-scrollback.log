@@ -1,0 +1,2 @@
+history_erasure_and_wide_resize: resize pads instead of repeating clipped cells
+evicted_ring_survives_repeated_resize: resize ring oldest after narrow and widen

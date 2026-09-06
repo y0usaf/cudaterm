@@ -1,0 +1,1 @@
+PASS: slow uploads and coalesced update boundaries retain complete frames

@@ -1,0 +1,116 @@
+{
+  "terminal": "/nix/store/pbrxrs63zj068p8g3bdzal9wgw60ilyv-cudaterm-0.1.0/bin/cudaterm",
+  "scope": "private headless Weston, no user desktop",
+  "samples": {
+    "reference": {
+      "benchmark": "terminal-idle-parent-resources",
+      "command": [
+        "/nix/store/dv3icgbzyqjrlc6bi1bwsfyd178iw6hg-cudaterm-0.1.0/bin/cudaterm",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/dv3icgbzyqjrlc6bi1bwsfyd178iw6hg-cudaterm-0.1.0/bin/cudaterm",
+      "samples": [
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "elapsed_seconds": 1.0015338319935836,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 120487936,
+          "pss_bytes": 81882112,
+          "private_bytes": 74809344,
+          "nvidia_compute_memory_bytes": 331350016
+        },
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "elapsed_seconds": 1.0014301119954325,
+          "cpu_seconds": 0.009999999999999995,
+          "cpu_percent_one_core": 0.9985719303041694,
+          "rss_bytes": 120545280,
+          "pss_bytes": 81894400,
+          "private_bytes": 74805248,
+          "nvidia_compute_memory_bytes": 331350016
+        },
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "elapsed_seconds": 1.0014444520056713,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 120475648,
+          "pss_bytes": 81870848,
+          "private_bytes": 74784768,
+          "nvidia_compute_memory_bytes": 331350016
+        }
+      ],
+      "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+    },
+    "current": {
+      "benchmark": "terminal-idle-parent-resources",
+      "command": [
+        "/nix/store/pbrxrs63zj068p8g3bdzal9wgw60ilyv-cudaterm-0.1.0/bin/cudaterm",
+        "--cols",
+        "318",
+        "--rows",
+        "89",
+        "-e"
+      ],
+      "terminal_resolved": "/nix/store/pbrxrs63zj068p8g3bdzal9wgw60ilyv-cudaterm-0.1.0/bin/cudaterm",
+      "samples": [
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "elapsed_seconds": 1.001400562003255,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 121122816,
+          "pss_bytes": 82476032,
+          "private_bytes": 75358208,
+          "nvidia_compute_memory_bytes": 331350016
+        },
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "elapsed_seconds": 1.001367642020341,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 121143296,
+          "pss_bytes": 82518016,
+          "private_bytes": 75411456,
+          "nvidia_compute_memory_bytes": 331350016
+        },
+        {
+          "geometry": {
+            "cols": 318,
+            "rows": 89
+          },
+          "elapsed_seconds": 1.0019062210049015,
+          "cpu_seconds": 0.0,
+          "cpu_percent_one_core": 0.0,
+          "rss_bytes": 121102336,
+          "pss_bytes": 82461696,
+          "private_bytes": 75354112,
+          "nvidia_compute_memory_bytes": 331350016
+        }
+      ],
+      "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+    }
+  },
+  "presentation": "passed",
+  "ekko": "/home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko"
+}

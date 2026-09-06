@@ -1,0 +1,6 @@
+evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
+evaluation warning: stdenv.isLinux is deprecated, use stdenv.hostPlatform.isLinux instead
+evaluation warning: stdenv.isDarwin is deprecated, use stdenv.hostPlatform.isDarwin instead
+evaluation warning: stdenv.is32bit is deprecated, use stdenv.hostPlatform.is32bit instead
+evaluation warning: stdenv.is32bit is deprecated, use stdenv.hostPlatform.is32bit instead
+{"amdGuard":true,"desktop":{"environment":"cudaterm-finix","failedAssertions":[],"launcher":"cudaterm-finix --app-id=launcher -e ~/.config/scripts/tui-launcher.sh","package":"/nix/store/q46mb95npb4sagdgwq8spfvzvy9bv20m-cudaterm-finix","systemDerivation":"/nix/store/7hzcgbrq0kki3igpi6iaa8kn5aq60044-finix-system.drv","terminal":"cudaterm-finix"},"explicitOverride":"foot","framework":{"cudaterm":false,"terminal":"monstar"}}

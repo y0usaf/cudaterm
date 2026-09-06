@@ -1,0 +1,54 @@
+{
+  "commands": [
+    {
+      "command": "nix build .",
+      "exit": 0,
+      "log": "bench/history-row-final-build.log"
+    },
+    {
+      "command": "nix develop . --command result/bin/cudaterm-selection-test",
+      "exit": 0,
+      "log": "bench/history-row-final-selection.log"
+    },
+    {
+      "command": "nix flake check",
+      "exit": 0,
+      "log": "bench/history-row-final-flake-check.log"
+    }
+  ],
+  "engine_source": {
+    "baseline_path": "/nix/store/db2nkgddjxm4la5lc6vxgf3hkwnw2lyq-source/src/engine.cu",
+    "baseline_sha256": "e6202ef11835b21509bcf0dac6c946ab1c698d1155cbc844699729b6b92f857e",
+    "matches_baseline": true,
+    "path": "src/engine.cu",
+    "sha256": "e6202ef11835b21509bcf0dac6c946ab1c698d1155cbc844699729b6b92f857e"
+  },
+  "executables": {
+    "cudaterm": {
+      "baseline_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm",
+      "baseline_sha256": "b7d7992443661dd95befd0afc402972425763f16db80035fb771de37b8146c64",
+      "matches_baseline": true,
+      "path": "/nix/store/6vqjrx4nmz9h5kw9859mfj0bkma2ldiy-cudaterm-0.1.0/bin/cudaterm",
+      "sha256": "b7d7992443661dd95befd0afc402972425763f16db80035fb771de37b8146c64"
+    },
+    "cudaterm-engine-bench": {
+      "baseline_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "baseline_sha256": "4f70e9cefc8279e7fe41d81a74fc26ce9a51f7f5b959736da29394bbc092bbea",
+      "matches_baseline": true,
+      "path": "/nix/store/6vqjrx4nmz9h5kw9859mfj0bkma2ldiy-cudaterm-0.1.0/bin/cudaterm-engine-bench",
+      "sha256": "4f70e9cefc8279e7fe41d81a74fc26ce9a51f7f5b959736da29394bbc092bbea"
+    },
+    "cudaterm-engine-host": {
+      "baseline_path": "/nix/store/3gkakr3w1qvs5n0bjgmcvpdg8k15bnnn-cudaterm-0.1.0/bin/cudaterm-engine-host",
+      "baseline_sha256": "7a1d41e002d263e3d4f84e226717b1ea94f00dc8fa9df7088463be7199005273",
+      "matches_baseline": true,
+      "path": "/nix/store/6vqjrx4nmz9h5kw9859mfj0bkma2ldiy-cudaterm-0.1.0/bin/cudaterm-engine-host",
+      "sha256": "7a1d41e002d263e3d4f84e226717b1ea94f00dc8fa9df7088463be7199005273"
+    }
+  },
+  "selection_test": {
+    "path": "tests/selection_test.cu",
+    "sha256": "4e6f74613fd7a255da2c023b5654350b27ca3f470327f5c619a48014f5f6f3f1"
+  },
+  "store_path": "/nix/store/6vqjrx4nmz9h5kw9859mfj0bkma2ldiy-cudaterm-0.1.0"
+}

@@ -1,0 +1,186 @@
+{
+  "benchmark": "pty-write-to-compositor-capture",
+  "terminal": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+  "command": [
+    "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+    "-o",
+    "font=DejaVu Sans Mono:size=11",
+    "-o",
+    "line-height=16px",
+    "-e"
+  ],
+  "cols": 318,
+  "rows": 89,
+  "capture_dimensions": [
+    64,
+    16
+  ],
+  "capture_region": "40,40 64x16",
+  "sample_pixel": [
+    32,
+    0
+  ],
+  "load_lines": 3000,
+  "samples": [
+    {
+      "write_start_ns": 183255944603919,
+      "observed_ns": 183255978173258,
+      "duration_ns": 33569339,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183255978296717,
+      "observed_ns": 183256008412772,
+      "duration_ns": 30116055,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256008519621,
+      "observed_ns": 183256028892740,
+      "duration_ns": 20373119,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256029020310,
+      "observed_ns": 183256060949321,
+      "duration_ns": 31929011,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256061058401,
+      "observed_ns": 183256083571447,
+      "duration_ns": 22513046,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256083683647,
+      "observed_ns": 183256115983947,
+      "duration_ns": 32300300,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256116094637,
+      "observed_ns": 183256148863767,
+      "duration_ns": 32769130,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256148985547,
+      "observed_ns": 183256181975167,
+      "duration_ns": 32989620,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256182099606,
+      "observed_ns": 183256203301224,
+      "duration_ns": 21201618,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256203423364,
+      "observed_ns": 183256236679183,
+      "duration_ns": 33255819,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256236799673,
+      "observed_ns": 183256270206622,
+      "duration_ns": 33406949,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256270324562,
+      "observed_ns": 183256289575123,
+      "duration_ns": 19250561,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256289724872,
+      "observed_ns": 183256324779319,
+      "duration_ns": 35054447,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256324906389,
+      "observed_ns": 183256357221359,
+      "duration_ns": 32314970,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256357336969,
+      "observed_ns": 183256390551138,
+      "duration_ns": 33214169,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256390659378,
+      "observed_ns": 183256411835076,
+      "duration_ns": 21175698,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256411940576,
+      "observed_ns": 183256429766759,
+      "duration_ns": 17826183,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256429901168,
+      "observed_ns": 183256447778001,
+      "duration_ns": 17876833,
+      "captures": 1
+    },
+    {
+      "write_start_ns": 183256447908671,
+      "observed_ns": 183256478915294,
+      "duration_ns": 31006623,
+      "captures": 2
+    },
+    {
+      "write_start_ns": 183256479048823,
+      "observed_ns": 183256511646374,
+      "duration_ns": 32597551,
+      "captures": 2
+    }
+  ],
+  "capture_duration_ns": [
+    16332945,
+    17924982,
+    13457970,
+    18649011,
+    13787509,
+    17464234,
+    12858870,
+    16288176,
+    19105601,
+    13142000,
+    17743333,
+    21582277,
+    13381430,
+    17958462,
+    13612099,
+    18129842,
+    13432140,
+    18531342,
+    20076069,
+    14038028,
+    18300792,
+    13663229,
+    18899301,
+    18331043,
+    13945089,
+    20209659,
+    13643229,
+    17822073,
+    13601259,
+    18668611,
+    20244849,
+    16833535,
+    17022774,
+    12824070,
+    16904745,
+    12820581,
+    18449032
+  ],
+  "limitations": "Includes capture overhead; not physical scanout or input latency."
+}

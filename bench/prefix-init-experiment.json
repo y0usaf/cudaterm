@@ -1,0 +1,7 @@
+{
+  "retained": false,
+  "reason": "ANSI, graphics and tabs PTY medians regressed in both reversed rounds; text reversed direction.",
+  "before": "/nix/store/dk8rawn2cmm20llzyfdn80amvnx0vnjh-cudaterm-0.1.0",
+  "experiment": "/nix/store/f93w1x5rb900qndw87q35v3zaabwbb6d-cudaterm-0.1.0",
+  "experiment_derivation": "/nix/store/g6q7fv5fby0rwcb41nfgm8gv6gx90636-cudaterm-0.1.0.drv"
+}

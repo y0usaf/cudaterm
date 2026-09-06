@@ -1,0 +1,4 @@
+this derivation will be built:
+  /nix/store/kvalb3zqnfw1v7ljbh3g8p2k6g0dxhm7-cudaterm-graphics-test.drv
+building '/nix/store/kvalb3zqnfw1v7ljbh3g8p2k6g0dxhm7-cudaterm-graphics-test.drv'...
+{"graphics_cases": 36, "status": "passed", "scope": "real CUDA parser/decode/raster, no desktop"}

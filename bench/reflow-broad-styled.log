@@ -1,0 +1,4 @@
+bulk_unicode: bulk mixed Unicode scalars
+partial_escape_csi: CR run reaches line scan bound
+partial_unicode: partial two byte scalar before bulk
+partial_osc: OSC ESC terminator prefix

@@ -1,0 +1,8 @@
+{
+  "retained": false,
+  "initial_derivation": "/nix/store/s033jqz2ilz1pxrya33v86ci3bzdmsfc-cudaterm-0.1.0.drv",
+  "cached_length_derivation": "/nix/store/l58mn9qivfab7phf26wlbj5943a38i3n-cudaterm-0.1.0.drv",
+  "reason": "Headless short-feed gains did not produce a repeatable PTY query latency gain. Prefer existing simpler path.",
+  "design": "Lazy graph for short feed_and_replies: pinned256-byte H2D, interpreter, pinnedwholeReplyBuffer D2H; reuse length parameters; default-stream completion",
+  "tests_retained": "Variable lengths, partial CSI, mixed feeds/replydrains, selection,resize,mouse and256-byte boundary"
+}

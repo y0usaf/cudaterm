@@ -1,0 +1,48 @@
+{
+  "benchmark": "terminal-idle-parent-resources",
+  "command": [
+    "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+    "-o",
+    "font=DejaVu Sans Mono:size=11",
+    "-o",
+    "line-height=16px",
+    "-e"
+  ],
+  "terminal_resolved": "/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0/bin/foot",
+  "samples": [
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000192501989659,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 37376000,
+      "nvidia_compute_memory_bytes": null
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000190771999769,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 36274176,
+      "nvidia_compute_memory_bytes": null
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000181501993211,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 38903808,
+      "nvidia_compute_memory_bytes": null
+    }
+  ],
+  "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+}

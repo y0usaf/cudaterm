@@ -1,0 +1,17 @@
+these 3 derivations will be built:
+  /nix/store/6gkkl7p3439y8rk3q3fhb6hj65azslwv-cudaterm-headless-seat.drv
+  /nix/store/rrd40425jkx6y02caavzjp10p6453s9w-python3-3.14.7-env.drv
+  /nix/store/yrmjcgvva91kn0cdwz8s6ili23hrcmg9-cudaterm-sync-test.drv
+this path will be fetched (47.2 KiB download, 192.6 KiB unpacked):
+  /nix/store/5biz40pc9n1r463bqnky55vjp42bxg76-wl-clipboard-2.3.0
+copying path '/nix/store/5biz40pc9n1r463bqnky55vjp42bxg76-wl-clipboard-2.3.0' from 'https://cache.nixos.org'...
+building '/nix/store/rrd40425jkx6y02caavzjp10p6453s9w-python3-3.14.7-env.drv'...
+building '/nix/store/6gkkl7p3439y8rk3q3fhb6hj65azslwv-cudaterm-headless-seat.drv'...
+building '/nix/store/yrmjcgvva91kn0cdwz8s6ili23hrcmg9-cudaterm-sync-test.drv'...
+PASS: slow uploads and coalesced update boundaries retain complete frames
+PASS: inherited PTY closes with final output and direct child status
+PASS: Wayland Ctrl-Space reached the PTY during CUDA decode in 0.1 ms
+PASS: Wayland Shift-selection mode 0 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland large external clipboard paste preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 2 clipboard roundtrip preserves UTF-8 and bracketed-paste framing
+PASS: Wayland Shift-selection mode 3 clipboard roundtrip preserves UTF-8 and bracketed-paste framing

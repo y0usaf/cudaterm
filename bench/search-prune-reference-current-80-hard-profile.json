@@ -1,0 +1,949 @@
+{
+  "dropped_diagnostic_lines": 0,
+  "kernels": {
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11feed_kernelEPNS0_11DeviceStateEPKhmPKiS6_Pi": {
+      "count": 1,
+      "duration_ns": 3808
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE": {
+      "count": 45,
+      "duration_ns": 1978423
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11plain_clearEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE": {
+      "count": 1,
+      "duration_ns": 7456
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c12plain_commitEPNS0_11DeviceStateEPKhiPKiS6_S6_PNS0_9PlainMetaE": {
+      "count": 1,
+      "duration_ns": 6368
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c12plain_repairEPNS0_11DeviceStateEPKi": {
+      "count": 1,
+      "duration_ns": 2208
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE": {
+      "count": 45,
+      "duration_ns": 339717
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13plain_scatterEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE": {
+      "count": 1,
+      "duration_ns": 19328
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c14plain_advancesEPKNS0_11DeviceStateEPKhiPKiPiS7_": {
+      "count": 1,
+      "duration_ns": 2847
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c14plain_classifyEPKNS0_11DeviceStateEPKhiPiS6_S6_S6_": {
+      "count": 1,
+      "duration_ns": 6240
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c14repair_historyEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE": {
+      "count": 1,
+      "duration_ns": 2304
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c15prepare_historyINS0_9PlainMetaEEEvPNS0_11DeviceStateEPKiPKT_": {
+      "count": 1,
+      "duration_ns": 38560
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c19grow_history_kernelEPKNS0_11DeviceStateEPNS_4CellE": {
+      "count": 1,
+      "duration_ns": 1920
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c19plain_wrap_metadataEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE": {
+      "count": 1,
+      "duration_ns": 4832
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c21commit_history_growthEPNS0_11DeviceStateEPNS_4CellEi": {
+      "count": 1,
+      "duration_ns": 2368
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c22clear_selection_kernelEPNS0_11DeviceStateE": {
+      "count": 1,
+      "duration_ns": 1568
+    },
+    "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c9init_gridEPNS_4CellES2_i": {
+      "count": 1,
+      "duration_ns": 5472
+    },
+    "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3__47maximumIvEEE10Policy1000EPiSB_NS0_13ScanTileStateIiLb1EEES8_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_": {
+      "count": 1,
+      "duration_ns": 6048
+    },
+    "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3std3__44plusIvEEE10Policy1000EPiSC_NS0_13ScanTileStateIiLb1EEES9_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_": {
+      "count": 1,
+      "duration_ns": 5760
+    },
+    "_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIiLb1EEEEEvT_i": {
+      "count": 2,
+      "duration_ns": 3105
+    }
+  },
+  "malformed_kernel_lines": 0,
+  "record_count": 108,
+  "records": [
+    {
+      "correlation": 151,
+      "duration": 5472,
+      "end": 1788655765517900134,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c9init_gridEPNS_4CellES2_i",
+      "start": 1788655765517894662
+    },
+    {
+      "correlation": 158,
+      "duration": 1920,
+      "end": 1788655765518497901,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c19grow_history_kernelEPKNS0_11DeviceStateEPNS_4CellE",
+      "start": 1788655765518495981
+    },
+    {
+      "correlation": 161,
+      "duration": 2368,
+      "end": 1788655765519222166,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c21commit_history_growthEPNS0_11DeviceStateEPNS_4CellEi",
+      "start": 1788655765519219798
+    },
+    {
+      "correlation": 207,
+      "duration": 6240,
+      "end": 1788655765519893566,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c14plain_classifyEPKNS0_11DeviceStateEPKhiPiS6_S6_S6_",
+      "start": 1788655765519887326
+    },
+    {
+      "correlation": 219,
+      "duration": 1536,
+      "end": 1788655765519916958,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIiLb1EEEEEvT_i",
+      "start": 1788655765519915422
+    },
+    {
+      "correlation": 229,
+      "duration": 6048,
+      "end": 1788655765519942622,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3__47maximumIvEEE10Policy1000EPiSB_NS0_13ScanTileStateIiLb1EEES8_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_",
+      "start": 1788655765519936574
+    },
+    {
+      "correlation": 235,
+      "duration": 2847,
+      "end": 1788655765519949758,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c14plain_advancesEPKNS0_11DeviceStateEPKhiPKiPiS7_",
+      "start": 1788655765519946911
+    },
+    {
+      "correlation": 246,
+      "duration": 1569,
+      "end": 1788655765519952447,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN3cub17CUB_200802_SM_89020DeviceScanInitKernelINS0_13ScanTileStateIiLb1EEEEEvT_i",
+      "start": 1788655765519950878
+    },
+    {
+      "correlation": 256,
+      "duration": 5760,
+      "end": 1788655765519970239,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN3cub17CUB_200802_SM_89016DeviceScanKernelINS0_6detail4scan10policy_hubIiiijN4cuda3std3__44plusIvEEE10Policy1000EPiSC_NS0_13ScanTileStateIiLb1EEES9_NS0_8NullTypeEjiLb0EEEvT0_T1_T2_iT3_T4_T5_",
+      "start": 1788655765519964479
+    },
+    {
+      "correlation": 262,
+      "duration": 6368,
+      "end": 1788655765519986207,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c12plain_commitEPNS0_11DeviceStateEPKhiPKiS6_S6_PNS0_9PlainMetaE",
+      "start": 1788655765519979839
+    },
+    {
+      "correlation": 264,
+      "duration": 38560,
+      "end": 1788655765520035551,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c15prepare_historyINS0_9PlainMetaEEEvPNS0_11DeviceStateEPKiPKT_",
+      "start": 1788655765519996991
+    },
+    {
+      "correlation": 266,
+      "duration": 7456,
+      "end": 1788655765520047232,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11plain_clearEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE",
+      "start": 1788655765520039776
+    },
+    {
+      "correlation": 268,
+      "duration": 19328,
+      "end": 1788655765520072064,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13plain_scatterEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE",
+      "start": 1788655765520052736
+    },
+    {
+      "correlation": 270,
+      "duration": 4832,
+      "end": 1788655765520081792,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c19plain_wrap_metadataEPNS0_11DeviceStateEPKhiPKiS6_S6_PKNS0_9PlainMetaE",
+      "start": 1788655765520076960
+    },
+    {
+      "correlation": 272,
+      "duration": 2304,
+      "end": 1788655765520088224,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c14repair_historyEPNS0_11DeviceStateEPKiPKNS0_9PlainMetaE",
+      "start": 1788655765520085920
+    },
+    {
+      "correlation": 274,
+      "duration": 2208,
+      "end": 1788655765520094752,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c12plain_repairEPNS0_11DeviceStateEPKi",
+      "start": 1788655765520092544
+    },
+    {
+      "correlation": 276,
+      "duration": 3808,
+      "end": 1788655765520184161,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11feed_kernelEPNS0_11DeviceStateEPKhmPKiS6_Pi",
+      "start": 1788655765520180353
+    },
+    {
+      "correlation": 283,
+      "duration": 199906,
+      "end": 1788655765520432900,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520232994
+    },
+    {
+      "correlation": 285,
+      "duration": 9057,
+      "end": 1788655765520447525,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520438468
+    },
+    {
+      "correlation": 290,
+      "duration": 39168,
+      "end": 1788655765520516357,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520477189
+    },
+    {
+      "correlation": 292,
+      "duration": 7520,
+      "end": 1788655765520524901,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520517381
+    },
+    {
+      "correlation": 297,
+      "duration": 38560,
+      "end": 1788655765520585062,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520546502
+    },
+    {
+      "correlation": 299,
+      "duration": 7520,
+      "end": 1788655765520593670,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520586150
+    },
+    {
+      "correlation": 304,
+      "duration": 39232,
+      "end": 1788655765520656167,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520616935
+    },
+    {
+      "correlation": 306,
+      "duration": 7488,
+      "end": 1788655765520664775,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520657287
+    },
+    {
+      "correlation": 311,
+      "duration": 38561,
+      "end": 1788655765520724776,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520686215
+    },
+    {
+      "correlation": 313,
+      "duration": 7520,
+      "end": 1788655765520733352,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520725832
+    },
+    {
+      "correlation": 318,
+      "duration": 39681,
+      "end": 1788655765520799593,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520759912
+    },
+    {
+      "correlation": 320,
+      "duration": 7520,
+      "end": 1788655765520808137,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520800617
+    },
+    {
+      "correlation": 325,
+      "duration": 38401,
+      "end": 1788655765520868586,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520830185
+    },
+    {
+      "correlation": 327,
+      "duration": 7520,
+      "end": 1788655765520877066,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520869546
+    },
+    {
+      "correlation": 332,
+      "duration": 39009,
+      "end": 1788655765520941419,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520902410
+    },
+    {
+      "correlation": 334,
+      "duration": 7520,
+      "end": 1788655765520949931,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520942411
+    },
+    {
+      "correlation": 339,
+      "duration": 38464,
+      "end": 1788655765521016811,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765520978347
+    },
+    {
+      "correlation": 341,
+      "duration": 7520,
+      "end": 1788655765521025356,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521017836
+    },
+    {
+      "correlation": 346,
+      "duration": 38752,
+      "end": 1788655765521088940,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521050188
+    },
+    {
+      "correlation": 348,
+      "duration": 7520,
+      "end": 1788655765521097484,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521089964
+    },
+    {
+      "correlation": 353,
+      "duration": 38784,
+      "end": 1788655765521158189,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521119405
+    },
+    {
+      "correlation": 355,
+      "duration": 7488,
+      "end": 1788655765521166733,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521159245
+    },
+    {
+      "correlation": 360,
+      "duration": 39297,
+      "end": 1788655765521228750,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521189453
+    },
+    {
+      "correlation": 362,
+      "duration": 7520,
+      "end": 1788655765521237358,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521229838
+    },
+    {
+      "correlation": 367,
+      "duration": 38817,
+      "end": 1788655765521298127,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521259310
+    },
+    {
+      "correlation": 369,
+      "duration": 7488,
+      "end": 1788655765521306671,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521299183
+    },
+    {
+      "correlation": 374,
+      "duration": 38337,
+      "end": 1788655765521369616,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521331279
+    },
+    {
+      "correlation": 376,
+      "duration": 7488,
+      "end": 1788655765521378256,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521370768
+    },
+    {
+      "correlation": 381,
+      "duration": 38337,
+      "end": 1788655765521438449,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521400112
+    },
+    {
+      "correlation": 383,
+      "duration": 7520,
+      "end": 1788655765521447057,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521439537
+    },
+    {
+      "correlation": 388,
+      "duration": 38368,
+      "end": 1788655765521508529,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521470161
+    },
+    {
+      "correlation": 390,
+      "duration": 7520,
+      "end": 1788655765521517106,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521509586
+    },
+    {
+      "correlation": 395,
+      "duration": 38592,
+      "end": 1788655765521580178,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521541586
+    },
+    {
+      "correlation": 397,
+      "duration": 7520,
+      "end": 1788655765521588818,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765521581298
+    },
+    {
+      "correlation": 402,
+      "duration": 112353,
+      "end": 1788655765522486013,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522373660
+    },
+    {
+      "correlation": 404,
+      "duration": 7680,
+      "end": 1788655765522494685,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522487005
+    },
+    {
+      "correlation": 409,
+      "duration": 38176,
+      "end": 1788655765522556862,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522518686
+    },
+    {
+      "correlation": 411,
+      "duration": 7520,
+      "end": 1788655765522565534,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522558014
+    },
+    {
+      "correlation": 416,
+      "duration": 38656,
+      "end": 1788655765522628671,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522590015
+    },
+    {
+      "correlation": 418,
+      "duration": 7520,
+      "end": 1788655765522637247,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522629727
+    },
+    {
+      "correlation": 423,
+      "duration": 38049,
+      "end": 1788655765522698528,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522660479
+    },
+    {
+      "correlation": 425,
+      "duration": 7520,
+      "end": 1788655765522707200,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522699680
+    },
+    {
+      "correlation": 430,
+      "duration": 40001,
+      "end": 1788655765522771553,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522731552
+    },
+    {
+      "correlation": 432,
+      "duration": 7520,
+      "end": 1788655765522780097,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522772577
+    },
+    {
+      "correlation": 437,
+      "duration": 39553,
+      "end": 1788655765522841090,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522801537
+    },
+    {
+      "correlation": 439,
+      "duration": 7520,
+      "end": 1788655765522849666,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522842146
+    },
+    {
+      "correlation": 444,
+      "duration": 38784,
+      "end": 1788655765522910786,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522872002
+    },
+    {
+      "correlation": 446,
+      "duration": 7489,
+      "end": 1788655765522919267,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522911778
+    },
+    {
+      "correlation": 451,
+      "duration": 39008,
+      "end": 1788655765522980451,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522941443
+    },
+    {
+      "correlation": 453,
+      "duration": 7520,
+      "end": 1788655765522988963,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765522981443
+    },
+    {
+      "correlation": 458,
+      "duration": 38496,
+      "end": 1788655765523051492,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523012996
+    },
+    {
+      "correlation": 460,
+      "duration": 7488,
+      "end": 1788655765523060132,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523052644
+    },
+    {
+      "correlation": 465,
+      "duration": 39744,
+      "end": 1788655765523122021,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523082277
+    },
+    {
+      "correlation": 467,
+      "duration": 7520,
+      "end": 1788655765523130693,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523123173
+    },
+    {
+      "correlation": 472,
+      "duration": 39297,
+      "end": 1788655765523192774,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523153477
+    },
+    {
+      "correlation": 474,
+      "duration": 7520,
+      "end": 1788655765523201254,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523193734
+    },
+    {
+      "correlation": 479,
+      "duration": 38785,
+      "end": 1788655765523262471,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523223686
+    },
+    {
+      "correlation": 481,
+      "duration": 7520,
+      "end": 1788655765523271175,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523263655
+    },
+    {
+      "correlation": 486,
+      "duration": 38497,
+      "end": 1788655765523332872,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523294375
+    },
+    {
+      "correlation": 488,
+      "duration": 7520,
+      "end": 1788655765523341544,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523334024
+    },
+    {
+      "correlation": 493,
+      "duration": 37952,
+      "end": 1788655765523402024,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523364072
+    },
+    {
+      "correlation": 495,
+      "duration": 7521,
+      "end": 1788655765523410729,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523403208
+    },
+    {
+      "correlation": 500,
+      "duration": 38176,
+      "end": 1788655765523472553,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523434377
+    },
+    {
+      "correlation": 502,
+      "duration": 7488,
+      "end": 1788655765523481193,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523473705
+    },
+    {
+      "correlation": 507,
+      "duration": 38496,
+      "end": 1788655765523542314,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523503818
+    },
+    {
+      "correlation": 509,
+      "duration": 7520,
+      "end": 1788655765523550922,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523543402
+    },
+    {
+      "correlation": 514,
+      "duration": 38304,
+      "end": 1788655765523613387,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523575083
+    },
+    {
+      "correlation": 516,
+      "duration": 7520,
+      "end": 1788655765523622027,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523614507
+    },
+    {
+      "correlation": 521,
+      "duration": 38241,
+      "end": 1788655765523685036,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523646795
+    },
+    {
+      "correlation": 523,
+      "duration": 7520,
+      "end": 1788655765523693516,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523685996
+    },
+    {
+      "correlation": 528,
+      "duration": 38753,
+      "end": 1788655765523758861,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523720108
+    },
+    {
+      "correlation": 530,
+      "duration": 7520,
+      "end": 1788655765523767533,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523760013
+    },
+    {
+      "correlation": 535,
+      "duration": 38625,
+      "end": 1788655765523828750,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523790125
+    },
+    {
+      "correlation": 537,
+      "duration": 7488,
+      "end": 1788655765523837422,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523829934
+    },
+    {
+      "correlation": 542,
+      "duration": 38496,
+      "end": 1788655765523899918,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523861422
+    },
+    {
+      "correlation": 544,
+      "duration": 7489,
+      "end": 1788655765523908559,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523901070
+    },
+    {
+      "correlation": 549,
+      "duration": 39360,
+      "end": 1788655765523971183,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523931823
+    },
+    {
+      "correlation": 551,
+      "duration": 7488,
+      "end": 1788655765523979695,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765523972207
+    },
+    {
+      "correlation": 556,
+      "duration": 38368,
+      "end": 1788655765524040272,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524001904
+    },
+    {
+      "correlation": 558,
+      "duration": 7520,
+      "end": 1788655765524048912,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524041392
+    },
+    {
+      "correlation": 563,
+      "duration": 39456,
+      "end": 1788655765524110449,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524070993
+    },
+    {
+      "correlation": 565,
+      "duration": 7520,
+      "end": 1788655765524119025,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524111505
+    },
+    {
+      "correlation": 570,
+      "duration": 38753,
+      "end": 1788655765524181778,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524143025
+    },
+    {
+      "correlation": 572,
+      "duration": 7488,
+      "end": 1788655765524190258,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524182770
+    },
+    {
+      "correlation": 577,
+      "duration": 38913,
+      "end": 1788655765524251699,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524212786
+    },
+    {
+      "correlation": 579,
+      "duration": 7520,
+      "end": 1788655765524260339,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524252819
+    },
+    {
+      "correlation": 584,
+      "duration": 38273,
+      "end": 1788655765524321108,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524282835
+    },
+    {
+      "correlation": 586,
+      "duration": 7520,
+      "end": 1788655765524329684,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524322164
+    },
+    {
+      "correlation": 591,
+      "duration": 38592,
+      "end": 1788655765524391380,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c11find_searchEPKNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524352788
+    },
+    {
+      "correlation": 593,
+      "duration": 7489,
+      "end": 1788655765524399925,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c13commit_searchEPNS0_11DeviceStateEPNS0_10SearchWorkE",
+      "start": 1788655765524392436
+    },
+    {
+      "correlation": 597,
+      "duration": 1568,
+      "end": 1788655765524424725,
+      "file": "bench/search-prune-reference-current-80-hard-profile.raw",
+      "name": "_ZN2ct41_GLOBAL__N__ff825839_9_engine_cu_36e6672c22clear_selection_kernelEPNS0_11DeviceStateE",
+      "start": 1788655765524423157
+    }
+  ]
+}

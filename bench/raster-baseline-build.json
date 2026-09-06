@@ -1,0 +1,10 @@
+{
+  "source": "/nix/store/y95inl0bf1zv6dyszid59pxlnas35b0p-source",
+  "font": "/nix/store/vp3jdl0bqji23z32l7b4rfyli42y6jr9-cudaterm-unifont-17.0.05",
+  "reference_executable": "/nix/store/3rk5112c3jib0xfasjz5240z594hcm92-cudaterm-0.1.0/bin/cudaterm",
+  "nix_expression": "let\n  flake = builtins.getFlake \"/home/y0usaf/dev/developing/cudaterm\";\n  oldSource = builtins.storePath \"/nix/store/y95inl0bf1zv6dyszid59pxlnas35b0p-source\";\n  oldFont = builtins.storePath \"/nix/store/vp3jdl0bqji23z32l7b4rfyli42y6jr9-cudaterm-unifont-17.0.05\";\nin flake.packages.x86_64-linux.default.overrideAttrs (old: {\n  pname = \"cudaterm-raster-baseline\";\n  postPatch = \"cp -r ${oldSource}/src/. src/\";\n  buildPhase = builtins.replaceStrings [\"/nix/store/qryp5im6hjx67wphdv38q0mkhvjkf0nl-cudaterm-unifont-17.0.05\"] [oldFont] old.buildPhase;\n})\n",
+  "baseline_derivation": "/nix/store/1p6yvkwk8h4vm8i87sn9q44jpc81jia8-cudaterm-raster-baseline-0.1.0.drv",
+  "baseline_result": "/nix/store/a79c5px2gjhrxycz5jzm795h53wvs59m-cudaterm-raster-baseline-0.1.0",
+  "benchmark_source": "/nix/store/gnbwj6xlpln348kiadnyyx2ni7g5xy28-source/bench/engine_bench.cu",
+  "benchmark_sha256": "d9cccb4f9c2248e21f2cf35b2217697ace679a3fc8856a9eb21cda12c5a2bf1a"
+}

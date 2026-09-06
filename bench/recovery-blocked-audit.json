@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-06",
+  "consecutive_goal_turns_with_same_access_blocker": 3,
+  "checks": [
+    {
+      "chunk_id": "302f5c",
+      "wall_time_seconds": 0.00000224,
+      "exit_code": 9,
+      "original_token_count": 37,
+      "output": "NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.\n\n"
+    },
+    {
+      "chunk_id": "f56172",
+      "wall_time_seconds": 0,
+      "exit_code": 1,
+      "original_token_count": 48,
+      "output": "error:\n       … while fetching the input 'path:/home/y0usaf/dev/developing/cudaterm'\n\n       error: cannot connect to socket at '/nix/var/nix/daemon-socket/socket': Operation not permitted\n"
+    }
+  ],
+  "decision": "Blocked: required NVIDIA runtime and Nix daemon access remain unavailable after three consecutive goal turns. CPU recovery/review is finished; remaining validation requires external access restoration.",
+  "work_preserved": "bench/reboot-recovery-validation.json",
+  "candidate": "unaccepted",
+  "targets": "unchanged"
+}

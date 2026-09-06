@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/ct-clipboard-debug.py", line 165, in <module>
+    else: main()
+          ~~~~^^
+  File "/tmp/ct-clipboard-debug.py", line 147, in main
+    assert (root/'clipboard.received').read_bytes()==b'\x1b[200~'+expected+b'\x1b[201~', repr((root/'clipboard.received').read_bytes()[:128])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: b'\x1b[200~\nCOPY \xc3\xa9\xe4\xb8\xad e\xcc\x81\x1b[201'

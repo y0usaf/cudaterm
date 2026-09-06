@@ -1,0 +1,394 @@
+{
+  "status": "passed",
+  "command": [
+    "bench/reflow_perf.py",
+    "--host",
+    "/nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm-engine-host",
+    "--output",
+    "bench/reflow-cost-after-blank-2.json",
+    "--lines",
+    "0",
+    "--soft-bytes",
+    "0",
+    "--cycles",
+    "5"
+  ],
+  "host": "/nix/store/qvq5z46v400c6x09h9l5lhkfldvjhnic-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "host_sha256": "2aa73c17be4d4d99e843a5e863cf6e7b15a4a287613ee614f2c6b05f78199f19",
+  "lines": 0,
+  "soft_bytes": 0,
+  "seed_bytes": 0,
+  "seed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "cycles": 5,
+  "widths": [
+    40,
+    318,
+    80
+  ],
+  "rows": 24,
+  "samples": [
+    {
+      "cycle": 0,
+      "cols": 40,
+      "resize_ns": 347339,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7650255,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 0,
+      "cols": 318,
+      "resize_ns": 233520,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 9215951,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 0,
+      "cols": 80,
+      "resize_ns": 926279,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7875535,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "cols": 40,
+      "resize_ns": 277770,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7650255,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "cols": 318,
+      "resize_ns": 229210,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 9215951,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "cols": 80,
+      "resize_ns": 935138,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7875535,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "cols": 40,
+      "resize_ns": 273749,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7650255,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "cols": 318,
+      "resize_ns": 229190,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 9215951,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "cols": 80,
+      "resize_ns": 939278,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7875535,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "cols": 40,
+      "resize_ns": 299220,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7650255,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "cols": 318,
+      "resize_ns": 225889,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 9215951,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "cols": 80,
+      "resize_ns": 937318,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7875535,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "cols": 40,
+      "resize_ns": 275919,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7650255,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 40,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "cols": 318,
+      "resize_ns": 355799,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 9215951,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 318,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "cols": 80,
+      "resize_ns": 975729,
+      "memory": {
+        "rss_kib": 63408,
+        "pss_kib": 54438,
+        "private_kib": 51008
+      },
+      "allocation": {
+        "device_bytes": 7875535,
+        "image_bytes": 0,
+        "transfer_bytes": 0,
+        "history_capacity": 128
+      },
+      "state": {
+        "cols": 80,
+        "rows": 24,
+        "row": 0,
+        "col": 0,
+        "history": 0,
+        "sync": 0
+      }
+    }
+  ],
+  "scope": "Engine-host W request RTT includes IPC and CUDA resize, not presentation latency. Old clipping is not functionally equivalent to reflow.",
+  "sampled_peak_note": "Stage samples are not instantaneous peaks.",
+  "pid": 27236
+}

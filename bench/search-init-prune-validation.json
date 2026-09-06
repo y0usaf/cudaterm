@@ -1,0 +1,54 @@
+{
+  "candidate": "third initialize_search plus long-query pruning",
+  "status": "rejected",
+  "store": "/nix/store/4wjbswz31d9kv43xk2i96ss122whh699-cudaterm-0.1.0",
+  "corrected_store": "/nix/store/4wjbswz31d9kv43xk2i96ss122whh699-cudaterm-0.1.0",
+  "functional_command": "nix develop . --command /nix/store/4wjbswz31d9kv43xk2i96ss122whh699-cudaterm-0.1.0/bin/cudaterm-search-test",
+  "functional_exit": 0,
+  "cost_command": "nix develop . --command /nix/store/4wjbswz31d9kv43xk2i96ss122whh699-cudaterm-0.1.0/bin/cudaterm-search-cost COLS hard|soft",
+  "cost_exit_statuses": "bench/search-init-prune-cost-exits.tsv",
+  "percentile": "Linear interpolation at zero-based (n-1)*0.9; 120 pooled samples per case.",
+  "gates": {
+    "80-hard": {
+      "candidate_median_ns": 55394.0,
+      "candidate_p90_ns": 61514.00000000001,
+      "baseline_median_ns": 49549.5,
+      "baseline_p90_ns": 50262.0,
+      "pass": false
+    },
+    "80-soft": {
+      "candidate_median_ns": 1168268.0,
+      "candidate_p90_ns": 1460846.0,
+      "baseline_median_ns": 6815504.5,
+      "baseline_p90_ns": 9714184.1,
+      "pass": true
+    },
+    "318-hard": {
+      "candidate_median_ns": 93025.0,
+      "candidate_p90_ns": 127081.0,
+      "baseline_median_ns": 98054.5,
+      "baseline_p90_ns": 131146.0,
+      "pass": true
+    },
+    "318-soft": {
+      "candidate_median_ns": 1199323.5,
+      "candidate_p90_ns": 1626704.0,
+      "baseline_median_ns": 27622753.0,
+      "baseline_p90_ns": 28950747.9,
+      "pass": true
+    }
+  },
+  "logs": [
+    "bench/search-init-prune-build-corrected.log",
+    "bench/search-init-prune-search-corrected.log",
+    "bench/search-init-prune-memcheck.log",
+    "bench/search-init-prune-racecheck.log"
+  ],
+  "raw_cost": "bench/search-init-prune-cost-{80,318}-{hard,soft}-{0,1,2}.json",
+  "restored_source_hashes": {
+    "src/engine.cu": "e942843c529b2799053801c1304ce14e8480dca8e800265bb2fd901a3286e95d",
+    "src/search_kernels.cuh": "d614d0baf85a5e4ca0c35fd7e64d7e1431b518efafaa42bb826221b1387fd923"
+  },
+  "review_note": "Parent recomputed all statistics using linear interpolation; earlier agent floor-rank report and false 318-hard failure were incorrect. Only 80-hard fails.",
+  "sanitizer_scope": "Listed sanitizer logs precede corrected host launch bounds and invalidated-result view_offset restoration; they do not validate the corrected candidate binary. Corrected candidate focused test passed; all candidate code was subsequently reverted."
+}

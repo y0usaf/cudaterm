@@ -1,0 +1,301 @@
+{
+  "percentile": "Linear interpolation at zero-based (n-1)*0.9; 120 pooled samples per case.",
+  "fixed_baseline": "bench/search-cost-summary.json",
+  "experiments": {
+    "search-prune-cost": {
+      "80-hard": {
+        "samples": 120,
+        "median_ns": 62175.0,
+        "p90_ns": 63671.0,
+        "max_ns": 67510,
+        "passes_fixed_median_and_p90": false,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-prune-cost-80-hard-0.json",
+            "sha256": "206a49f9c3cb30b5c52757c2b493c843dff65c8697b8c0f41852f4afca63e184"
+          },
+          {
+            "path": "bench/search-prune-cost-80-hard-1.json",
+            "sha256": "ae06c5dc4858606477068136ea87184a50bed43126ddcbeaa40a559c5323f233"
+          },
+          {
+            "path": "bench/search-prune-cost-80-hard-2.json",
+            "sha256": "0b6f525e54a0b392063ed5c0986da600461fce0f1de94d534d1205c7b6b3e4e4"
+          }
+        ]
+      },
+      "80-soft": {
+        "samples": 120,
+        "median_ns": 1118488.0,
+        "p90_ns": 1767810.1,
+        "max_ns": 3677714,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-prune-cost-80-soft-0.json",
+            "sha256": "55a4f2f354298b3db2eccbb706d0482b023f8a7db01c4f42debc6685ee0fa702"
+          },
+          {
+            "path": "bench/search-prune-cost-80-soft-1.json",
+            "sha256": "b016d175b452df704bf8e74377a55e3d1b6fbbd7af9c20f25f60205aaa04ad7a"
+          },
+          {
+            "path": "bench/search-prune-cost-80-soft-2.json",
+            "sha256": "e7667ab08b22d291897f7888c060bda96a20d6221578a39be6ecb08bd5d6c878"
+          }
+        ]
+      },
+      "318-hard": {
+        "samples": 120,
+        "median_ns": 98070.0,
+        "p90_ns": 136596.00000000003,
+        "max_ns": 2527756,
+        "passes_fixed_median_and_p90": false,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-prune-cost-318-hard-0.json",
+            "sha256": "8ba25d9e3365bbcfe732f7c3de1ef2193e63c642c0ff8f501ab1ea6217f4e1e8"
+          },
+          {
+            "path": "bench/search-prune-cost-318-hard-1.json",
+            "sha256": "8d8fc1b58af1fdecbc6e02d9984741e7a1c835620f8197d41714b3c1c71e2da3"
+          },
+          {
+            "path": "bench/search-prune-cost-318-hard-2.json",
+            "sha256": "e725b2d43da13f4f65704ce935f8bef6f8fc62f651ec2fcffe43428fc6c918b7"
+          }
+        ]
+      },
+      "318-soft": {
+        "samples": 120,
+        "median_ns": 1254653.5,
+        "p90_ns": 1914396.0,
+        "max_ns": 4313103,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-prune-cost-318-soft-0.json",
+            "sha256": "61bafffa73332abd0c0157de1de47db05f7162b012b503a1663c54060d9775f1"
+          },
+          {
+            "path": "bench/search-prune-cost-318-soft-1.json",
+            "sha256": "6d6d1d14c9c7667ed4d7fa006f98fb60f78e766cfa7d2a3308208768d68266d5"
+          },
+          {
+            "path": "bench/search-prune-cost-318-soft-2.json",
+            "sha256": "bdeb6e7f3aa3883d79b4b06cb4845db32d59bc931f20a594a63c332a14d3dd3c"
+          }
+        ]
+      }
+    },
+    "search-long-prune-cost": {
+      "80-hard": {
+        "samples": 120,
+        "median_ns": 64325.0,
+        "p90_ns": 65357.0,
+        "max_ns": 79629,
+        "passes_fixed_median_and_p90": false,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-long-prune-cost-80-hard-0.json",
+            "sha256": "b06e06c721ff1b8def5e359255caa9dd7295fb785ee974d77ee34b225b88bf1f"
+          },
+          {
+            "path": "bench/search-long-prune-cost-80-hard-1.json",
+            "sha256": "86da94a98b617d959befb43935492da36b5b075ad632adf86b4f597adc425a85"
+          },
+          {
+            "path": "bench/search-long-prune-cost-80-hard-2.json",
+            "sha256": "c22cab684047ef51f240c07cb98b042c4111991d295a0aa7a0d6e9616bf9ee8f"
+          }
+        ]
+      },
+      "80-soft": {
+        "samples": 120,
+        "median_ns": 1006093.0,
+        "p90_ns": 2590572.9000000004,
+        "max_ns": 4104024,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-long-prune-cost-80-soft-0.json",
+            "sha256": "18f6f697f351e3942d5aa3861f2b7373c0322933690f1a144c0c10bcbff5d551"
+          },
+          {
+            "path": "bench/search-long-prune-cost-80-soft-1.json",
+            "sha256": "9b6d61c8ffa134ac677183c09379dd1c8924ae77c42c9fdad7176e69a458b28a"
+          },
+          {
+            "path": "bench/search-long-prune-cost-80-soft-2.json",
+            "sha256": "91a07acd7bebfa85d2b5eb52296e15edf6c753bf78a307980be95b1830ca238e"
+          }
+        ]
+      },
+      "318-hard": {
+        "samples": 120,
+        "median_ns": 97275.0,
+        "p90_ns": 138242.0,
+        "max_ns": 459890,
+        "passes_fixed_median_and_p90": false,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-long-prune-cost-318-hard-0.json",
+            "sha256": "3e0eb172ea8a26489c640bb932bf020da09b548490e036c19d04203c3dda9cea"
+          },
+          {
+            "path": "bench/search-long-prune-cost-318-hard-1.json",
+            "sha256": "cc2cb4cd1ec2f3821bbb19c3cc31ed16cda673fe2bf0e8c02c9168cb236e7f61"
+          },
+          {
+            "path": "bench/search-long-prune-cost-318-hard-2.json",
+            "sha256": "a9da0d4c06f89f63c544445b001e9644b36c2afba31f7329b3df77aae6cc593a"
+          }
+        ]
+      },
+      "318-soft": {
+        "samples": 120,
+        "median_ns": 1109103.0,
+        "p90_ns": 1574976.1,
+        "max_ns": 3670174,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-long-prune-cost-318-soft-0.json",
+            "sha256": "e1430b3e87766521e811017727a4e4d36a7d78be8875662d042f2bd3d323ea15"
+          },
+          {
+            "path": "bench/search-long-prune-cost-318-soft-1.json",
+            "sha256": "7094faf54111d9dea621935ffe5ec25beef2e1382696a569fb4bb0124fac1a6b"
+          },
+          {
+            "path": "bench/search-long-prune-cost-318-soft-2.json",
+            "sha256": "ed2e68c00fc9267042611f3bd3badfedfce275a1d23e3d8f5de615de4bf38946"
+          }
+        ]
+      }
+    },
+    "search-init-prune-cost": {
+      "80-hard": {
+        "samples": 120,
+        "median_ns": 55394.0,
+        "p90_ns": 61514.00000000001,
+        "max_ns": 862389,
+        "passes_fixed_median_and_p90": false,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-init-prune-cost-80-hard-0.json",
+            "sha256": "2180a0a7c06ab427d3b98432b5c8127b975fc73be72b483d3dc33a19f784084a"
+          },
+          {
+            "path": "bench/search-init-prune-cost-80-hard-1.json",
+            "sha256": "593324c9f058b908d4b9ee051824b6a716936623ed2ad474f43394e5cc780e76"
+          },
+          {
+            "path": "bench/search-init-prune-cost-80-hard-2.json",
+            "sha256": "821aeb5a9a25409d4cfd097c087d8faf614f7b84e2ae7a0257831b06271a0b61"
+          }
+        ]
+      },
+      "80-soft": {
+        "samples": 120,
+        "median_ns": 1168268.0,
+        "p90_ns": 1460846.0,
+        "max_ns": 2972635,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-init-prune-cost-80-soft-0.json",
+            "sha256": "f1dbf4c475edb8cb02aef5062581c2c89e8f8a17cef67605fa7f21be48b4f180"
+          },
+          {
+            "path": "bench/search-init-prune-cost-80-soft-1.json",
+            "sha256": "000d94d8d2905c97fcb795a883dec5d2ae0f72afcca2e8f038ad1c2df1246b74"
+          },
+          {
+            "path": "bench/search-init-prune-cost-80-soft-2.json",
+            "sha256": "b0b70f08eaf982c7f1c214ee324782391db2ed4cca2e6a7a78656b832fa17f33"
+          }
+        ]
+      },
+      "318-hard": {
+        "samples": 120,
+        "median_ns": 93025.0,
+        "p90_ns": 127081.0,
+        "max_ns": 448989,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-init-prune-cost-318-hard-0.json",
+            "sha256": "2b5de182a11430d6257014204047d6e7d99aa669c7ff1f7c8d21bda8cf7b0cc4"
+          },
+          {
+            "path": "bench/search-init-prune-cost-318-hard-1.json",
+            "sha256": "285834677073a6c606ae8da7b1e5c99061ace6feb2d7092e4e382537dbbb76d2"
+          },
+          {
+            "path": "bench/search-init-prune-cost-318-hard-2.json",
+            "sha256": "0de4f42ad653f20fbcb0bc08af0d5bf333ab92b80a9796f5d9de665a87096d64"
+          }
+        ]
+      },
+      "318-soft": {
+        "samples": 120,
+        "median_ns": 1199323.5,
+        "p90_ns": 1626704.0,
+        "max_ns": 3488325,
+        "passes_fixed_median_and_p90": true,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-init-prune-cost-318-soft-0.json",
+            "sha256": "fa1aeb0c7da6d89eee4d4d4a0961d9c18c35527fc2705c4f807912eb4fef782a"
+          },
+          {
+            "path": "bench/search-init-prune-cost-318-soft-1.json",
+            "sha256": "b22146aabd47b65dc674d53d1b738b8c7fa9c5de60b670fe4174baa3c6a9b583"
+          },
+          {
+            "path": "bench/search-init-prune-cost-318-soft-2.json",
+            "sha256": "2f05b2cc8d73facdefbce14bf6c36cdd623fc4f78f9f9d4c6120921a074569eb"
+          }
+        ]
+      }
+    },
+    "search-prune-reference-current": {
+      "80-hard": {
+        "samples": 120,
+        "median_ns": 53250.0,
+        "p90_ns": 65380.9,
+        "max_ns": 68530,
+        "passes_fixed_median_and_p90": false,
+        "cleared_to_baseline": true,
+        "raw": [
+          {
+            "path": "bench/search-prune-reference-current-80-hard-0.json",
+            "sha256": "568b26bf32021e74575cc9a962c72f1a6380e36df705d8e59403e147d7e13d65"
+          },
+          {
+            "path": "bench/search-prune-reference-current-80-hard-1.json",
+            "sha256": "89a21912b456166fdf238ca4b97aa666b047a046f25992d5f0dc644ee908fafe"
+          },
+          {
+            "path": "bench/search-prune-reference-current-80-hard-2.json",
+            "sha256": "022bac78f9173fffc16fe1acdabdb2b8dbca5336c5555bb9c9eca446276461ad"
+          }
+        ]
+      }
+    }
+  },
+  "decision": "All three candidates rejected; fixed acceptance gates unchanged."
+}

@@ -1,0 +1,9 @@
+{
+  "calls": 104,
+  "ended": 1,
+  "maximum_ms": 1.742537,
+  "mouse_bytes": 936,
+  "binary": "/nix/store/fv9gqwbv3sj4jb8kqphbxnjf0rz2c3px-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "upload_ms": 218.4018970001489,
+  "scope": "GPU snapshot and mouse reports during CUDA decode; no desktop input injection"
+}

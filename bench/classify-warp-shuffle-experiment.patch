@@ -1,0 +1,47 @@
+--- a/src/engine.cu
++++ b/src/engine.cu
+@@ -1023,8 +1023,9 @@
+ __global__ void plain_classify(const DeviceState *s, const unsigned char *b,
+                                int n, int *starts, int *rejected, int *styled) {
+   int i = blockIdx.x * blockDim.x + threadIdx.x;
+-  if (i >= n)
+-    return;
++  bool active = i < n;
++  unsigned char c = active ? b[i] : 0;
++  int candidate = n;
+   if (i == 0)
+     *styled = 0;
+   if (i == 0) {
+@@ -1033,19 +1034,24 @@
+         (b[0] < 32 && b[0] != 27 &&
+          !(b[0] == '\n' && s->col == 0 && !s->wrap_pending) &&
+          !(b[0] == '\r' && n > 1 && b[1] == '\n')))
+-      atomicMin(rejected, -1);
++      candidate = -1;
+     else if (!s->autowrap || s->insert_mode || s->top != 0 ||
+              s->bottom != s->rows - 1)
+-      atomicMin(rejected, 0);
+-  }
+-  unsigned char c = b[i];
+-  bool valid = (c >= 32 && c < 127) ||
++      candidate = 0;
++  }
++  bool valid = !active || (c >= 32 && c < 127) ||
+                (c == '\r' && (i == n - 1 || b[i + 1] == '\n')) ||
+                (c == '\n' && ((i > 0 && b[i - 1] == '\r') ||
+                               (i == 0 && s->col == 0 && !s->wrap_pending)));
+-  if (!valid)
+-    atomicMin(rejected, i);
+-  starts[i] = (i > 0 && b[i - 1] == '\n') ? i : 0;
++  if (active && !valid)
++    candidate = dmin(candidate, i);
++  if (active)
++    starts[i] = (i > 0 && b[i - 1] == '\n') ? i : 0;
++  // Both launch sites use full 256-thread blocks; tail lanes join with n.
++  for (int delta = 16; delta; delta >>= 1)
++    candidate = dmin(candidate, __shfl_down_sync(0xffffffffu, candidate, delta));
++  if ((threadIdx.x & 31) == 0 && candidate < n)
++    atomicMin(rejected, candidate);
+ }
+ __global__ void plain_advances(const DeviceState *s, const unsigned char *b,
+                                int n, const int *starts, int *advances,

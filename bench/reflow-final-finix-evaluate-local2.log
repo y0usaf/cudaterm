@@ -1,0 +1,24 @@
+error:
+       … while evaluating the file '/home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix':
+
+       … in the condition of the assert statement
+         at /home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix:16:4:
+           15|   failed = system: map (a: a.message) (builtins.filter (a: !a.assertion) system.config.assertions);
+           16| in assert failed desktop == [];
+             |    ^
+           17| assert builtins.elem "cudaterm requires the NVIDIA driver" (failed amd);
+
+       … while calling the 'map' builtin
+         at /home/y0usaf/dev/developing/cudaterm/nix/finix-evaluate.nix:15:20:
+           14|   override = desktop.extendModules { modules = [ { user.defaults.terminal = "foot"; } ]; };
+           15|   failed = system: map (a: a.message) (builtins.filter (a: !a.assertion) system.config.assertions);
+             |                    ^
+           16| in assert failed desktop == [];
+
+       … while evaluating the option `assertions':
+
+       … while evaluating definitions from `<unknown-file>':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option `user.ui.cudaterm.enable' in `<unknown-file>' is already declared in `<unknown-file>'.

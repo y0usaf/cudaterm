@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "uploads": 19,
+  "pixel_checks": 19,
+  "checks": [
+    "real browser beside shell",
+    "compressed frame pixel oracle",
+    "GPU mouse to DOM click"
+  ],
+  "cuda_binary": "/nix/store/dv3icgbzyqjrlc6bi1bwsfyd178iw6hg-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "ekko_binary": "/nix/store/xkg4vksgdvznc70hlgsd9kr5qmgqlb12-ekko-0.1.0/bin/ekko",
+  "browser_binary": "/nix/store/1m1zizx7572f0r2lpn81ygm5ma8c0c1z-terminal-slack-browser/bin/terminal-slack-browser",
+  "ekko_status": {
+    "wire_version": 2,
+    "session": "browser-test",
+    "daemon_pid": 16261,
+    "allocated_bytes": 61333696,
+    "gc_seconds": 0.0,
+    "snapshot_bytes": 0,
+    "attached": true,
+    "panes": [
+      {
+        "id": 1,
+        "pid": 16272,
+        "exit_code": null,
+        "cols": 59,
+        "rows": 38,
+        "images": 0,
+        "frames": 0,
+        "graphics_errors": 0,
+        "image_bytes": 0,
+        "pty_output_bytes": 10,
+        "local_images": 0
+      },
+      {
+        "id": 2,
+        "pid": 16273,
+        "exit_code": null,
+        "cols": 60,
+        "rows": 38,
+        "images": 1,
+        "frames": 21,
+        "graphics_errors": 0,
+        "image_bytes": 38735,
+        "pty_output_bytes": 489484,
+        "local_images": 0
+      }
+    ]
+  },
+  "scope": "headless browser and CUDA raster; no desktop display"
+}

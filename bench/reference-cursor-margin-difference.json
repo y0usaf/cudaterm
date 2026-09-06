@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/nix/store/xac72lwxclyj9yhs9cxw8qqqrhvbrmfg-cudaterm-0.1.0/bin/cudaterm-reference-test",
+    "margin_checkpoints"
+  ],
+  "exit_code": 1,
+  "stderr": "reference-test: margin_checkpoints step=10 cursor chunk=0 expected=3,0 actual=2,0\n",
+  "interpretation": "libvterm0.3.3 clamps vertical moves to screen bounds with origin off; DEC CUU/CUD stop at scrolling margins unless already beyond that margin. Keep cudaterm behavior and verify with literal tests.",
+  "sources": [
+    "https://vt100.net/docs/vt510-rm/CUD.html",
+    "https://vt100.net/docs/vt510-rm/CUU.html"
+  ]
+}

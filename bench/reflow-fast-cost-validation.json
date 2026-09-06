@@ -1,0 +1,1246 @@
+{
+  "store_path": "/nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0",
+  "source_hash": {
+    "working_reflow_cuh": "5d5c6d58b434eeb8a13dea3b25873ef9c390d7d85b94503e523003564ddd5928",
+    "derivation_reflow_cuh": "5d5c6d58b434eeb8a13dea3b25873ef9c390d7d85b94503e523003564ddd5928"
+  },
+  "commands": [
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-blank-0.json --lines 0 --soft-bytes 0 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-hard-0.json --lines 5000 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-soft-0.json --lines 0 --soft-bytes 65536 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-blank-1.json --lines 0 --soft-bytes 0 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-hard-1.json --lines 5000 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-soft-1.json --lines 0 --soft-bytes 65536 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-blank-2.json --lines 0 --soft-bytes 0 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-hard-2.json --lines 5000 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-soft-2.json --lines 0 --soft-bytes 65536 --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-wide-0.json --lines 0 --soft-bytes 65536 --soft-unit wide --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-wide-1.json --lines 0 --soft-bytes 65536 --soft-unit wide --cycles 5",
+      "exit": 0
+    },
+    {
+      "command": "nix develop . --command python3 bench/reflow_perf.py --host /nix/store/37swjdsqvx58grl0bdc6gqkkmcyq0bim-cudaterm-0.1.0/bin/cudaterm-engine-host --output bench/reflow-fast-cost-after-wide-2.json --lines 0 --soft-bytes 65536 --soft-unit wide --cycles 5",
+      "exit": 0
+    }
+  ],
+  "report": {
+    "fast": {
+      "blank": {
+        "40": {
+          "rtt_ns": {
+            "min": 88670,
+            "median": 123770,
+            "p90": 189255.6,
+            "max": 445660,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63672,
+              "median": 63672,
+              "p90": 63672,
+              "max": 63672,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54712,
+              "median": 54862,
+              "p90": 54862,
+              "max": 54862,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51256,
+              "median": 51256,
+              "p90": 51256,
+              "max": 51256,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 7650255,
+              "median": 7650255,
+              "p90": 7650255,
+              "max": 7650255,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 128,
+              "median": 128,
+              "p90": 128,
+              "max": 128,
+              "n": 15
+            }
+          }
+        },
+        "80": {
+          "rtt_ns": {
+            "min": 113870,
+            "median": 151210,
+            "p90": 355048.9999999999,
+            "max": 2551566,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63672,
+              "median": 63672,
+              "p90": 63672,
+              "max": 63672,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54740,
+              "median": 54862,
+              "p90": 54862,
+              "max": 54862,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51256,
+              "median": 51256,
+              "p90": 51256,
+              "max": 51256,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 7875535,
+              "median": 7875535,
+              "p90": 7875535,
+              "max": 7875535,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 128,
+              "median": 128,
+              "p90": 128,
+              "max": 128,
+              "n": 15
+            }
+          }
+        },
+        "318": {
+          "rtt_ns": {
+            "min": 132040,
+            "median": 163520,
+            "p90": 1011322.3999999997,
+            "max": 1887367,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63672,
+              "median": 63672,
+              "p90": 63672,
+              "max": 63672,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54755,
+              "median": 54862,
+              "p90": 54862,
+              "max": 54862,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51256,
+              "median": 51256,
+              "p90": 51256,
+              "max": 51256,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 9215951,
+              "median": 9215951,
+              "p90": 9215951,
+              "max": 9215951,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 128,
+              "median": 128,
+              "p90": 128,
+              "max": 128,
+              "n": 15
+            }
+          }
+        }
+      },
+      "hard": {
+        "40": {
+          "rtt_ns": {
+            "min": 4481883,
+            "median": 5486702,
+            "p90": 10563291.799999999,
+            "max": 11705872,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63804,
+              "median": 63804,
+              "p90": 63804,
+              "max": 63804,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54625,
+              "median": 54903,
+              "p90": 54903,
+              "max": 54903,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51252,
+              "median": 51260,
+              "p90": 51260,
+              "max": 51260,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 15453902,
+              "median": 15453902,
+              "p90": 15453902,
+              "max": 15453902,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 4096,
+              "median": 4096,
+              "p90": 4096,
+              "max": 4096,
+              "n": 15
+            }
+          }
+        },
+        "80": {
+          "rtt_ns": {
+            "min": 5606352,
+            "median": 7997747,
+            "p90": 11973611.2,
+            "max": 13060330,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63804,
+              "median": 63804,
+              "p90": 63804,
+              "max": 63804,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54537,
+              "median": 54903,
+              "p90": 54903,
+              "max": 54903,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51252,
+              "median": 51260,
+              "p90": 51260,
+              "max": 51260,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 20758222,
+              "median": 20758222,
+              "p90": 20758222,
+              "max": 20758222,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 4096,
+              "median": 4096,
+              "p90": 4096,
+              "max": 4096,
+              "n": 15
+            }
+          }
+        },
+        "318": {
+          "rtt_ns": {
+            "min": 4754373,
+            "median": 7430289,
+            "p90": 10867507.4,
+            "max": 12748841,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63804,
+              "median": 63804,
+              "p90": 63804,
+              "max": 63804,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54625,
+              "median": 54903,
+              "p90": 54903,
+              "max": 54903,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51252,
+              "median": 51260,
+              "p90": 51260,
+              "max": 51260,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 52318926,
+              "median": 52318926,
+              "p90": 52318926,
+              "max": 52318926,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 4096,
+              "median": 4096,
+              "p90": 4096,
+              "max": 4096,
+              "n": 15
+            }
+          }
+        }
+      },
+      "soft": {
+        "40": {
+          "rtt_ns": {
+            "min": 750559,
+            "median": 802038,
+            "p90": 1068302,
+            "max": 1633237,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63804,
+              "median": 63804,
+              "p90": 63804,
+              "max": 63804,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54903,
+              "median": 54903,
+              "p90": 54903,
+              "max": 54903,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51260,
+              "median": 51260,
+              "p90": 51260,
+              "max": 51260,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 12832462,
+              "median": 12832462,
+              "p90": 12832462,
+              "max": 12832462,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 2048,
+              "median": 2048,
+              "p90": 2048,
+              "max": 2048,
+              "n": 15
+            }
+          }
+        },
+        "80": {
+          "rtt_ns": {
+            "min": 327819,
+            "median": 416899,
+            "p90": 465873,
+            "max": 529239,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63804,
+              "median": 63804,
+              "p90": 63804,
+              "max": 63804,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54903,
+              "median": 54903,
+              "p90": 54903,
+              "max": 54903,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51260,
+              "median": 51260,
+              "p90": 51260,
+              "max": 51260,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 12893902,
+              "median": 12893902,
+              "p90": 12893902,
+              "max": 12893902,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 1024,
+              "median": 1024,
+              "p90": 1024,
+              "max": 1024,
+              "n": 15
+            }
+          }
+        },
+        "318": {
+          "rtt_ns": {
+            "min": 1034189,
+            "median": 1183748,
+            "p90": 1515998,
+            "max": 1583438,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63804,
+              "median": 63804,
+              "p90": 63804,
+              "max": 63804,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54903,
+              "median": 54903,
+              "p90": 54903,
+              "max": 54903,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51260,
+              "median": 51260,
+              "p90": 51260,
+              "max": 51260,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 13243086,
+              "median": 13243086,
+              "p90": 13243086,
+              "max": 13243086,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 256,
+              "median": 256,
+              "p90": 256,
+              "max": 256,
+              "n": 15
+            }
+          }
+        }
+      }
+    },
+    "initial_functional_baseline": {
+      "blank": {
+        "40": {
+          "rtt_ns": {
+            "min": 271149,
+            "median": 346829,
+            "p90": 2447911.999999999,
+            "max": 4019804,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63408,
+              "median": 63408,
+              "p90": 63408,
+              "max": 63408,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 53818,
+              "median": 54438,
+              "p90": 54438,
+              "max": 54438,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 50952,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 7650255,
+              "median": 7650255,
+              "p90": 7650255,
+              "max": 7650255,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 128,
+              "median": 128,
+              "p90": 128,
+              "max": 128,
+              "n": 15
+            }
+          }
+        },
+        "80": {
+          "rtt_ns": {
+            "min": 909819,
+            "median": 975729,
+            "p90": 2018361,
+            "max": 3903454,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63408,
+              "median": 63408,
+              "p90": 63408,
+              "max": 63408,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 53818,
+              "median": 54345,
+              "p90": 54438,
+              "max": 54438,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 50952,
+              "median": 51000,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 7875535,
+              "median": 7875535,
+              "p90": 7875535,
+              "max": 7875535,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 128,
+              "median": 128,
+              "p90": 128,
+              "max": 128,
+              "n": 15
+            }
+          }
+        },
+        "318": {
+          "rtt_ns": {
+            "min": 211850,
+            "median": 297269,
+            "p90": 1090518.3999999997,
+            "max": 1786037,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63408,
+              "median": 63408,
+              "p90": 63408,
+              "max": 63408,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 53818,
+              "median": 54438,
+              "p90": 54438,
+              "max": 54438,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 50952,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 9215951,
+              "median": 9215951,
+              "p90": 9215951,
+              "max": 9215951,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 128,
+              "median": 128,
+              "p90": 128,
+              "max": 128,
+              "n": 15
+            }
+          }
+        }
+      },
+      "hard": {
+        "40": {
+          "rtt_ns": {
+            "min": 83086904,
+            "median": 124719140,
+            "p90": 220625303.39999998,
+            "max": 269143859,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63536,
+              "median": 63536,
+              "p90": 63536,
+              "max": 63536,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54289,
+              "median": 54337,
+              "p90": 54476,
+              "max": 54476,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51008,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 15453902,
+              "median": 15453902,
+              "p90": 15453902,
+              "max": 15453902,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 4096,
+              "median": 4096,
+              "p90": 4096,
+              "max": 4096,
+              "n": 15
+            }
+          }
+        },
+        "80": {
+          "rtt_ns": {
+            "min": 443871393,
+            "median": 488692174,
+            "p90": 504927710.8,
+            "max": 506682687,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63536,
+              "median": 63536,
+              "p90": 63536,
+              "max": 63536,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54283,
+              "median": 54337,
+              "p90": 54476,
+              "max": 54476,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51004,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 20758222,
+              "median": 20758222,
+              "p90": 20758222,
+              "max": 20758222,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 4096,
+              "median": 4096,
+              "p90": 4096,
+              "max": 4096,
+              "n": 15
+            }
+          }
+        },
+        "318": {
+          "rtt_ns": {
+            "min": 41580786,
+            "median": 57893582,
+            "p90": 67489142.8,
+            "max": 82827064,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63536,
+              "median": 63536,
+              "p90": 63536,
+              "max": 63536,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54281,
+              "median": 54337,
+              "p90": 54476,
+              "max": 54476,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51000,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 52318926,
+              "median": 52318926,
+              "p90": 52318926,
+              "max": 52318926,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 4096,
+              "median": 4096,
+              "p90": 4096,
+              "max": 4096,
+              "n": 15
+            }
+          }
+        }
+      },
+      "soft": {
+        "40": {
+          "rtt_ns": {
+            "min": 19259011,
+            "median": 24308873,
+            "p90": 27501776.2,
+            "max": 30399294,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63536,
+              "median": 63536,
+              "p90": 63536,
+              "max": 63536,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 54074,
+              "median": 54336,
+              "p90": 54476,
+              "max": 54476,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51000,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 12832462,
+              "median": 12832462,
+              "p90": 12832462,
+              "max": 12832462,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 2048,
+              "median": 2048,
+              "p90": 2048,
+              "max": 2048,
+              "n": 15
+            }
+          }
+        },
+        "80": {
+          "rtt_ns": {
+            "min": 19636490,
+            "median": 24615652,
+            "p90": 29671246.2,
+            "max": 31585652,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63536,
+              "median": 63536,
+              "p90": 63536,
+              "max": 63536,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 53675,
+              "median": 54335,
+              "p90": 54476,
+              "max": 54476,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51000,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 12893902,
+              "median": 12893902,
+              "p90": 12893902,
+              "max": 12893902,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 1024,
+              "median": 1024,
+              "p90": 1024,
+              "max": 1024,
+              "n": 15
+            }
+          }
+        },
+        "318": {
+          "rtt_ns": {
+            "min": 18553052,
+            "median": 22696846,
+            "p90": 28561218,
+            "max": 30165294,
+            "n": 15
+          },
+          "memory": {
+            "rss_kib": {
+              "min": 63536,
+              "median": 63536,
+              "p90": 63536,
+              "max": 63536,
+              "n": 15
+            },
+            "pss_kib": {
+              "min": 53676,
+              "median": 54386,
+              "p90": 54476,
+              "max": 54476,
+              "n": 15
+            },
+            "private_kib": {
+              "min": 51000,
+              "median": 51008,
+              "p90": 51008,
+              "max": 51008,
+              "n": 15
+            }
+          },
+          "allocation": {
+            "device_bytes": {
+              "min": 13243086,
+              "median": 13243086,
+              "p90": 13243086,
+              "max": 13243086,
+              "n": 15
+            },
+            "image_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "transfer_bytes": {
+              "min": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0,
+              "n": 15
+            },
+            "history_capacity": {
+              "min": 256,
+              "median": 256,
+              "p90": 256,
+              "max": 256,
+              "n": 15
+            }
+          }
+        }
+      }
+    },
+    "gates": {
+      "blank": {
+        "40": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        },
+        "80": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        },
+        "318": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        }
+      },
+      "hard": {
+        "40": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        },
+        "80": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        },
+        "318": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        }
+      },
+      "soft": {
+        "40": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        },
+        "80": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        },
+        "318": {
+          "median_le_baseline": true,
+          "p90_le_baseline": true,
+          "pass": true
+        }
+      }
+    },
+    "wide_note": "Wide soft stream has no matched old baseline; report only, no gate or parity claim."
+  },
+  "percentile_method": "Sort pooled samples; linearly interpolate between floor and ceil of zero-based rank (n - 1) * 0.9. Median uses the middle value or mean of the middle pair. Each case/width pools 15 samples across three launches."
+}

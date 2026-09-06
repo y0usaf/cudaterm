@@ -1,0 +1,40 @@
+--- a/src/engine.cu
++++ b/src/engine.cu
+@@ -202,23 +202,20 @@
+   if (*accepted < 256 || m->history_base < 0)
+     return;
+   int first = dmax(0, m->scroll - s->history_capacity);
+-  int count = m->scroll - first;
+-  for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < count * s->cols;
+-       i += blockDim.x * gridDim.x) {
+-    int logical = first + i / s->cols, col = i % s->cols;
+-    Cell value = {32, s->fg, s->bg, 0};
+-    if (logical < s->rows) {
+-      int oldrow = (logical - m->scroll % s->rows + s->rows) % s->rows;
+-      value = s->grid[at(*s, oldrow, col)];
+-      if (col == 0)
+-        s->history_wrap[(m->history_base + logical) % s->history_capacity] =
+-        s->row_wrap[s->rowmap[oldrow]];
+-    } else if (col == 0) {
+-      s->history_wrap[(m->history_base + logical) % s->history_capacity] = 0;
+-    }
+-    s->history[((m->history_base + logical) % s->history_capacity) *
+-                   s->history_cols +
+-               col] = value;
++  for (int logical = first + blockIdx.x; logical < m->scroll;
++       logical += gridDim.x) {
++    int oldrow = logical < s->rows
++                     ? (logical - m->scroll % s->rows + s->rows) % s->rows
++                     : -1;
++    int slot = (m->history_base + logical) % s->history_capacity;
++    if (threadIdx.x == 0)
++      s->history_wrap[slot] = oldrow >= 0 ? s->row_wrap[s->rowmap[oldrow]] : 0;
++    for (int col = threadIdx.x; col < s->cols; col += blockDim.x) {
++      Cell value = {32, s->fg, s->bg, 0};
++      if (oldrow >= 0)
++        value = s->grid[at(*s, oldrow, col)];
++      s->history[slot * s->history_cols + col] = value;
++    }
+   }
+ }
+ __device__ Cell viewed_cell(const DeviceState &s, int r, int c) {

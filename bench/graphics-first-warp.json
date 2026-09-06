@@ -1,0 +1,36 @@
+{
+  "binary": "/nix/store/9pp4byhx170bnh99h9pkghraccyrqlll-cudaterm-0.1.0/bin/cudaterm-engine-host",
+  "scope": "headless Python transport plus CUDA feed/reply; solid repeated RGBA",
+  "results": [
+    {
+      "size": [
+        256,
+        96
+      ],
+      "transport_bytes": 213,
+      "samples_ms": [
+        8.932836004532874,
+        8.784846984781325,
+        8.207117003621534,
+        8.078628015937284,
+        8.2236870075576,
+        8.07286801864393
+      ]
+    },
+    {
+      "size": [
+        1274,
+        1368
+      ],
+      "transport_bytes": 9134,
+      "samples_ms": [
+        195.01034199493006,
+        43.264264008030295,
+        39.915048982948065,
+        39.898098999401554,
+        39.918130001751706,
+        36.83961302158423
+      ]
+    }
+  ]
+}

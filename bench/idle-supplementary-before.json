@@ -1,0 +1,44 @@
+{
+  "benchmark": "terminal-idle-parent-resources",
+  "command": [
+    "./result/bin/cudaterm",
+    "-e"
+  ],
+  "terminal_resolved": "/nix/store/3rk5112c3jib0xfasjz5240z594hcm92-cudaterm-0.1.0/bin/cudaterm",
+  "samples": [
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.00019889199757,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 225157120,
+      "nvidia_compute_memory_bytes": 505413632
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.000173451990122,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 225914880,
+      "nvidia_compute_memory_bytes": 505413632
+    },
+    {
+      "geometry": {
+        "cols": 318,
+        "rows": 89
+      },
+      "elapsed_seconds": 3.0001666320022196,
+      "cpu_seconds": 0.0,
+      "cpu_percent_one_core": 0.0,
+      "rss_bytes": 224182272,
+      "nvidia_compute_memory_bytes": 505413632
+    }
+  ],
+  "scope": "Terminal parent CPU and RSS only; NVIDIA compute-process memory when reported. Excludes compositor, descendants, and GPU utilization. Null GPU memory is unavailable, not zero."
+}

@@ -1,0 +1,10 @@
+{
+  "reference": "libvterm-neovim 0.3.3",
+  "fixture": "AB\u001b[1;2H\u001b[4h中\u001b[4l",
+  "geometry": [12, 4],
+  "difference": "cell (0,3): reference space (32), cudaterm B (66)",
+  "reference_source": "src/state.c: mode.insert scroll(state, rect, 0, -1) regardless of glyph width",
+  "xterm_source": "https://github.com/ThomasDickey/xterm-snapshots/blob/master/util.c",
+  "xterm_behavior": "WriteText computes visual_width(str, length) and passes that cell count to InsertChar",
+  "resolution": "Retain width-sized insertion, cover explicit cells in vt-test; exclude this case from libvterm equivalence claims."
+}

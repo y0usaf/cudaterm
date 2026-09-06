@@ -1,0 +1,16 @@
+--- /nix/store/5li7j670zy6ysrzfwyd879db8nmi2gn3-source/src/inflate.cuh	1969-12-31 19:00:01.000000000 -0500
++++ src/inflate.cuh	2026-09-05 10:10:10.327222203 -0400
+@@ -228,7 +228,12 @@
+       for (size_t i = w.batch_start + lane; i < w.pos; i += blockDim.x) {
+         size_t source = i;
+         unsigned char value = 0;
+-        while (source >= w.batch_start) {
++        // A single token can only reference old history or repeat itself.
++        if (w.token_count == 1) {
++          Token token = w.tokens[0];
++          if (!token.back) value = token.symbol;
++          else source = w.batch_start - token.back + (i - w.batch_start) % token.back;
++        } else while (source >= w.batch_start) {
+           unsigned offset = source - w.batch_start;
+           int lo = 0, hi = w.token_count;
+           while (lo + 1 < hi) {
