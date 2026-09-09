@@ -104,6 +104,19 @@ int main() {
     feed(e, "\033[?25l\033[2;4mA", 1); e.select(0,0,0,0);
     out = pixels();
     check(out[19 * 38 + 3] == 0xffffffff, "dim text reduced configured selection contrast");
+    auto selected = out;
+    e.set_copy_flash(true);
+    auto flashed = pixels();
+    bool yellow = false;
+    for (auto pixel : flashed) yellow |= pixel == 0xffafffff;
+    check(yellow, "copy flash background");
+    check(flashed[5 * 38 + 11] == selected[5 * 38 + 11], "copy flash escaped selection");
+    e.set_copy_flash(false);
+    check(pixels() == selected, "copy flash did not restore selection styling");
+    e.set_copy_flash(true);
+    e.select(0, 0, 0, 0);
+    check(pixels() == selected, "new selection inherited copy flash");
+
     cudaFree(device);
   }
   for (size_t split : {size_t(1), size_t(7), size_t(65536)}) {

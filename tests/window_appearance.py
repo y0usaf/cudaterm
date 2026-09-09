@@ -40,6 +40,13 @@ def child(folder):
         if (root / 'history').exists() and not (root / 'history-ready').exists():
             os.write(1, ('\x1b[3J\x1b[2J\x1b[H' + ''.join(f'history line {i:02d}\r\n' for i in range(80))).encode())
             (root / 'history-ready').touch()
+        if (root / 'osc-copy').exists() and not (root / 'osc-copy-ready').exists():
+            import base64
+            sequence = b'\x1b]52;c;' + base64.b64encode('Ekko clipboard é中\n'.encode()) + b'\x1b\\'
+            for offset in range(0, len(sequence), 3):
+                os.write(1, sequence[offset:offset+3])
+                time.sleep(.005)
+            (root / 'osc-copy-ready').touch()
         if (root / 'alternate').exists() and not (root / 'alternate-ready').exists():
             os.write(1, b'\x1b[?1049h')
             (root / 'alternate-ready').touch()
@@ -103,8 +110,8 @@ def main():
                         codes = [(29,1)] + ([(42,1)] if shift else []) + [(key,1),(key,0)]
                         codes += ([(42,0)] if shift else []) + [(29,0)]
                         for code, value in codes: keys.write(struct.pack('=II', code, value))
-                    def capture(name):
-                        time.sleep(.25)
+                    def capture(name, delay=.25):
+                        time.sleep(delay)
                         for path in root.glob('*.png'): path.unlink()
                         subprocess.run([str(Path(args.weston).with_name('weston-screenshooter'))],
                             cwd=folder, env=env, check=True, capture_output=True, timeout=10)
@@ -169,10 +176,21 @@ def main():
                     event(768, ((left+12+16*cw)<<16) | (bottom-2))
                     time.sleep(1.2)
                     button(272,0)
+                    flashed = capture('copy-flash', .02)
+                    assert (255,255,175) in flashed.getdata(), 'selection did not flash on release'
+                    restored = capture('copy-restored')
+                    assert (255,255,175) not in restored.getdata(), 'copy flash did not expire while idle'
                     chord(46,True)
+                    repeated = capture('keyboard-copy-flash', .02)
+                    assert (255,255,175) in repeated.getdata(), 'keyboard copy did not flash'
                     time.sleep(.25)
                     copied = subprocess.run([args.wl_paste,'--no-newline'],env=env,capture_output=True,check=True,timeout=5).stdout
                     assert copied.startswith(b'history line 00\n') and copied.count(b'\n') >= 30, copied
+                    (root / 'osc-copy').touch()
+                    wait(lambda: (root / 'osc-copy-ready').exists(), 'OSC clipboard output')
+                    time.sleep(.2)
+                    copied = subprocess.run([args.wl_paste,'--no-newline'],env=env,capture_output=True,check=True,timeout=5).stdout
+                    assert copied == 'Ekko clipboard é中\n'.encode(), copied
                     (root / 'alternate').touch()
                     wait(lambda: (root / 'alternate-ready').exists(), 'alternate screen')
                     time.sleep(.2)

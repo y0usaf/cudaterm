@@ -63,6 +63,7 @@ public:
   void select(int start_row, int start_col, int end_row, int end_col,
               SelectionMode mode = SelectionMode::Cell, bool history = false);
   void clear_selection();
+  void set_copy_flash(bool active);
   SearchMatch search(const std::string &, SearchDirection, bool restart = false);
   void clear_search();
   void set_search_prompt(const std::string &);

@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--terminal', default='./result/bin/cudaterm')
     parser.add_argument('--xdotool', default='xdotool')
     parser.add_argument('--mouse', action='store_true', help='Shift selection while application tracking is enabled')
+    parser.add_argument('--auto-copy', action='store_true', help='paste after release without pressing Copy')
     parser.add_argument('--rapid', action='store_true', help='send drag events without pacing')
     parser.add_argument('--history', action='store_true', help='copy text after it leaves the live screen')
     parser.add_argument('--curses', action='store_true', help='copy a border drawn by ncurses')
@@ -92,7 +93,8 @@ while True:
             if args.mouse: drag += ['keyup', 'Shift_L']
             xdo(*drag, 'mouseup', '1')
             time.sleep(0.2)
-            xdo('key', 'ctrl+shift+c')
+            if not args.auto_copy:
+                xdo('key', 'ctrl+shift+c')
             time.sleep(0.1)
             xdo('key', 'ctrl+shift+v', 'Return')
             status = proc.wait(timeout=10)

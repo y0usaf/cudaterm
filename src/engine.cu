@@ -114,6 +114,7 @@ struct DeviceState {
   int join_blocked;
   int mouse_mode, mouse_sgr, mouse_row, mouse_col;
   int mouse_pixels, focus_reporting, synchronized_updates;
+  int copy_flash;
   int selection_active, selection_start_row, selection_start_col;
   int selection_end_row, selection_end_col, selection_rectangle;
   unsigned char *selection_output;
@@ -1721,6 +1722,7 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
       dswap(fg, bg);
       if (s->theme.customized & 4) fg = s->theme.colors[260];
       if (s->theme.customized & 8) bg = s->theme.colors[261];
+      if (s->copy_flash) { fg = 0x000000; bg = 0xffffaf; }
     }
     float cx = (s->cursor_x < 0 ? float(s->col) : s->cursor_x) * s->cell_width;
     float cy = (s->cursor_y < 0 ? float(s->row) : s->cursor_y) * s->cell_height;
@@ -1808,6 +1810,7 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
 }
 __global__ void clear_selection_kernel(DeviceState *s) {
   s->selection_active = 0;
+  s->copy_flash = 0;
 }
 __global__ void set_selection_output_kernel(DeviceState *s,
                                             unsigned char *output) {
@@ -1838,6 +1841,7 @@ __device__ uint32_t selection_token(DeviceState &s, int row, int col, SelectionM
 }
 __global__ void select_kernel(DeviceState *s, int sr, int sc, int er, int ec,
                               SelectionMode mode, bool history) {
+  s->copy_flash = 0;
   int min_row = s->alt_active ? 0 : s->view_offset - s->history_count;
   int max_row = s->alt_active ? s->rows - 1 : s->view_offset + s->rows - 1;
   sr = dmax(history ? min_row : 0, dmin(sr, history ? max_row : s->rows - 1));
@@ -2019,12 +2023,14 @@ __global__ void scroll_view_kernel(DeviceState *s, int delta) {
   if (s->alt_active) {
     s->view_offset = 0;
     s->selection_active = 0;
+    s->copy_flash = 0;
     return;
   }
   int maxoff = s->history_count;
   long long next = (long long)s->view_offset + delta;
   s->view_offset = (int)(next < 0 ? 0 : next > maxoff ? maxoff : next);
   s->selection_active = 0;
+  s->copy_flash = 0;
 }
 __device__ int mouse_number(char *out, int value) {
   char digits[10];
@@ -2081,6 +2087,7 @@ __global__ void mouse_kernel(DeviceState *s, int button, int row, int col,
 __global__ void follow_output_kernel(DeviceState *s) {
   s->view_offset = 0;
   s->selection_active = 0;
+  s->copy_flash = 0;
 }
 
 } // namespace
@@ -2874,6 +2881,13 @@ void Engine::select(int sr, int sc, int er, int ec, SelectionMode mode, bool his
   ck(cudaGetLastError());
   ck(cudaStreamSynchronize(nullptr));
   p->selection_possible = true;
+}
+__global__ void copy_flash_kernel(DeviceState *s, bool active) {
+  s->copy_flash = active;
+}
+void Engine::set_copy_flash(bool active) {
+  copy_flash_kernel<<<1, 1>>>(p->d, active);
+  ck(cudaGetLastError());
 }
 void Engine::clear_selection() {
   if (!p->selection_possible)
