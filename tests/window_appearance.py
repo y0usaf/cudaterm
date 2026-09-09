@@ -88,9 +88,12 @@ def main():
         shell.chmod(0o700)
         env['SHELL'] = str(shell)
         terminal = None
+        # A faster terminal must not race Weston's independent startup fade.
+        weston_config = root / 'weston.ini'
+        weston_config.write_text('[shell]\nstartup-animation=none\n')
         with (output / 'weston.log').open('w') as log, (output / 'terminal.log').open('w') as terminal_log:
             weston = subprocess.Popen([args.weston, '--backend=headless', '--renderer=gl', '--shell=desktop',
-                '--socket=appearance', '--no-config', '--debug', '--modules='+args.seat,
+                '--socket=appearance', '--config='+str(weston_config), '--debug', '--modules='+args.seat,
                 '--width=1500', '--height=1000'], env=env, stdout=log, stderr=log)
             def wait(predicate, label, seconds=20):
                 deadline = time.monotonic() + seconds

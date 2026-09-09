@@ -193,6 +193,10 @@
     packages.${system} = { default = package; headless-seat = headlessSeat; headless-input = headlessInput; headless-ime = headlessIme; };
     apps.${system} = {
     default = { type = "app"; program = "${package}/bin/cudaterm"; };
+    startup-benchmark = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-startup-benchmark" ''
+      exec ${pkgs.python3}/bin/python3 ${./bench/startup.py} \
+        --weston ${pkgs.weston}/bin/weston --seat ${headlessSeat}/lib/seat.so "$@"
+    ''}"; };
     appearance-test = { type = "app"; program = "${package}/bin/cudaterm-appearance-test"; };
     hyperlink-oom-test = { type = "app"; program = "${package}/bin/cudaterm-hyperlink-oom-test"; };
     build-face = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-build-face" ''

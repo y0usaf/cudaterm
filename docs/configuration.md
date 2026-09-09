@@ -60,6 +60,14 @@ Missing, corrupt, or unwritable caches fall back to rendering; deleting the
 cache directory is safe. Cold generation prepares the four styles concurrently,
 with separate FreeType libraries and a serial fallback when threads are unavailable.
 
+The Finix package prepares its configured primary font and symbols during the
+Nix build. Its launcher sets `CUDATERM_PREPARED_FONTS` to those validated atlases,
+so the first launch also avoids rasterization. Other sizes, font overrides, and
+zoom levels use the normal runtime cache. Nix store font identities are portable
+across machines; mutable font files retain timestamp and inode checks.
+Runtime-only font path strings without Nix dependency context use the runtime
+cache instead of requiring the file inside the build sandbox.
+
 `--font-face` still loads a prepared CTFACE01 atlas. Prepared atlases and the
 `bitmap` family use scaled coverage; runtime font families rerasterize on zoom
 and display-scale changes. Runtime glyph coverage is bounded to 16 MiB per style.

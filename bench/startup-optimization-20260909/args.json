@@ -1,0 +1,19 @@
+[
+  "--no-config",
+  "--font-file",
+  "/nix/store/f1yqal1khhv6xrzbadqissd0lr88mn9n-y0usaf-fonts-all-1.0.0/share/fonts/truetype/DepartureMonoUltraCondensed-Regular.ttf",
+  "--font-fallback",
+  "file:/nix/store/mb4m42fdgdgzrnnkav26jb7cj3968cgv-nerd-fonts-symbols-only-3.5.0/share/fonts/truetype/NerdFonts/Symbols/SymbolsNerdFontMono-Regular.ttf",
+  "--font-size",
+  "21",
+  "--line-height",
+  "1.142857",
+  "--background-opacity",
+  "0.82",
+  "--theme",
+  "/home/y0usaf/.cache/wallust/colors_monstar",
+  "--cols",
+  "80",
+  "--rows",
+  "24"
+]

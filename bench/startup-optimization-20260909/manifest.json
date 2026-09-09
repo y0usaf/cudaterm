@@ -1,0 +1,38 @@
+{
+  "date_utc": "2026-09-09T17:23:29.351235+00:00",
+  "gpu": "NVIDIA GeForce RTX 4090, 595.91.07",
+  "cpu": "AMD Ryzen 9 7950X 16-Core Processor",
+  "logical_cpus": 32,
+  "kernel": "7.2.0",
+  "git_head": "2fa4cda8a2cf5c86d08f57553191e979dd62a77a",
+  "dirty_source": true,
+  "executables": {
+    "baseline": {
+      "path": "/nix/store/4kn2vfkb5i0dhzw2b306izn5dw7fcdp0-cudaterm-0.1.0/bin/cudaterm",
+      "sha256": "33485dbab8a17a3ea1849fd6e3c7255a640fb60cfcabf676b70a4c08847f3f33"
+    },
+    "optimized": {
+      "path": "/nix/store/j368hdksir4jz6rz8ha0v562s7vs3pwj-cudaterm-0.1.0/bin/cudaterm",
+      "sha256": "ba10bceaa13367c64846213100d682b17c2dbc7364a132c373bfeb5370a9eddd"
+    },
+    "configured": {
+      "path": "/nix/store/if5y8h0x1v3jkisyvgzliwvwrl2jl3wr-cudaterm-finix/bin/cudaterm-finix",
+      "sha256": "de30cb8dd1c03d739609ff0af2ebab2516b6e8839c6f1df546a4452382781a92"
+    }
+  },
+  "source_sha256": {
+    "src/font.hpp": "014a13cb6c4bc8909c9b5300624a6ba23867d5b296626e82701ead7e22650ae5",
+    "src/font_cache.hpp": "c61af48b784662b950c7a59218e799d7c4e871a6ccf10db33489e6444cc6c4a2",
+    "src/main.cu": "bb8a879df8a477fdbf5aa9ca11d7d5dcf88596e6e106c4925ffe62ba656f95e5",
+    "src/engine.cu": "4e5bea84e823365962aca7e74739d6d0bc46f48b457f6f96bfce0de4752fff03",
+    "flake.nix": "aebb8e1698079c3c43f7ad037c3a0823b2bd7ca80417621a3534657586eaf90d",
+    "nix/finix-package.nix": "a93dab7cf22df4e4b81c04731afdbf6b0c5254f8dcc8859769382043da892d82",
+    "tools/build_font_cache.cpp": "3859209777ebae27939eed93cc590c6e84c5bec27e35a4173e59825175e08399",
+    "tests/font_test.cpp": "f176f6625561b7735b96e9c5a508b119d39177cff53c91fbdae028f0a04b72bd",
+    "tests/window_appearance.py": "3b41646f70b6c9066541e870129aa31d9be7ed7f74f1a557a30a341fe7e73ba2",
+    "bench/startup.py": "dda89d11caff6dfa065a39ee3262a1bf08cbb1ddd13623010ee25f98a3cdc991"
+  },
+  "verified_binary_equivalence": "hvz0bpmv1giz9gkzliban6x545k7jxah and j368hdksir4jz6rz8ha0v562s7vs3pwj cudaterm binaries are byte-identical; GPU and interaction checks cover the final executable.",
+  "final_verification_utc": "2026-09-09T17:34:48.068398+00:00",
+  "runtime_only_font_path_compatibility": "Nix evaluation confirms fontCache == null for a runtime-only absolute font string."
+}
