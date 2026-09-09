@@ -1,21 +1,2217 @@
 # Development evidence and recovery state — 2026-09-06
 
-## Current goal status — blocked on environment access
+## ZWJ geometry implemented; broader grapheme and resource gates remain open
 
-Three consecutive goal turns have confirmed the same external blocker:
-NVIDIA runtime access is unavailable and the sandbox denies the Nix daemon
-socket. CPU recovery and focused review are finished. Further acceptance work
-requires restored access to those services; repeated source reviews cannot
-replace the required CUDA, private-window, performance and Nix checks.
-`bench/recovery-blocked-audit.json` records the third fresh check.
+The new package is `/nix/store/sfnwmzl1n0clr8cap03nlcjp19csz4sd-cudaterm-0.1.0`.
+It uses generated Unicode 17 Extended_Pictographic and GCB Extend predicates
+(156/384 merged ranges, 2,848/2,237 code points). Exact source data and full header
+regeneration checks are part of the Nix build, with independent malformed-input
+and raw-source membership tests. The scalar GPU path checks the existing suffix
+chain once in reverse, preserves control barriers, and appends to a local Cell
+before two-cell promotion. Arena exhaustion preserves the pending scalar before
+cursor/root mutation. Styled lines containing ZWJ or an incoming joining emoji
+fall back before commit; prompt layout reserves joined width before truncation.
+Cell size and the existing mark-arena bound remain unchanged.
 
-The full objective is incomplete. The idle candidate remains unaccepted,
-all numerical gates remain unchanged, and the last accepted build remains
-selected. After access is restored, resume the exact pending checks in
-`bench/reboot-recovery-validation.json`, then continue the broader baseline,
-performance and daily-driver feature work recorded below.
+Nix build and Unicode/search/styled/reflow/selection applications exited zero.
+The expanded tests cover all 20 frozen boundary cases at every input byte split,
+exact copy/search/reflow, 0/4/66/256 preceding Extend marks, arena growth on the
+joined scalar, narrow-base bottom/right-margin promotion, chained family emoji,
+large styled batches split after ZWJ, and prompt pixels including negative and
+truncation cases. Exact commands and logs are in
+`bench/zwj-final-validation-20260906T155042Z/manifest.json`.
+All 70 packaged src/tests/tools/data files were independently compared with the
+worktree in that directory's `parent-packaged-source.json`.
 
-## Post-shutdown recovery — validation access unavailable
+A parent review probe caught a real intermediate regression: a large SGR-only
+batch cleared a preceding CUP barrier. Initial package g1 reported zero-based
+column 2 instead of 4; qcx reported 4. Raw evidence is
+`bench/zwj-sgr-barrier-before.jsonl`. The styled preflight now routes such
+control-only fragments through the interpreter. A dedicated regression passes
+and the fresh package reports column 4. The earlier package/logs remain retained.
+
+Fresh private-headless comparison collects all 20 frozen cases twice across
+Foot, Monstar and cudaterm. Parent raw-byte review confirms all 40 candidate
+sequence replies and 40 after-X replies match the frozen Foot expectations;
+there were 11 case differences before this change. A separate nine-case
+no-autowrap probe collects all replies, but clipped cursor positions do not
+prove retained text. Existing clipping guards are retained pending copy evidence.
+No desktop was used. These are cursor/state observations, not shaping or latency.
+
+The additional ten-case investigation exposes six remaining Foot differences:
+modifiers after a joined component (two cases), nonzero-width GCB Extend
+characters U+FF9E/U+FF9F/U+1ADD (three), and zero-width space before ZWJ (one).
+Foot and Monstar also disagree for zero-width space after ZWJ. Exact observed
+coordinates and payloads are in `parent-extended-review.json` in the validation
+directory. These observations require further storage/default-ignorable policy
+work; the current change does not claim complete GB11 or UAX #29 conformance.
+Sequence shaping, font fallback and the full daily-driver requirements remain.
+
+Static Nix cuobjdump evidence in `bench/zwj-resource-delta-20260906T155312Z/`
+finds 58 kernels before and after. Feed registers/shared memory remain 58/20,376
+bytes, but feed stack grows 128→144 bytes. Styled scan registers/stack grow
+28/80→32/112; prompt registers 26→27 and selection registers 36→38. The
+engine-host executable grows 339,968 bytes. These are costs, not runtime-memory
+or speed claims. Nix flake check and Finix preview/evaluation exit zero in
+`bench/zwj-nix-integration-20260906T155452Z/`; no activation occurred.
+
+Explicit-path CUDA memcheck (Unicode) and initcheck (search) exited zero with
+zero reported errors. Private graphics (38 cases), Ekko presentation and sync
+checks also exited zero through Nix. Raw commands, target hashes and results are
+in `bench/zwj-final-sanitizer-20260906T155621Z/` and
+`bench/zwj-final-private-20260906T160351Z/`.
+
+The ordinary-feed screen failed its frozen 1.05 ratio limits: ASCII median
+1.0553; Unicode median/p90 1.0680/1.0538. The parent evaluator includes all 480
+samples (48 per workload per binary), superseding the retained worker summary
+that omitted half. Tracked device and mark growth were zero. Host timing drift
+was present, so attribution remains unresolved; it does not erase the failure.
+See `bench/zwj-feed-regression-20260906T160756Z/parent-pooled-evaluation.json`.
+
+Two-order private window measurement gives six samples per binary at 318×89.
+Median PSS rose from 79,196,160 to 79,729,152 bytes (+532,992); per-process NVIDIA
+memory rose from 331,350,016 to 335,544,320 bytes (+4 MiB). This confirms a resource
+regression and misses the 78,000,000-byte PSS target. Allocation ownership is not
+established by these totals. Raw evidence and parent summary are in
+`bench/zwj-window-resource-20260906T161153Z/`.
+
+Derived compiler experiments under `bench/zwj-property-inline-static-20260906T161640Z/`
+have not changed production. With the production `-lineinfo` flag, preventing
+predicate inlining saves only about 60 KB of embedded CUDA data while increasing
+feed registers from 58 to 72; preventing loop unrolling gives no saving. Earlier
+experiments omitted `-lineinfo` and are paired prototypes only. Recovery review
+also found a truncated font-data path in these experiment records; valid matched
+window builds are required before attributing runtime costs to line information.
+
+Restored-access checks in `bench/access-zwj-recovery-20260906T162857Z.json` reached
+the Nix daemon, exchanged bytes over an owned Unix socket, and queried the RTX
+4090. Five current implementation hashes and both result links match the saved
+checkpoint. The pending memory experiment is resuming only on private headless
+Weston. Older timing failures, lifecycle/resource comparisons, six extended
+Unicode gaps and the full goal remain unmet.
+
+## Restored access and ZWJ boundary baseline — 2026-09-06
+
+Fresh parent checks reached the Nix daemon (2.34.8), exchanged bytes through an
+owned Unix socket, and queried the RTX 4090 (driver 595.91.07). Access evidence is
+`bench/access-recovery-20260906T153119Z.json`. All 58 packaged source/test hashes
+still match qcx; the result links remain unchanged. Desktop benchmarking remains
+prohibited. The restarted worker used only a new private headless Weston session.
+
+`env -u DISPLAY -u WAYLAND_DISPLAY LD_LIBRARY_PATH=/run/opengl-driver/lib nix
+develop --command python3 .../bench/grapheme_zwj_boundary_probe.py ...` exited
+zero. The six terminal runs contain 20 cases each, with 120 sequence CPRs and
+120 after-X CPRs. Parent review checked every raw reply against its decoded
+1-based coordinates, effective 80×24 geometry, payload identity and repeat
+consistency. Exact argv, raw output and comparison are under
+`bench/grapheme-zwj-boundary-run-20260906T153118Z/`. Its inner report filename uses
+local time; embedded UTC timestamps and command time records are authoritative.
+`env -u DISPLAY -u WAYLAND_DISPLAY nix run .#unicode-test` also exited zero.
+No production code changed during this recovery increment.
+
+Before implementation, `parent-reviewed-expectations.json` in that directory
+freezes Foot 1.27.0 geometry for all 20 cases. Both references agree on 17; qcx
+fails 11 of the selected expectations. Direct woman–ZWJ–laptop and either SGR
+placement advance two columns in both references, four in qcx. Extend after ZWJ
+and repeated ZWJ do not join in either reference; Extend before ZWJ does. The
+references disagree after same-position CUP and backspace, and for narrow
+copyright–ZWJ–registered at column 80. Choosing Foot behavior in these cases is
+an explicit terminal compatibility policy, not a Unicode cursor requirement.
+Narrow copyright–ZWJ–registered has width two at column 1 in both references,
+so simply taking the maximum scalar width would be insufficient.
+
+Official Unicode 17 GraphemeBreakProperty data is staged with URL/hash in
+`bench/zwj-unicode-source-20260906T153141Z/`; it is not yet integrated. Next work
+needs generated EP and GCB Extend predicates, validated reverse suffix traversal,
+control barriers, two-cell promotion, and matching prompt geometry. A successful
+suffix append to a local Cell must precede any cursor/root promotion so pool
+exhaustion can retry without partial mutation. Styled ZWJ lines need preflight
+fallback before commit. Required regressions include exact copy/search/reflow,
+UTF-8 splits, overflow, margin/wrap and prompt behavior. This baseline measures
+cursor geometry only; shaping, full grapheme behavior, resource/performance gates
+and the full original goal remain incomplete.
+
+## Latest checkpoint: duplicate scan code removed; resource targets unmet
+
+The prior goal turn made progress through code changes and validated checkpoints.
+Latest 5lda graphics, private headless presentation, sync, Nix flake checking and
+Finix preview/evaluation now pass; see
+`bench/mark-pool-final-confirmation-20260906T144608Z/manifest.json`. The initial
+sync wrapper pre-created its output directory and failed before exercising the
+application; its failed invocation is preserved, and a fresh-path retry exited
+zero. No deployment or desktop benchmarking occurred.
+
+Read-only Nix cuobjdump output shows all 48 shared GPU functions have identical
+assembly and compiler resource counts between pre-compaction 2yi and latest
+5lda. Exact output/hashes are in
+`bench/compactor-binary-resources-20260906T144636Z/`. This rules out changed code
+or register counts in those functions as a direct explanation, not differences
+in host/runtime behavior, scheduling or clock state.
+
+Owned standalone CUPTI runs exited zero; instrumented timings are excluded from
+acceptance. First hybrid 64-node serial-fallback launch spent 301,309 ns in the
+runtime API, including 281,619 ns of correlated module/function loading, while
+the actual kernel took 16,416 ns. The serial baseline launch spent 73,809 ns,
+including 56,339 ns of loading; its kernel took 86,433 ns. Coarse global SM-clock
+samples ranged 495–2760 MHz during serial and stayed at 2760 MHz during hybrid.
+These 100 ms global samples cannot assign clock state to individual kernels or
+attribute other GPU activity. See
+`bench/compactor-runtime-profile-20260906T145100Z/parent-profile-summary.json`.
+The prior failed timing gates remain failed.
+
+The completed follow-up reuses the engine's existing signed integer CUB sum scan
+for 0/1 mark-prefix flags (maximum sum 1,048,576). Signed/unsigned corresponding
+types may alias; storage, node order and the 8 MiB arena limit remain unchanged.
+The stored package is `/nix/store/qcx63462ba02li8gid9h7wjxdy5bzldb-cudaterm-0.1.0`;
+`bench/mark-compaction-scan-reuse-checkpoint.json` verifies 58 packaged files and
+links the exact patch relative to 5lda. Static review finds exactly two duplicate
+unsigned scan kernels removed (60→58 total), no added kernels and no resource
+changes in shared functions. The engine-host executable shrinks by 118,784 bytes,
+including 110,512 bytes of embedded GPU code. This is verified code-size reduction,
+not a claimed runtime-memory or speed improvement.
+
+Fresh production compaction passes all 131 oracle-checked rows, including six
+expected malformed cases. CUDA memcheck/initcheck, Unicode/search/reflow/selection,
+graphics, private headless presentation/sync, Nix flake checking and Finix preview/
+evaluation all exit zero. Temporary scan storage remains 0/767/1791/5119 bytes
+by size/path. A benchmark conditional initially omitted the non-production
+prototype branch; its exact pre-fix file is archived, and serial/prototype/
+production builds all exit zero after correction. No deployment occurred.
+The sanitizer command record initially named an executable absent from the Nix
+PATH. Explicit-path parent reruns of memcheck and initcheck each exited zero,
+checked all 131 rows and reported zero errors. Their reproducible commands,
+wrapper/payload hashes and raw output are in
+`bench/scan-reuse-sanitizer-provenance-20260906T150529Z/manifest.json`;
+the earlier uncertain invocation record remains preserved.
+Current 318×89 private-window PSS is 80.337–80.392 MB and NVIDIA compute memory
+331,350,016 bytes. One parent CPU interval accumulated 0.01 seconds; zero aggregate
+idle activity is not established. The 78 MB PSS gate and all previously failed
+timing screens remain unmet. A diagnostic-only engine copy now captures seven
+constructor/lifetime stages and vector addresses/capacities, smaps/rollup and
+before/after-logging mallinfo2. Three default and three process-local trim-control
+runs/analyzers exited zero. Default scope exit unmapped the 4,632,576-byte font
+allocation while adding about 2,227,296–2,227,456 free heap bytes with no heap
+shrink; the two 1,114,112-byte tables occupied that heap. Trim-control runs mapped
+all three and released 6,868,992 allocator mapping bytes. Raw evidence and limits
+are in `bench/startup-staging-qcx-summary.json`; instrumentation may alter layout.
+
+This reconfirms earlier constructor evidence, not a newly proven window saving.
+The prior `bench/font-map-evaluation.json` already rejected mapped startup data:
+paired window PSS reductions were only 224,256/258,048 bytes against a frozen
+1,048,576-byte minimum. That stronger end-use counterevidence prevents repeating
+the loader experiment on the strength of this engine-only result. No allocator
+setting, mapped loader or blanket malloc_trim is adopted. Next work is the
+measured emoji-ZWJ cursor-geometry gap using the validated variable suffix pool;
+shaping and full grapheme conformance remain separate unmet requirements.
+
+## In progress: hybrid mark compaction; small-pool timing gates unmet
+
+Restored access is verified in `bench/access-recheck-20260906T142634Z.json`:
+Nix daemon communication exited zero, an owned Unix socket exchanged bytes, and
+NVIDIA reported the RTX 4090 with driver 595.91.07. All graphical work remains
+restricted to private headless Weston; no desktop benchmarking is authorized.
+
+The recovered hybrid harness compiled and ran through Nix: serial and candidate
+streams each contain 131 checked rows, including six expected malformed cases.
+Candidate CUDA memcheck and initcheck exited zero with no errors. Exact commands,
+source hashes and raw outcomes are in
+`bench/mark-compaction-hybrid-validation-20260906T164500Z/manifest.json`.
+The hybrid selects serial compaction when both node and root counts are at most
+256, avoiding parallel-launch costs for small collections. The parallel path
+uses pointer doubling and stable prefix remapping with bounded temporary storage.
+
+Correctness checks passing does not establish the performance gate. The extended
+Nix evaluator exited **1**: eight of 41 case/size screens fail the unchanged
+median/p90 limits, including several tiny serial cases and 512-node sparse/empty
+collections. All samples remain in
+`bench/mark-compaction-hybrid-evaluation-20260906T1428.json`. Earlier 48-case
+prototype results passed, but omitted these small sizes. No threshold or target
+has been relaxed. Source review found that the serial dispatch relied on the
+caller clearing status; it now resets status after successful precondition
+validation. Fresh Nix build, Unicode, search and styled tests exited zero for
+`/nix/store/q69iza52054mk90c5mwfq6hsrvp1ygcc-cudaterm-0.1.0`.
+See `bench/mark-pool-v5-recovery-20260906T170500Z/manifest.json`.
+All 58 packaged source/test files match the working tree in
+`bench/mark-compaction-v5-source-audit.json`; untracked local files remain preserved.
+
+A freshly compiled engine capacity probe passed three Nix runs. Each retained
+1,048,576 nodes in exactly 8 MiB, copied 2,097,159 bytes exactly, released large
+copy scratch and rejected an extra mark while preserving prior text. Exhaustion
+wall time was 529,858 / 547,178 / 565,768 ns (median 0.547 ms), compared with the
+historical single serial sample of 473.327 ms. This is not a contemporaneous
+paired comparison or display latency measurement. See
+`bench/mark-compaction-v5-capacity-summary.json` and its raw run manifest.
+Core reflow/selection/VT/reference/graphics (38 cases), private headless Ekko
+presentation and sync checks exited zero; see
+`bench/q69-core-private-20260906T143030Z/manifest.json`. Current large-window PSS
+is 80.881–80.907 MB, still above the 78 MB target. NVIDIA compute memory remains
+331,350,016 bytes. One of three parent CPU intervals accumulated 0.01 seconds;
+these limited observations do not establish idle zero activity.
+
+Nix flake checking, Finix preview build and Finix evaluation exited zero, with no
+activation. Four ordinary-feed collections exited zero but their unchanged 1.05
+median/p90 screen exited **1**: all five workload median ratios fail (1.194,
+1.258, 1.383, 2.088, 1.505); ANSI p90 also fails. Tracked device growth is exactly
+zero. All 480 samples remain in
+`bench/q69-finix-feed-validation-20260906T143230Z/`; no failed samples or gates
+were adjusted. Per-host breakdown in
+`bench/mark-compaction-q69-feed-order-diagnosis.json` shows large variation for
+both baseline and candidate; this does not erase failure or identify its cause.
+Final private window-search and six exact mark-clipboard checks exited zero,
+including the byte-exact evaluator; see
+`bench/q69-final-private-window-20260906T143545Z/manifest.json`.
+The functional checkpoint is `bench/mark-compaction-q69-checkpoint.json`, with
+an isolated implementation patch relative to v4. Small-pool compaction,
+ordinary-feed, historical search and PSS gates remain unmet.
+
+The next draft restores the frozen serial nested-span loop (removing extra
+root-index lookup) and uses it for up to 512 nodes with at most 256 roots. No new
+algorithm or relaxed gate is introduced. Initial isolated measurements pass 40
+of 41 screens, failing 64-node chain p90. Corrected serial/candidate/candidate/
+serial measurements each exit zero with 131 checked rows, but the timing
+evaluators exit **1**: first pair 14 failures, second pair 19, pooled six samples
+per case/binary 18. All outcomes remain in
+`bench/mark-compaction-final-streams-20260906T144004Z/`; no favorable pair was
+selected as acceptance. Pooled million-node chain host medians are 491.905 ms
+serial and 0.990 ms candidate. Small-pool timings vary strongly and remain unmet.
+
+An execution mistake first reran stored 2yi/q69 ordinary-feed hosts instead of
+the standalone compactor binaries. Those files remain explicitly marked as
+mis-scoped in the archived/corrected nested-validation manifest; they cannot
+validate this draft. The corrected four-run manifest names and hashes the exact
+serial/hybrid binaries. The simpler nested loop passed fresh Nix build, Unicode/search/reflow/selection,
+CUDA memcheck and initcheck (all exits zero, no sanitizer errors). Its package is
+`/nix/store/5ldaq77h5j8db2qxxdy734nz45r1invl-cudaterm-0.1.0`;
+`bench/mark-compaction-nested-checkpoint.json` verifies all 58 packaged source/test
+files and links the exact patch relative to q69. The broader private graphical
+and Finix results above belong to q69; they were not rerun for this serial-loop
+follow-up. Further threshold tuning has stopped. No background verification jobs
+remain. Next investigation must explain timing variation and cold-launch cost
+without relaxing frozen targets; latest graphical/Finix confirmation and all
+original incomplete feature/resource requirements remain pending.
+
+## Retained pre-compaction candidate: variable-length marks integrated; search latency gate still open
+
+The restored-access run verified the Nix daemon, an owned Unix socket and NVIDIA
+access. All window work used private headless Weston. The current local candidate
+is `/nix/store/2yi0131q1xp8pggk80mq5d1h5m4lnsnk-cudaterm-0.1.0`; its checkpoint is
+`bench/mark-pool-v4-checkpoint.json`, source verification is
+`bench/mark-pool-v4-source.json`, and its isolated implementation patch is
+`bench/mark-pool-v4-candidate.patch`. All 57 packaged source/test files matched the
+working tree at that checkpoint. Existing result/Finix links are unchanged; nothing was activated
+or pushed by this recovery run.
+
+The 32-byte cell keeps three inline marks and an immutable overflow head. Parser
+retry preserves a decoded scalar across exhaustion, including a scalar at the
+last byte and synchronized-frame boundaries. Styled preflight rejects overflow
+before commit. Rendering, exact copy/search, prompt and reflow share the arena;
+compaction visits primary/alternate/history/prompt roots. Nix Unicode, search,
+styled, reflow, selection, VT, reference and graphics checks passed. Six private
+clipboard observations preserve exact four/16/256-mark bytes, and current-binary
+sync, window-search and Ekko presentation checks passed. Nix build, flake
+evaluation, Finix preview build and Finix evaluation also exited zero, with no
+failed Finix assertions. See the final manifests in the checkpoint.
+
+The arena starts empty and caps at 8 MiB; all-live exhaustion raises an explicit
+error. The full-capacity probe retains 1,048,576 nodes, copies 2,097,159 bytes
+exactly and preserves old text after the failed append. It submits supported
+16 KiB input chunks and reselects after output invalidates selection. Earlier
+fixture failures (oversized input, implicit alternate-screen home, overwrite,
+and stale selection) and their corrections are preserved. Copy counts exact
+bytes before allocation, rejects viewport batches above 64 MiB and frees output
+buffers above 64 KiB. The v4 allocation trace observes 106 application cudaMalloc
+calls, peak requested storage 30,129,978 bytes and zero tracked live bytes after
+destruction; this excludes driver/context/internal reservation costs. The serial
+full-live compaction/exhaustion path took 473.327 ms in one uninstrumented v3
+sample. This pause remains a responsiveness issue, not an accepted latency result.
+
+The frozen ordinary-feed screen passes: before/candidate/candidate/before gives
+48 samples per workload/binary across five workloads, all median/p90 ratios at
+most 1.05, no overflow arena, and exactly 64 bytes of declared fixed metadata.
+The initial candidate failed allocation growth by 16,896 extra bytes; removing an
+unused LineScan field fixed the issue without changing gates. Timing variation
+prevents attributing an isolated speedup. Raw failed and final paired results
+remain in `bench/mark-pool-paired-20260906T134234Z/` and
+`bench/mark-pool-v4-paired-20260906T134657Z/`.
+
+The separate historical search gate remains unmet: 80-column literal-search p90
+was 85.913 us against 50.262 us; the other three search cases pass. All 480 samples
+are preserved in `bench/mark-pool-search-cost-20260906T135029Z/`. Four subsequent
+controlled-order runs also varied strongly for the unchanged baseline (median
+246.529 then 97.295 us; candidates 184.209/184.614 us). These observations do not
+isolate a source regression and do not erase the failed absolute gate. Search
+scratch is now 2,120 bytes for a 512-codepoint query; prompt arrays are 20,480 bytes,
+plus shared suffix storage. Search cleanup returns tracked memory to baseline.
+
+Large private-window PSS is 80.125–80.208 MB, above the unchanged 78 MB target;
+NVIDIA compute-process memory is 331,350,016 bytes. Three one-second parent CPU
+samples reported no accumulated CPU ticks, which does not establish zero total
+activity. ZWJ geometry/shaping, broader font/config/input work, lifecycle soaks,
+and original comparative resource/latency targets remain open. Full goal is
+incomplete. Next work is controlled search profiling and the measured serial
+compaction pause, while preserving the validated exact-text behavior.
+
+## Earlier standalone mark-pool foundation (before engine integration)
+
+The previous turn was progress: it verified ZWJ geometry gaps and a distinct
+four-mark copy/search loss. This turn implements a standalone immutable suffix
+pool and strengthens the clipboard baseline; production remains at skin-tone v2.
+The durable record is `bench/mark-pool-foundation-checkpoint.json`.
+
+Private triple-click clipboard fixtures collected four/16/256-mark inputs twice
+per terminal (18 observations), with pinned binaries/fonts, 40×24 geometry and
+all terminal/compositor/clipboard exits zero. Nix collection and evaluator exited
+zero; raw bytes are retained in `bench/mark-selection-baseline/`. Monstar keeps
+exact four/16-mark bytes but only 64 marks from the 256-mark input. Foot composes
+A+acute, remains canonically equivalent at four/16 marks, and retains 255 at 256.
+Cudaterm keeps only three marks in every case. The evaluator distinguishes exact
+bytes from canonical equivalence and separately records Foot's trailing newline.
+The first launch failed before compositor creation due to missing Pillow; its log
+is preserved, and the successful recovery uses the pinned Pillow environment.
+
+`bench/mark_pool.cuh` retains the 32-byte Cell ABI and first three inline marks,
+then uses immutable 8-byte suffix nodes referenced by the high reserved bits.
+The explicit-space bit is preserved. A single parser leader appends; allocation
+failure changes neither root nor used count. Compaction marks shared chains once,
+remaps nodes in old-index order, and rewrites supplied roots only after validation.
+It is a standalone component, not a connected engine implementation.
+
+Final compile and runtime both used `nix develop --command` and exited zero
+(`bench/mark-pool-parent-final/commands.json`). The GPU harness proves exact
+four/16/256-mark reconstruction, immutable 256-to257 branching, shared snapshots,
+space-bit preservation across append/compaction, reclamation after roots clear,
+repeated fill/compact cycles, FULL status with unchanged root/counter, malformed
+index rejection, and rejection of a self-parent cycle without changing root/node/
+counter state. Earlier drafts and test runs remain preserved. The test arena has
+512 nodes; a 256-mark root uses 253 suffix nodes. No production latency, memory-
+retention, actual history/reflow or shaped-glyph claim follows from this harness.
+
+Parent review corrected inline duplication, reversed ordinal lookup and repeated
+shared-chain traversal. It also replaced a proposed UTF-8 rewind with a pending-
+decoded-scalar integration design: a scalar may start in an earlier feed, so its
+bytes cannot safely be retried without retained parser state. Copy output must
+count duplicated/shared roots, and search must avoid multiplying every ASCII cell
+by a maximum-mark thread count. These decisions and frozen exact-text/Cell-size
+gates are in `bench/mark-pool-integration-{decisions.md,gates.json}`.
+
+Next is production integration: pool lifetime/retry, every text consumer including
+search prompt, exact-copy batching, and measured compaction/capacity behavior.
+The current terminal still loses the fourth mark. ZWJ width/shaping and original
+memory/timing targets remain open; no deployment or desktop testing occurred.
+
+## Longer graphemes: verified geometry and copy gaps
+
+The previous turn was progress: the skin-tone v2 increment was retained after
+all required integration checks. Current source hashes still match that checkpoint.
+This turn adds `bench/zwj-investigation-checkpoint.json`; production is unchanged.
+
+A corrected private Weston probe records 21 cases across both orders of all three
+terminals (126 observations), with exact payload/CPR/80×24 geometry and clean exits.
+Nix collection and summary commands exited zero. Family and toned family advance
+8 cells in Cudaterm versus 2 in both references; technologist, rainbow/pirate flags,
+profession and heart-on-fire use 4 versus 2. Actual kiss/couple/toned-kiss sequences
+use 8/6/8 versus 2/2/2. Both references preserve joining through SGR and a CUP to
+the same cursor position; repeated ZWJ remains separate in all three. The original
+18-case fixture mistakenly used standalone kiss/couple scalars; its raw output and
+helper are preserved as scalar controls, not evidence for those ZWJ sequences.
+
+A derived current-engine probe, rerun under `nix develop --command` with exit zero,
+proves exact copy and search before/after an 80-to-40-column resize for all six
+tested ZWJ strings, despite the geometry gap. It independently proves actual text
+loss for `A` + U+0301 U+0308 U+0323 U+0332: copied text loses U+0323 and exact search
+fails before and after resize. This distinguishes a geometry problem from an
+existing arbitrary-mark storage problem. Raw JSONL, source hashes and actual Nix
+run argv are in `bench/grapheme-engine-parent-validation/`. Earlier failed compile
+attempts and a stale placeholder manifest remain preserved and excluded.
+
+The source-based storage audit is `bench/zwj-storage-options.md`. Global Cell
+expansion increases ordinary history memory; wide-tail payloads need a one-column
+resize fallback. A CPU-only finite RGI trie prototype validates exact prefix/text
+reconstruction in 41,220 serialized bytes under Nix (exit zero), but does not solve
+arbitrary combining-mark loss, incomplete/non-RGI strings, or shaping. The original
+worker prototype helper was overwritten in a coordination collision; its JSON is
+not authoritative. The parent prototype has a separate exact helper/hash and output
+(`bench/zwj-trie-parent-prototype.json`). No CUDA allocation/performance is inferred.
+
+Next: implement a bounded variable-length representation with lossless overflow
+and lifecycle handling, using these copy and geometry failures as acceptance cases.
+Keep the original memory/timing gates and the full grapheme/shaping objective open.
+
+## Skin-tone sequences: validated v2 increment retained
+
+Recovery access recheck: Nix daemon access, an owned Unix socket roundtrip and
+NVIDIA enumeration passed; see `bench/access-skin-tone-v2-recovery-20260906T122013Z.json`. Fresh v2 build, Unicode (including the clipped no-wrap copy regression), search
+and reflow validation exited zero; see
+`bench/skin-tone-v2-recovery-20260906-081915/manifest.json`. All 31 frozen
+private-compositor feature expectations pass in
+`bench/skin-tone-v2-feature-parent-evaluation.json` (Nix evaluator exit zero).
+Engine tests remove display variables; window tests use private Weston.
+All 11 final integration commands exited zero, including VT/reference/selection,
+private sync/search, 38 graphics cases, private Ekko, flake check, final build,
+Finix preview build and evaluation with no failed assertions. The durable record
+is `bench/skin-tone-v2-checkpoint.json`; the exact feature patch is
+`bench/skin-tone-v2-candidate.patch`. Final application SHA-256 is
+`062fb5b7f1fc9af7a7db8fbe3d03a766aa51b542ab517e415c1b2ff1279a37fc`.
+
+The before/candidate/candidate/before cost screen also passed unchanged limits
+(48 measured samples per workload per binary; tracked device growth zero).
+`bench/skin-tone-v2-paired-evaluation.json` retains all samples. Before-run timings
+varied from roughly 22 ms to 12 ms; the lower candidate p90 is not evidence of
+an attributable speedup under uncontrolled shared scheduling. Current private
+large-window PSS is 81.862–82.006 MB, still above 78 MB; three one-second parent
+CPU samples had zero ticks at sampled resolution, not proof of zero wakeups or GPU
+activity. Reported NVIDIA compute memory is 331,350,016 bytes. No deployment or
+activation occurred, and both existing result links are unchanged.
+The v1 Unicode/search/reflow checks, 31-case cursor comparison and paired cost
+screen passed (see `bench/skin-tone-feature-evaluation.json` and
+`bench/skin-tone-paired-evaluation.json`). Source review then found a clipped
+no-wrap cursor could target an earlier cell. V2 guards that ambiguous position
+and adds an exact-copy regression. Fresh v2 validation above supersedes v1
+for the retained current source; v1 raw results remain preserved.
+
+The previous turn made progress by retaining the German keypad separator fix.
+Fresh private Weston cursor probes against that exact h1ic binary and pinned
+Foot/Monstar now confirm 72 basic observations: VS16 hearts, VS16 keycaps, keycaps
+without VS16, ASCII/CJK/combining controls and regional-flag-pair cursor positions
+agree. Skin tone and the two tested ZWJ sequences still differ: Cudaterm advances
+4/8/4 cells for toned thumbs/family/technologist versus 2/2/2 in both references.
+The flag-pair result proves cursor position only, not cluster storage or shaping.
+Raw reports are in `bench/grapheme-current-retained/`; both terminal orders agree.
+
+A 114-observation skin-tone extension separates reference policy differences.
+Valid wide modifier bases advance two cells in both references, versus four in
+Cudaterm. For narrow bases and base+VS16+tone, Foot uses two cells while Monstar
+varies. Both references preserve skin-tone adjacency across SGR and a CUP to the
+same cursor position, so a proposed anchor cleared by every escape was rejected.
+Invalid ASCII/heart+tone, repeated modifiers and intervening combining marks have
+different reference behavior; these cannot justify a blanket zero-width rule.
+`bench/grapheme-skin-baseline/` preserves all replies and payload writes.
+
+The candidate uses the local Unicode data file whose header explicitly identifies
+Emoji 17.0 (the package version 1.19 is not the Unicode version). Its exact copy is
+`data/emoji-data-17.0.0.txt`, SHA-256
+`2cb2bb9455cda83e8481541ecf5b6dfda66a3bb89efa3fa7c5297eccf607b72b`.
+The generated modifier-base table contains 134 code points in 50 ranges and is
+checked by Nix against the versioned source. Eligible base+optional VS16+tone joins
+one wide cell; lone/invalid/repeated modifiers retain explicit scalar behavior.
+SGR/same-cursor adjacency remains allowed, while a cursor inside an old wide pair
+does not qualify. Streaming placement reuses the existing margin/insert/history
+promotion. Complete inline sequences keep the parallel styled path; split or
+unsupported contexts fall back before styled commit. Search prompt layout uses
+the same complete-sequence width. Cell capacity and scalar width tables are unchanged.
+This is not a ZWJ, shaping or arbitrary-length grapheme implementation.
+
+Review corrected draft omissions in cursor adjacency, narrow-base paint/prompt
+promotion and one-column styled fallback before the build; the draft is archived.
+`nix build . --no-link --print-out-paths` exited zero for
+`/nix/store/s6gdmyl8239gbsz0valryii5jvhlg5vl-cudaterm-0.1.0`.
+V1 CUDA Unicode validation subsequently exited zero. New tests cover byte splits, margins, insertion,
+bottom scrolling, reflow, exact search/copy, control adjacency and bulk-versus-byte
+feeds at 1/8/20 columns. No test success is claimed until its Nix command exits zero.
+
+Pre-change engine feed/reply cost collection exited zero: 24 measured samples per
+ASCII/ANSI/Unicode/tone/styled-tone workload, medians 22.29–22.83 ms, with maximum
+tracked allocation 18,206,422 bytes. `bench/skin-tone-cost-gates.json` freezes an
+additional median/p90 ratio screen of at most 1.05 and no tracked allocation growth;
+paired confirmation is required after an initial pass. These engine intervals are
+not window or physical latency, and original competitive gates remain unchanged.
+The full goal remains incomplete, including the 78 MB PSS target and ZWJ/shaping.
+
+Next storage investigation is recorded in
+`bench/grapheme-next-audit-20260906-082928.md`. Current family pictographs remain
+in separate cells; the three-mark limit constrains a proposed collapsed cluster,
+not proof that the current family copy is truncated. Expanding every Cell from
+32 to an illustrative 52 bytes would add 6.55 MB to an 80-column 4096-row ring
+and 26.05 MB at 318 columns, before live grids. No such expansion is adopted.
+Bounded pool or wide-tail storage requires ownership, overflow and consumer
+validation before implementation; this note is design evidence only.
+
+## German keypad separator: validated and retained
+
+The previous recovery turn made progress: all 13 integration commands passed and
+its keypad checkpoint was retained. A new layout fixture first exposed its own
+configuration error: XKB environment variables did not change Weston's effective
+US map. All six physical evdev-21 probes returned `y`, not German `z`. That Nix-zero
+collection is preserved as US calibration in `bench/keypad-layout-de-baseline/`,
+with `bench/keypad-layout-env-diagnosis.json`; it is not German-layout evidence.
+
+The corrected helper writes a private Weston keyboard section with explicit
+keymap rules/model/layout/variant/options. All six probes now return `z`. Repeated
+17-key/2-mode/2-NumLock observations show German numeric Decimal is a comma in
+Foot and Monstar but a period in Cudaterm. Forced application mode produces Foot's
+SS3 `l` separator sequence, Monstar's comma, and Cudaterm's incorrect SS3 `n` decimal
+sequence. Fourteen modifier phases confirm Alt-comma, Foot Ctrl keysym 65452 and
+modified SS3 `l`, versus Cudaterm's hardcoded period/65454/SS3 `n`. Exact reports and
+summaries are `bench/keypad-layout-de-configured*` and `bench/keypad-layout-de-modified*`.
+The premature modifier-summary attempt exited one while collection was still
+running; its log is preserved, and the completed collection and summary exited zero.
+
+Frozen `bench/keypad-layout-gates.json` requires German separator bytes to match
+Foot, all other keys to retain previous behavior, all existing US mode/modifier
+bytes unchanged, and whole held-key repetitions followed by an intact ordinary
+character. This changes no original performance targets.
+
+The candidate defers only NumLock-on Decimal until GLFW's layout-resolved
+character-with-modifiers callback, which precedes ordinary text delivery and also
+runs for Alt/Ctrl and repeats in the pinned GLFW 3.4 source. Its encoder selects
+comma/SS3 `l`/65452 for Separator and retains period/SS3 `n`/65454 for Decimal.
+The next plain callback is consumed once; release/other keys/focus loss clear
+pending state. Search and NumLock-off navigation retain their existing paths.
+Other Unicode symbols on that physical key are forwarded as text; their extended
+modifier/protocol semantics remain unverified. The deprecated GLFW callback is
+available in the pinned 3.4 dependency; backend/IME coverage beyond the measured
+Wayland layouts remains open. A plain-character-only fix was rejected because it
+would leave the verified application and Alt/Ctrl errors in place.
+
+The candidate Nix build (including input tests) exited zero:
+`/nix/store/h1icfdpzis7gfgbcwaaw526ghicjmbip-cudaterm-0.1.0`.
+All four private candidate fixtures and summaries exited zero through Nix.
+`bench/keypad-layout-evaluation.json` passes 68 German basic and 476 German
+modified cases, plus unchanged 408 US mode and 476 US modifier cases. Each
+candidate fixture was repeated in fresh private compositors.
+
+Both layout repeat fixtures and their evaluators exited zero: 144 total held-key
+cases across Foot/Monstar/Cudaterm in both orders emit whole expected sequences
+with at least two repetitions and exactly one following ordinary key. Observed
+counts were six to seven (US) and seven (German), not a repeat-timing acceptance
+claim. Exact raw observations and evaluations are `bench/keypad-repeat-{us,de}-*`.
+All eight final integration commands exited zero: private sync/window search,
+38 graphics cases, private headless Ekko, Nix flake check/build and Finix preview
+build/evaluation. `bench/keypad-layout-integration-20260906-073835/manifest.json`
+records exact commands and exits; `bench/keypad-layout-checkpoint.json` joins
+source/binary identity, frozen gates, raw evidence and verified archive hashes.
+The final binary SHA-256 is
+`75913e60359daa8241a882a1c1f9da69af982682ec3a1b88d61edc187fa22e2d`, identical to
+the candidate used for passing byte/repeat fixtures. Engine source is unchanged
+from the prior keypad checkpoint.
+
+Fresh private 318×89 Ekko PSS is 80.70–80.76 MB with listed compute allocation
+331,350,016 bytes (316 MiB). The 78 MB target remains unmet. These short idle
+samples establish neither zero wakeups nor zero GPU activity. No desktop access,
+deployment, activation or result-link change occurred. Next revalidate current
+grapheme behavior against the pinned references: the older cursor-gap report
+predates the retained VS16 work and cannot alone identify current failures.
+The full objective remains active and incomplete.
+
+## Recovery: keypad increment validated and retained
+
+Nix daemon access, an owned Unix-socket round trip and NVIDIA discovery passed
+again after permissions were restored (`bench/access-keypad-recovery-20260906T070917.json`).
+Old process handles were not reused. The original goal, frozen performance gates,
+private-headless-only window testing and deployment restrictions remain in force.
+
+The keypad increment adds GPU application-keypad state (ESC = / ESC > and private
+mode 66), NumLock override mode 1035, reset behavior and host key encoding.
+NumLock-off digit/decimal keys now navigate; NumLock-on keys emit numeric text.
+Like both measured references, override defaults on, so applications must clear
+1035 to receive application-keypad sequences. Navigation retains application-cursor
+mode behavior. The host suppresses the duplicate GLFW text callback after handling
+a keypad press. State stays in CUDA; no idle polling or GPU architecture change
+was introduced. A small enum/table encoder reuses the existing navigation encoder;
+merely mapping keypad Enter would leave the measured navigation/application gaps.
+
+The current source hashes match `bench/keypad-validation.json`. Its Nix build
+(including native input tests), VT test and two fresh private runs of each keyboard
+fixture exited zero. Baseline reports preserve 9,384 key observations across both
+terminal orders, default and disabled Foot font bindings. Candidate fixtures add
+816 mode and 952 modifier observations. Every key has exact raw bytes and a unique
+F12 sentinel; repeats agree. Initial geometry is 40×24; reference font shortcuts
+can change geometry during modified-key runs, so it is not claimed fixed throughout.
+
+`nix develop --command python3 bench/keypad_evaluate.py --output bench/keypad-evaluation.json`
+exited zero. Frozen raw-report hashes agree. All 408 unmodified cases match both
+Foot 1.27.0 and Monstar 1.1.0. All 299 required modified cases with nonempty
+references match at least one reference. Two application Ctrl+Alt-minus cases
+produce no reference bytes and remain unknown/local interception. Of 175 separately
+reported numeric-text/Equal cases, 68 differ from at least one reference and six
+match neither (numeric Ctrl+Alt plus/minus/multiply with NumLock off/on). The
+encoder's unsupported numeric Ctrl fallback follows the measured Foot legacy
+keysym form; this does not establish full modifier, keyboard-layout or keyboard
+protocol parity. No input/display latency claim follows from these byte checks.
+
+Raw reports, exact helper versions, pre-edit source archives, candidate patch,
+frozen gates and evaluator output are under `bench/keypad-*`. All 13 sequential
+integration commands exited zero: reference, Unicode, selection, reflow, search,
+private sync/window search, 38 graphics cases, private headless Ekko, flake check,
+standard build, Finix preview build and evaluation. Exact commands, exits and
+source hashes are in `bench/keypad-recovery-integration-20260906-070947/manifest.json`;
+`bench/keypad-checkpoint.json` joins the evidence. The retained package is
+`/nix/store/nwnqnd0l1v0hgp5ppc2bdlybaasw1yqh-cudaterm-0.1.0`, binary SHA-256
+`ca92a54878004d94f959eb2c03008568039865cb98fdb380b713d78d99bd04c8`.
+Fresh private 318×89 Ekko samples report PSS 80.68–80.99 MB and listed compute
+allocation 331,350,016 bytes (316 MiB). Three one-second parent samples contain no
+CPU ticks; they do not establish zero wakeups or GPU activity. No performance target
+has been relaxed; PSS remains above 78 MB, and the full objective remains incomplete.
+Next input work is a bounded repeat/character-callback and non-US-layout fixture
+before expanding protocol support; numerical performance gates remain open.
+
+## Recovery: retained-history selection increment
+
+Restored access was rechecked: Nix daemon information, an owned Unix-socket
+round trip and NVIDIA RTX 4090 discovery all succeeded
+(`bench/access-offviewport-recovery.json`). Previous background jobs were not
+reused. All terminal windows remain on private headless Weston; desktop access,
+GPU performance settings and deployment/result links are unchanged.
+
+A new 40×24 comparator fixture places the beginning of a 1,200-letter ASCII word
+above the viewport. Twelve pre-fix cases in both terminal orders show Foot and
+Monstar copying all 1,200 letters on double-click, versus Cudaterm's 846-letter
+visible suffix. Triple-click differs: Foot copies the visible suffix plus newline
+(853 bytes), Monstar the full logical line (1,212 bytes), and Cudaterm the visible
+suffix without newline (852 bytes). Raw screenshots, clipboard bytes, commands,
+helper/binary hashes and repeated observations remain in
+`bench/selection-comparators-history/` and its summary.
+
+Word/Line endpoint expansion now follows retained soft-wrap metadata above and
+below the viewport, stopping at retained-history bounds and hard breaks. Alternate
+screen bounds prevent access to primary history. Copy extraction processes at
+most one viewport per batch, preserving global newline/wide-padding decisions.
+The smaller alternative—only widening endpoint bounds—would grow retained GPU
+scratch with history length. The batched implementation avoids that allocation.
+Review caught and corrected a draft's unsafe one-row allocation before any build;
+that draft remains archived and was never run.
+
+`nix build . --no-link` and `nix run .#selection-test` exited zero. New cases
+exercise both viewport directions, exact Unicode bytes across short wide wraps,
+hard breaks between batches, alternate isolation, cursor/view preservation,
+ring eviction and all 4,096 retained rows. At 128×24, first-copy tracked device
+allocation is bounded by 49,177 bytes; repeat copy adds none. The first fixture
+incorrectly assumed alternate entry homes the cursor; its preserved failure and
+diagnostic identify empty output versus expected ALT. Explicit CUP corrected the
+test, consistent with existing VT coverage, without changing terminal behavior.
+
+Eight private candidate clipboard cases pass through Nix: history word/line
+outputs are exactly 1,200 / 1,212 bytes, matching Monstar for this fixture;
+visible outputs remain 80 / 92 bytes. Exact expected bytes are asserted in
+`bench/offviewport-clipboard-acceptance.json`. Reflow, search and independent
+reference tests also exited zero (`bench/offviewport-final-validation.json`).
+
+The old sync fixture failed its final blue capture on candidate and retained
+binary: child write readiness plus 50 ms did not establish draw completion.
+The retained binary's saved capture contains the complete previous green image
+(32,768 pixels), with zero blue, in
+`bench/offviewport-sync-baseline-capture/` and `offviewport-sync-baseline-colors.json`.
+The initial candidate failure log is preserved; its temporary screenshot was
+removed by the original fixture and is unavailable. The corrected fixture saves
+every capture. Red/green retention assertions remain single-shot; final blue may
+wait up to five seconds while only the complete previous green image is allowed.
+Blank or partially blue frames still fail. This is functional frame completion,
+not a physical display-latency measurement or a change to frozen performance gates.
+Strict candidate and retained-baseline sync runs exited zero, as did window
+search, all 38 graphics cases, private headless Ekko, flake check, standard build,
+Finix preview build and evaluation. `bench/offviewport-integration-validation.json`
+records commands, exits and source hashes; `bench/offviewport-checkpoint.json`
+joins unit, clipboard, failure and integration evidence. Two candidate correctness
+runs accidentally overlapped; their captures/logs remain, and no timing/resource
+inference is drawn from them. The reliable pipefail rerun first captured complete
+green, then complete blue. Subsequent GPU checks ran sequentially.
+
+The final package is
+`/nix/store/40cgcx894yfx355bcb6z6wd51wh3nq21-cudaterm-0.1.0`, application SHA-256
+`e68bdf0dcc4181d5da00a8949ae27c63ec48e4fbeedee93fbce5d91a6dad1ad7`, identical
+to the binary used for the passing unit and clipboard checks. Final private
+318×89 Ekko idle samples report PSS 80.66–81.00 MB and listed compute allocation
+316 MiB; PSS remains above 78 MB. No parent CPU ticks were observed in these
+three one-second samples; this does not establish zero wakeups or GPU activity.
+
+Full-goal targets remain unmet. This increment does not establish Unicode word
+segmentation, full graphemes/shaping, drag/autoscroll or desktop clipboard parity.
+The measured large-window PSS remains above the fixed 78 MB target; this
+selection change has not been claimed to improve whole-window memory or throughput.
+Earlier sections below describe their respective validated checkpoints.
+
+## Logical-line triple-click copying validated from comparator evidence
+
+The previous turn was progress: it measured feed-size tradeoffs and restored a
+rejected bitmap candidate. This increment addresses a verified daily-use gap.
+The settled private Wayland comparison runs both terminal orders and captures
+exact clipboard bytes after double/triple clicks on a fully visible wrapped
+ASCII line. All 12 cases pass readiness/geometry, marker calibration, clipboard
+replacement, empty child input and clean terminal exit checks through Nix.
+`bench/selection-comparators-summary.json` records that all three copy the whole
+80-character word on double-click; Foot and Monstar copy the entire logical line
+on triple-click, but Cudaterm 27k8 copies only its physical 40-character row.
+Foot additionally appends a newline; Monstar does not. Screenshots/raw clipboard
+files, commands and exact helper/binary hashes are retained. The first fixture
+failed calibration during Weston's startup fade, preserved its failures, then
+was corrected to wait for exact marker color with bounded retries.
+
+`select_kernel` now expands Line-mode endpoints over existing visible soft-wrap
+joins, stopping at hard breaks and viewport bounds. The change adds two bounded
+walks and preserves Cudaterm's existing no-forced-final-newline policy. No parser,
+CUDA raster architecture, feed limit or allocation policy changed. Meaningful
+CUDA cases cover clicks from either wrapped row, reversed ranges, hard breaks,
+wide-wrap padding, an actual history viewport, resize reflow and a full row with
+no committed wrap. A new window-sync mode7 triple-clicks a wrapped continuation
+and checks exact full-line clipboard bytes plus bracketed-paste framing.
+
+`nix run .#selection-test` passes. Four candidate private comparison cases also
+pass and now match Monstar's full logical-line bytes; double-click output is
+unchanged (`selection-comparators-logical-line-summary.json`). Reflow, search
+and independent reference test commands exited zero. Sync (including new mode7),
+38 CUDA graphics cases and private headless Ekko presentation passed. Flake
+check, final package build, Finix preview build and evaluation also exited zero.
+No deployment or result-link changes occurred. The final package is
+`/nix/store/y5wj6w516qli7r1n1dm5i8dwhhb67221-cudaterm-0.1.0`, application SHA-256
+`5bd8ac3fd6ab7678347954c090e8cad4626e8fc825f706ea1231613457928d17`.
+Final status/hashes are in `bench/logical-line-validation.json`.
+
+The original window-search fixture failed on both candidate and restored 27k8:
+it captured immediately after injecting Escape, before observing the redraw.
+Failure logs/screenshots/traces remain in `logical-line-window-search-failure`
+and `logical-line-window-search-baseline-failure`. The fixture now waits up to
+five seconds for a newer `gl_texture_swap`, retaining its exact marker-coordinate
+oracle and saving screenshots before assertions. It passes on both executables.
+This orders the functional check; it is not a display-latency or transient-frame
+quality measurement. The test-only repair leaves application bytes unchanged.
+
+This is a visible-line copying increment, not full selection parity. Off-viewport
+logical-line expansion, Unicode segmentation and further gesture/backend cases
+remain open. Performance/resource targets remain unmet and unchanged. The full
+objective remains active.
+
+## Feed-size tradeoff measured; bitmap candidate rejected after fresh pairing
+
+The previous goal turn was progress: host/event profiles narrowed raw graphics
+cost to parser dispatch. This turn sends identical 2,802,391-byte raw RGBA wire
+payloads through six fresh hosts at 4 KiB, 64 KiB, 1 MiB, then reversed sizes.
+Each host has one warmup and four measured uploads; all 30 upload/delete checks
+and six exits pass through Nix. `bench/image-feed-size-profile.json` retains raw
+per-request timing and allocations; `image-feed-size-summary.json` validates
+exact coverage and retains eight timing samples per size. Median upload times
+are 4220.93, 1189.95 and 1114.05 ms respectively. The 1 MiB feed retains
+61,585,102 device bytes versus 20,758,222 at 64 KiB; 4 KiB retains 18,206,414.
+No feed limit changed. The modest larger-feed gain does not justify its workspace
+increase against the outstanding memory target.
+
+A separate candidate compacted graphics parameter presence flags from 128 bytes
+to four words, cleared only flags at APC start, and checked continuation membership
+with word masks. Values remained GPU-owned and guarded by presence flags. It
+saved only 224 tracked bytes. Before edits, `bench/graphics-flags-gates.json`
+froze a 10% raw median improvement and no worse p90/compressed timing against
+existing measured gates, with no retained allocation regression. Full targets
+and prior memory targets were neither changed nor declared met.
+
+Candidate Nix build, flake check and all 38 CUDA graphics cases passed. Both
+targeted protocol oracle runs exited zero: 17 cases matched restored replies,
+terminal state and graphics allocations, including malformed continuations and
+quiet-error ordering (`graphics-flags-oracle-comparison.json`). The initial
+128-sample timing collection passed every frozen gate
+(`graphics-flags-evaluation.json`). However, later hosts were substantially
+faster than the first; that collection did not uniquely attribute the difference
+to this implementation.
+
+Before a fresh retained/candidate/candidate/retained raw RGBA collection, an
+additional qualification froze the same 10% median improvement and no worse p90
+against its paired retained samples (`graphics-flags-paired-gates.json`). All
+36 upload/delete cycles and four exits passed, with 16 measured samples per
+executable preserved. Candidate median was only 2.7% lower (ratio 0.972810), and
+p90 was essentially unchanged (0.997895). Thus this qualification failed;
+the original passing run and every paired sample remain on disk. Shared GPU
+conditions were uncontrolled, so this is not proof of an exact causal gain.
+
+The candidate is rejected. Both headers are restored byte-for-byte from
+`bench/graphics{,_types}.before-flags.cuh`. Rejected source, patch, oracle,
+raw timing and paired results remain under `bench/graphics-flags-*` and
+`graphics{,_types}.flags-rejected.cuh`. Restoration build/flake status and hashes
+are in `graphics-flags-validation.json`. Earlier work and result links remain
+preserved. This measurement does not support implementing the bitmap solely for
+the claimed speed target. Next quantify parser phase costs before more graphics
+micro-optimizations, or proceed with the still-open comparator pixel/Foot Sixel
+workflow and prioritized daily-use gaps. Full goal requirements remain unmet.
+
+## Raw image transport profiled before another optimization
+
+The previous goal turn was progress: fixed gates rejected the opaque reservation
+candidate and exact source restoration passed. This increment changes no
+production engine/flake bytes. `bench/image_chunk_profile.py` uses the existing
+Kitty encoder and two fresh engine hosts, four RGB/RGBA raw/zlib variants, one
+warmup plus four measured uploads per variant per host. Every 64 KiB F request
+has raw offset/length/monotonic start/end timing. All 40 upload acknowledgments,
+quiet deletions, zero post-delete image/transfer allocations and host exits pass.
+`bench/image-chunk-profile.json` stores raw data, exact wire/helper/host/dependency
+hashes; its summary retains per-image timing distributions.
+
+Eight measured raw RGB uploads have median summed request time 897.80 ms across
+33 requests; raw RGBA 1169.15 ms across 43. Median interior-request totals are
+755.38/993.17 ms, so the cost is distributed through transport. Each compressed
+upload fits one request (209.77/273.11 ms medians). These are harness request
+intervals including IPC, not kernel or display timings.
+
+A separate derived diagnostic engine (`bench/image-profile-engine.cu`) adds host
+wall timers around existing preparation, history reservation, dispatch plus
+request copy, and graphics service; it adds no CUDA synchronization. Repeating
+the same sample plan gives median raw RGB/RGBA dispatch totals 740.33/996.58 ms
+and service totals 134.89/153.93 ms. Each raw upload makes 11 service calls,
+not one per continuation APC: the source already performs capacity-sufficient
+continuation decoding inline, and output allocation occurs only at final
+completion. Compressed uploads instead spend 197.84/254.08 ms in service.
+`image-chunk-instrumented.json`, its stderr trace, and
+`image-profile-host-summary.json` preserve all 820 matched feed/delete records.
+
+A second derived engine (`image-profile-events-engine.cu`) adds CUDA events
+around dispatch, read after the existing request-copy wait. Across 496 measured
+full 64 KiB feeds with one dispatch and zero graphics-service calls, median host
+dispatch time is 21.30 ms and CUDA event interval 16.25 ms. Median summed raw
+RGB/RGBA event intervals are 617.49/788.66 ms. Events can include GPU scheduling
+and host submission gaps; they are not exclusive SM instruction time or physical
+display latency. Instrumentation perturbs timing and is not an acceptance run.
+See `image-chunk-events.json`, its stderr trace and
+`image-profile-events-summary.json`. Shared GPU scheduling was uncontrolled;
+inherited `CUDA_DISABLE_PERF_BOOST=1` was preserved, not changed.
+
+All three collections, both diagnostic compilations and summary evaluations ran
+through Nix and exited zero. No window/EGL/raster workload was launched. Sources,
+hashes and command status are in `bench/image-profile-{source,validation}.json`.
+The new evidence prioritizes the GPU parser/dispatch path over repeated output
+allocation or history shrinking. Next isolate fixed per-dispatch cost from
+byte-dependent parsing using the identical wire stream at different feed sizes,
+and profile parser phases before changing production code. Existing acceptance
+and better-comparator targets remain unchanged and unmet.
+
+## Access restored; opaque graphics reservation candidate rejected
+
+Nix daemon access, a fresh AF_UNIX roundtrip, and NVIDIA access passed after
+permission restoration. `nix run .#headless-test -- --ekko
+/run/current-system/sw/bin/ekko --output-dir bench/recovery-transport-ekko`
+exited zero on restored package 27k8 in private Weston; no desktop was used.
+See `bench/recovery-transport-access.json` and the associated headless log.
+
+The candidate kept graphics classification on the GPU and stopped opaque
+transport before ordinary text, including text between continuation packets.
+It moved speculative history reservation after classification, retaining normal
+reservation for text and decoded-height reservation for scrolling placement.
+Candidate Nix builds passed. `nix run .#graphics-test` passed 38 real CUDA
+parser/decode/raster cases; the Nix-integrated transport test passed split
+prefixes, cancellations, interleaved wrapped Unicode text, image allocation,
+live cells/copying and pending UTF-8/partial-ESC boundaries. Flake check passed.
+The first standalone test attempt loaded a CUDA stub; the Nix package used the
+normal driver rpath successfully. This was not a restored-access blocker.
+
+All 128 measured and 32 warmup upload/delete allocations in the separate
+acceptance collection met the frozen 128-row/10,600,142-byte limits, with zero
+image/transfer bytes after deletion. However, four of eight timing groups failed
+`bench/image-reclaim-gates.json`: raw RGB/RGBA with and without the diagnostic H
+callback. Median ratios versus the fixed gates were 1.083/1.158 without H and
+1.061/1.114 with H; p90 ratios were 1.002/0.975 and 1.105/1.165 respectively.
+All four compressed-image groups passed. No limits changed or samples were
+removed. Shared GPU conditions remain uncontrolled, so this is acceptance-test
+failure, not a unique causal attribution to the new guard.
+
+`bench/opaque-guard-acceptance-cost.json` retains the separate collection, which
+started after all agent-owned GPU correctness workers finished; collection and
+Nix evaluation exited zero. `bench/opaque-guard-evaluation.json` records the
+failed acceptance decision. The earlier `opaque-guard-cost.json` remains a
+separate diagnostic because parent overlapped it with graphics correctness
+work (`opaque-guard-cost-context.json`). The window-memory gate was not run
+after the timing rejection.
+
+The candidate is rejected. Exact pre-edit engine/flake bytes are restored;
+`bench/opaque-guard-candidate.patch`, `engine.opaque-guard-rejected.cu`,
+`flake.opaque-guard-rejected.nix` and `opaque-guard-rejected-test.cu` preserve
+reviewable work. The transport test also remains untracked in tests, as it was
+at recovery, and is not wired into the restored package. Earlier local work,
+result links and Finix deployment were preserved. Final restored checks are
+recorded in `bench/opaque-guard-validation.json`.
+
+Next: profile raw graphics transport before another implementation attempt;
+current evidence does not justify retrying either post-commit reclaim or this
+per-dispatch guard unchanged. Pixel-observed comparator image workflows, Foot
+Sixel, remaining lifecycle coverage and daily-driver gaps remain open. Full
+performance targets are unmet and the goal is not complete.
+
+## Image-history reclaim experiment rejected on timing gates
+
+The previous increment attributed 10,158,080 unused history bytes after images.
+This experiment froze `bench/image-reclaim-gates.json` before production edits:
+post-delete engine bytes ≤10,600,142, empty history capacity ≤128, window listed
+compute ≤246 MiB, and no worse pooled engine image-operation median/p90 in each
+of eight mode/format groups. Full historical/better-comparator targets were not
+changed. A fresh retained baseline contains 128 measured intervals plus 32
+warmups across four hosts, with the diagnostic decode callback on/off in paired
+order. The same sample plan was run on the candidate, with raw samples retained.
+
+The candidate added `request.committed` to the existing post-request history
+shrink condition, after GPU servicing and history-count refresh. Nix built
+`/nix/store/qi0njjcck8rappcyf5q3wd4l221mqxfd-cudaterm-0.1.0` and the new
+`nix run .#graphics-history-test` passed: wrapped Unicode history, nonzero view
+position, live cells, viewport copy, search after reflow, empty-history capacity,
+7-byte/large chunks and cursor-advancing image scrolling were preserved.
+
+All candidate measured post-delete allocations met 10,600,142 bytes and 128-row
+capacity. However, seven of eight timing groups failed their frozen median/p90
+guards. The default-callback zlib RGBA median worsened by about 14.2% and p90 by
+12.9%; other groups varied. `bench/image-reclaim-evaluation.json` records every
+result. Shared GPU conditions were not controlled, so the comparison does not
+uniquely attribute timing differences to allocator churn. It does fail the
+predeclared acceptance test; samples were not discarded or thresholds relaxed.
+The window-memory gate was not run after this earlier rejection.
+
+The experiment is rejected and the prior engine/flake bytes are restored exactly.
+The candidate patch, source, regression test and raw timing samples remain under
+`bench/image-reclaim-*` plus `bench/engine.image-reclaim-rejected.cu` and
+`bench/flake.image-reclaim-rejected.nix`. The experimental test is archived as
+`bench/image-reclaim-rejected-test.cu`; it is not wired into the restored package
+because its new memory requirement intentionally fails the original behavior.
+Only this experiment's paths were restored; all earlier local work is preserved.
+
+Restored `nix build . --no-link --print-out-paths` and `nix flake check` exited
+zero. The package is again 27k8, with application SHA-256
+`64937ea240ddc79b141a92eba017087130d6921ba7d877f7fd9048d73f043d56`.
+Commands/hashes are in `bench/image-reclaim-validation.json`. Existing targets
+remain unmet. The next memory approach should avoid reserving thousands of
+history rows for GPU-identified opaque image transport, rather than repeatedly
+allocating and freeing them after completion. This requires preserving genuine
+scrolling and invalid/split parser behavior without introducing a CPU parser.
+Image transfer profiling, pixels, Foot Sixel and combined multiwindow workflows
+remain separate outstanding work.
+
+## Image retention attributed to unused history capacity
+
+The previous turn measured 14 MiB of retained window compute allocation after
+image deletion. Four engine-host runs now repeat the same 1024×512 image variants
+and exact wire hashes, fed in 64 KiB chunks, without EGL, rasterization or windows.
+Two runs enable the existing diagnostic H decode callback, paired between two
+default runs. All 32 upload/delete cycles pass and all four hosts exit zero.
+Image and transfer allocations return to zero after every deletion in every mode.
+
+Default and diagnostic decode paths give identical allocation totals: engine
+bytes rise from 7,875,535 initially to 20,758,222 after deletion; NVIDIA compute
+allocation rises from 230 to 242 MiB. History capacity rises from 128 to 4096.
+Thus the separate interactive decode callback is not supported as the explanation
+for this retained allocation. Its H callback differs from GLFW and includes
+snapshot/mouse polling, so this is a controlled host-path comparison, not a
+complete attribution of every window resource.
+
+A separate exact-state/RIS probe proves history occupancy is zero before and
+after image upload/delete. Reset reduces history capacity back to 128 and tracked
+allocation to 10,600,142 bytes, releasing exactly 10,158,080 bytes:
+(4096−128) × 80 columns × 32-byte Cell. NVIDIA's rounded listing falls from
+242 to 232 MiB. Input/scan workspace remains above initial allocation, separately
+from this unused history reservation. Source `Engine::enqueue_feed` calls
+`reserve_history(n-offset)` before dispatch, and the reservation conservatively
+budgets two potential rows per byte, including opaque graphics transport.
+
+`bench/image-engine-memory.json`, `bench/image-engine-memory-summary.json` and
+`bench/image-history-attribution.json` retain actual allocation/state counts,
+image/wire hashes, process observations and callback reports. Collection,
+summary validation and state attribution all ran through Nix and exited zero;
+`nix flake check` also passed (`bench/image-engine-attribution-validation.json`).
+Luna prepared the host probe; parent integration corrected wire packet size,
+constructor arguments, missing initial/exit/provenance records and added paired
+H-mode coverage. No production code changed.
+
+This identifies a concrete optimization candidate: reclaim speculative history
+capacity after a completed graphics request, using freshly returned history
+occupancy and preserving every occupied row. Source review identifies allocation
+churn and preservation of wrap metadata/nonzero viewport offsets as material
+risks. Before editing production code, freeze retention gates from these samples
+and capture repeated image-operation timing; then exercise real history and
+selection/search across growth/shrink. Existing full performance targets remain
+unmet and must not be relaxed. Window-specific residual memory, pixel validation,
+Foot graphics, multiwindow combined workflows and daily-driver gaps remain open.
+
+## Acknowledged image upload/delete window lifecycles
+
+The previous turn qualified Kitty query replies from the actual Monstar and
+Cudaterm builds. `bench/image_lifecycle_probe.py` now runs eight upload/delete
+cycles in each of four fresh private Weston processes, in reversed orders.
+Each sequence covers raw RGB, raw RGBA, zlib RGB and zlib RGBA twice, using
+1024×512 solid images (1,572,864 or 2,097,152 decoded bytes). Payload generation
+and retained wire buffers live in the separate child, outside parent accounting.
+The images exceed the small viewport and may clip; no pixel verification is
+claimed. Foot remains outside this Kitty workload pending a Sixel path.
+
+All 32 uploads return the exact image/placement success reply. The same explicit
+placement command succeeds before deletion and fails afterward: Monstar reports
+`ENOENT: image not found`, while Cudaterm returns its generic `EINVAL` graphics
+error. This verifies loss of a usable placement under that command, not exact
+GPU allocation release. All 32 deletion checks, 80×24 geometries and four
+parent/child cleanup checks pass. Raw/encoded image SHA-256 and byte counts
+match the independent existing encoder in `tests/test_graphics.py`.
+
+Cudaterm starts at 242 MiB NVIDIA compute allocation and retains 256 MiB after
+every deletion in both orders: a 14 MiB process-level increase despite successful
+protocol deletion. Final parent PSS is 82.302–82.314 MB, above the fixed 78 MB
+gate. Monstar final PSS is 10.973–10.976 MB; some earlier delete samples are
+about 13.995 MB. Its GPU memory remains unknown. These eight-cycle settled
+samples do not establish peaks, long-term stability, allocation ownership, full
+protocol compatibility or presentation. CUDA image/transfer accounting and
+context/driver retention need separation using the same larger payloads.
+
+Luna implemented the child protocol; parent integration corrected cursor-reply
+coordinates versus ioctl geometry, ready-field names and delete indices, added
+pre/post-delete placement checks, and verified wire bytes against the existing
+encoder. The production application was unchanged. Collection and summary:
+`nix develop --command python3 bench/image_lifecycle_probe.py` and
+`nix develop --command python3 bench/image_lifecycle_summary.py` exited zero,
+as did `nix flake check`. Raw results, summaries and command/hash records are
+`bench/image-lifecycle-current/report.json`, `bench/image-lifecycle-summary.json`
+and `bench/image-lifecycle-validation.json`.
+
+Next attribute the 14 MiB residual with the same raw/compressed image sizes in
+the engine host, add actual private-compositor image observation, and integrate
+image/history/resize workloads with multiple windows. Foot's graphics protocol,
+long soaks, daily-driver feature gaps and fixed performance targets remain open.
+
+## Runtime graphics protocol qualification
+
+The previous turn completed combined history/resize/reset evidence. Before
+adding an image lifecycle comparator, `bench/image_protocol_probe.py` now runs
+a one-pixel RGB Kitty query (`a=q,t=d,f=24,s=1,v=1,i=123`) followed by CSI 6 n
+in six fresh private Weston terminal processes, using two reversed orders.
+The reader accepts APC and CSI independently and waits up to three seconds;
+no cursor reply alone is counted as image support. All six processes and their
+children exit cleanly at the verified 80×24 grid.
+
+Both Cudaterm and Monstar reply exactly `ESC_Gi=123;OK ESC\` (without the
+explanatory space before ESC) followed by the cursor reply in both orders.
+Foot replies to CSI 6 n but sends no Kitty reply during the bounded interval.
+That absence is unknown Kitty support, not proof of unsupported protocol or
+successful image handling. Foot's installed documentation identifies Sixel;
+its image workload must therefore be qualified separately. Local source review
+informed the query, while these replies establish behavior of the actual pinned
+executables. No displayed pixel or retained-image assertion follows from a query.
+
+`bench/image-protocol-current/report.json` preserves exact request/response hex,
+commands, executable/dependency hashes, geometry, bounded observation duration
+and cleanup. `bench/image-protocol-summary.json` validates both orders, exact
+positive APC replies and the independent CSI barrier. The collection and summary
+ran through `nix develop --command python3` and exited zero; `nix flake check`
+also exited zero (`bench/image-protocol-validation.json`). Production code and
+all existing targets remain unchanged.
+
+Next run acknowledged raw/compressed RGB/RGBA uploads and image deletion in
+Cudaterm/Monstar, measuring per-cycle retention and observing pixels separately.
+Use meaningful image sizes within both implementations' limits, retain transfer
+and image hashes, and do not treat parser completion as display or exact device
+allocation release. Foot needs its own Sixel image path. Multiwindow combined
+lifecycles, long soaks, remaining feature gaps and unmet targets remain active.
+
+## Combined history, matched resize and reset lifecycles
+
+The previous turn completed matched resize-only evidence. The same private
+Weston helper now fills 10,000 Unicode/SGR lines (370,000 bytes) before each
+40×32 → 318×89 → 80×24 resize cycle, then sends ED3/RIS and waits for CSI 6 n.
+Six processes in reversed terminal orders each complete three combined cycles:
+54 verified resize transitions, 36 history/reset acknowledgments, and six clean
+parent/child exits. Large writes loop until the full payload is sent. No desktop
+connection or production-code change was made.
+
+`bench/resize-history/report.json` and `bench/resize-history-summary.json`
+retain commands/provenance, geometry, byte counts, settled parent/child/compositor
+resources and parent-only NVIDIA compute readings. CUDA baseline is 242 MiB;
+each history fill is 256 MiB, each large resize 344 MiB, each return to 80×24
+before reset 254 MiB, and each reset 245 MiB in both orders. The first/small
+resize samples are 251, 249 and 251 MiB across cycles, also repeated in both
+orders. The 3 MiB post-reset excess therefore differs from the prior resize-only
+return to 242 MiB. Engine input/scan high-water storage was previously identified,
+but these process totals cannot uniquely attribute the residual allocation.
+
+After the third reset, parent PSS is 46.367–46.429 MB Foot, about 20.287 MB
+Monstar and 81.363–81.436 MB cudaterm. These are decimal MB and are post-command
+retention samples, not an assertion of equal reset/history semantics or a leak.
+Cudaterm remains above the fixed 78 MB PSS gate. GPU memory for the comparators
+is unknown; absence from NVIDIA's compute-process list is not zero.
+
+The helper's exact pre-history source is preserved as
+`bench/resize_geometry_probe_matched_baseline.py`, hash
+`a617e35e435a6febd2cd75e51452203abec974d385864baad86a87005f9637f3`.
+An extra trailing newline in the initial archive was removed only after verifying
+that this restores the raw report's recorded hash; original results were unchanged.
+Luna implemented child protocol support and parent integration completed the
+control loop and summary checks after patch-context failures.
+
+`nix develop --command python3 bench/resize_geometry_probe.py --matched-grids --history --output bench/resize-history/report.json`,
+`nix develop --command python3 bench/resize_geometry_summary.py bench/resize-history`,
+prior matched-run revalidation with its archived helper, and `nix flake check`
+all exited zero (`bench/resize-history-validation.json`). This verifies bounded
+short-run processing, geometry and cleanup; it does not verify reflow pixels,
+equal history content, peaks, long-running stability or physical display latency.
+
+Next integrate the verified resize/history path with multiple retained windows
+and image upload/delete. Use explicit protocol handling and preserve unsupported
+cases as unknown. Existing performance gates and remaining daily-driver gaps
+are unchanged; the full goal is not complete.
+
+## Matched-grid private resize lifecycle samples
+
+The previous turn made progress by calibrating per-terminal resize geometry.
+The helper now optionally requests terminal-specific pixel sizes and requires
+exact shared PTY grids: 40×32 → 318×89 → 80×24, repeated three times in each
+of six fresh processes across reversed Foot/Monstar/cudaterm orders. All 54
+transitions and six parent/child clean exits pass. No user desktop was used.
+
+The calibrated request formulas were verified by the runtime assertions: Foot
+uses 9×cols by 16×rows+28; Monstar 10×cols by 15×rows; cudaterm 8×cols+8 by
+16×rows+28. These formulas apply to this pinned compositor/font/terminal setup.
+Matching cells does not make font pixels, decoration, rendering or history policy
+identical. This workload contains geometry queries and resizing, not text/history
+reflow assertions or image uploads. It supplies settled resource samples, not
+latency, peaks or display evidence.
+
+After the third return to 80×24, parent PSS across the two orders is 6.797–6.839
+MB Foot, 19.667–19.668 MB Monstar and 79.074–79.123 MB cudaterm (decimal MB).
+Cudaterm remains above the fixed 78 MB PSS target and the better comparator.
+Its reported NVIDIA compute allocation repeats 241/302/242 MiB for the three
+sizes in every cycle/order, returning to its 242 MiB starting value. Comparator
+GPU values remain unknown. Traces repeat the mapped-buffer growth/shrink pattern;
+these short observations do not prove long-term boundedness or full GPU ownership.
+
+Luna prepared the matched mode and parent integration corrected tuple/list
+comparison, per-case size validation and acknowledgment timestamp placement.
+The original calibration helper is archived byte-for-byte as
+`bench/resize_geometry_probe_calibration.py`, SHA-256
+`509f3ff932e96378ba8cc42f50c1e5a8c159cd832ec2a6ef847721238f52abee`.
+The initial archive had one extra trailing newline; restoring exactly the
+recorded bytes allowed the original raw evidence to revalidate. Raw results
+were not edited. New `ack_end_ns` samples receipt before settling, but still
+include deliberate convergence polling and cannot measure display latency.
+
+`nix develop --command python3 bench/resize_geometry_probe.py --matched-grids --output bench/resize-matched/report.json`,
+`nix develop --command python3 bench/resize_geometry_summary.py bench/resize-matched`,
+old-calibration revalidation with the archived helper, and `nix flake check`
+all exited zero. See `bench/resize-matched-validation.json` for commands/hashes
+and `bench/resize-matched-summary.json` for per-cycle samples.
+
+Production code and acceptance targets remain unchanged. Next reuse these
+verified dimension requests in combined history/resize and multiwindow lifecycles,
+and add image upload/delete with protocol-specific handling; Foot documents Sixel,
+while the current cudaterm/Monstar graphics path uses Kitty graphics. Unsupported
+protocols must not silently count as successful image workloads. Full objective
+requirements, including daily-driver gaps and unexplained timing regressions,
+remain active.
+
+## Private resize calibration and short lifecycle validation
+
+The previous increment completed recovered redraw evidence. This increment adds
+`bench/resize_geometry_probe.py`, using the verified functional seat and fresh
+private Weston for each Foot/Monstar/cudaterm launch in two reversed orders.
+All six parents/children exit cleanly after three small–large–small cycles each:
+54 successful geometry transitions in total. No desktop connection was used.
+
+The first prototype timed out because the parent omitted its child control
+request. That result did not establish a comparator or compositor limitation.
+Luna implemented the prototype; parent review/integration corrected the handshake,
+repeated same-process cycles, geometry convergence and cleanup/provenance before
+the successful run. `bench/resize-geometry-calibration/report.json` preserves
+raw settled samples; `bench/resize-geometry-summary.json` validates them.
+
+Requested dimensions 328×540, 2552×1452 and 648×412 produce, respectively:
+
+| Terminal | First size | Large size | Final size |
+| --- | --- | --- | --- |
+| Foot | 36×32 | 283×89 | 72×24 |
+| Monstar | 32×36 | 255×96 | 64×27 |
+| Cudaterm | 40×32 | 318×89 | 80×24 |
+
+All geometries repeat exactly across all cycles and both orders. This is
+calibration and short lifecycle evidence, not a matched-grid resource gate.
+Different cell/decorations prevent treating identical requested pixels as
+identical terminal workloads. Content/reflow pixels are not verified here.
+
+For cudaterm, baseline NVIDIA compute allocation is 242 MiB; each cycle samples
+241 MiB at 40×32, 302 MiB at 318×89 and 242 MiB after returning to 80×24.
+Both runs repeat those totals across all three cycles. Lifetime mapped-PBO
+traces show 983,040 → 14,490,624 → 983,040 bytes for each large/small pair.
+The first intermediate size retains 983,040 bytes because it is above the
+half-capacity shrink threshold. GPU driver/backing ownership remains unknown.
+Compositor descriptors are 50 after every close; this probe includes a control
+FIFO and has no empty-before snapshot, so it does not prove a return to the
+original descriptor baseline. All measured child processes are absent after exit.
+
+`nix develop --command python3 bench/resize_geometry_probe.py` and
+`nix develop --command python3 bench/resize_geometry_summary.py` exited zero.
+`nix flake check` also exited zero; commands and hashes are recorded in
+`bench/resize-geometry-validation.json`. Luna independently reviewed the final
+report and repeated geometry/cleanup evidence.
+The field `ack_end_ns` was recorded after settling; it is excluded from latency
+claims. These snapshots are not peaks, presentation evidence, long-soak stability
+or multiwindow resize routing. Production code remains unchanged; targets remain
+unmet. Next use calibrated per-terminal dimensions to assert shared effective
+grids, then integrate the validated resize path with multiwindow/history/images.
+
+## Restored access and completed redraw-only validation
+
+Recovery rechecked the Nix daemon, an owned Unix socket round trip and NVIDIA
+access successfully (`bench/access-redraw-recovery.json`). The saved redraw run
+was already collected; no old PID or background job was reused. New local work
+and package links were preserved. A fresh Luna worker reviewed and corrected
+parent-only GPU summation and complete trace/acknowledgment validation.
+
+`bench/multiwindow-redraw/report.json` contains 12 private Weston groups, both
+grids and reversed Foot/Monstar/cudaterm orders, with 36 clean parent/child exits.
+Each window executes three cycles of 60 small background redraw updates followed
+by reset. All 216 operation acknowledgments pass; compositor descriptors return
+to 48 in every group after five seconds. This validates parser/geometry replies
+and cleanup, not each update's visible pixels or identical reset semantics.
+
+Three cudaterm parents have the same within-run NVIDIA compute allocation in
+both orders: 726 → 729 MiB at 80×24 and 900 → 948 MiB at 318×89, comparing the
+last idle sample with the first redraw before any reset. The first and third
+reset retain those redraw totals. History fill is therefore not required for
+part of the window-level increase. These figures do not identify its allocator,
+backbuffer owner, or complete graphics VRAM. Prior history/reset totals of
+738/1002 MiB remain higher, under a different workload/schedule.
+
+The 12 cudaterm traces each record 184 lifetime `gl_texture_swap` events.
+Command interval timestamps are absent, so these cannot establish per-update
+presentation or physical display latency. Three-parent PSS rises by 3,182,592
+bytes after the first redraw and another 1,216,512 bytes by the third reset in
+all four cudaterm groups; a three-cycle observation does not prove a leak or
+long-term boundedness. Raw evidence and limitations are retained in
+`bench/multiwindow-redraw-summary.json` and
+`bench/multiwindow-redraw/validation-restored.json`.
+
+`nix develop --command python3 bench/multiwindow_summary.py bench/multiwindow-redraw`,
+`nix develop --command python3 bench/validate_redraw.py`,
+`nix run .#headless-test -- --ekko /run/current-system/sw/bin/ekko --output-dir bench/recovery-redraw-ekko`,
+and `nix flake check` each exited zero. Fresh Ekko presentation passed entirely
+inside private headless Weston, using the current 27k8 package. Logs/hashes are
+listed in `bench/recovery-redraw-validation.json`. Production code was unchanged.
+
+Targets remain unchanged and unmet. Next extend private window lifecycle evidence
+to resizing with explicit geometry acknowledgments and safe surface targeting,
+then image upload/delete. Exact window GPU allocation ownership, peaks, long
+soaks and the outstanding daily-driver requirements remain open.
+
+Resize preparation: the smallest approach is to resize each newly launched
+private window before launching the next, then restore its starting geometry.
+Opcode 770 affects keyboard focus only; do not assume focus or configure
+completion from launch alone. Require bounded child geometry convergence and
+verify earlier children's geometries remain unchanged. Reuse the verified
+functional seat build with opcode 770 rather than assuming the older benchmark
+seat implements it. Cudaterm's existing 328×540 outer-size fixture expects
+40×32 cells; Foot/Monstar decoration/cell offsets still need direct calibration.
+This is a prepared next step, not completed resize evidence.
+
+## History memory attribution separates workspace from window costs
+
+The previous turn was progress: the mapped-font experiment failed its gate and
+was safely restored. This increment changes only `tests/memory_probe.cu` to
+report engine-accounted device bytes, separately tracked raster-buffer bytes,
+and samples after EGL interop release, history reset and raster release. Its
+optional `--history` workload asserts that capacity reaches 4096 rows and
+returns to 128, with zero image/transfer bytes. Those assertions concern the
+named resources, not all engine workspace. Original probe source is preserved
+in `bench/memory_probe.before-history.cu`.
+
+Four Nix-run probes alternate no-EGL/EGL/EGL/no-EGL with the 128-byte stack limit
+and three history/reset cycles. EGL is explicitly surfaceless on the NVIDIA
+device; DISPLAY/WAYLAND_DISPLAY are removed, and no window/desktop is used.
+A 370,000-byte single feed leaves 32,315,982 engine-accounted bytes after each
+reset versus 10,538,831 initially. History capacity is restored, but input/scan
+workspace remains sized for the largest feed. Source inspection of
+`enqueue_feed`, `reserve_scan` and `memory_usage` identifies that high-water
+policy; it is bounded by the existing 1 MiB input ceiling, not freed by RIS.
+
+A separate four-host comparison uses the retained 055j2 engine-host with the
+same payload, alternating whole-payload and 65,536-byte chunks. With terminal-
+sized chunks, post-reset engine-accounted bytes are 13,263,438 and NVIDIA
+compute allocation is 234 MiB, versus 32,315,982 and 252 MiB for whole feeds.
+Both repeat identically across all three cycles/orders. This 19,052,544-byte
+accounted difference shows why the large single-feed probe cannot directly
+represent terminal memory retention. `bench/history-chunk-memory.json` retains
+all stages; its host payload is outside the measured engine process.
+
+In the direct probe, raster allocation adds 14 MiB to NVIDIA's rounded listing
+and returns on release; destroying the engine lowers it to 220 MiB without
+EGL or 226 MiB with EGL, about 2 MiB above the preceding context-only levels.
+Surfaceless EGL does not reproduce the window swapchain. The earlier large-grid
+windows increase about 34 MiB per parent after history/reset, whereas the
+terminal-sized engine-only workload increases about 2 MiB. That difference
+supports investigating window/GL allocation separately, but different rendering
+and feed schedules prevent attributing it to a specific buffer/cache yet.
+
+Exact commands, exits and raw hashes are in `bench/history-memory-probe-runs.json`;
+`bench/history-memory-attribution.json` combines the validated stages and limits.
+All four probe processes and four engine hosts exit zero. Unavailable NVIDIA
+readings remain -1/null, never zero. These are synchronous stage measurements,
+not peaks, process-owner attribution of aggregate load, or long leak tests.
+
+The diagnostic package is `/nix/store/27k8jdw5qq57mikziji0n4qjrhhg04zc-cudaterm-0.1.0`. Its application bytes
+are identical to provisional 055j2 (SHA256 `64937ea240ddc79b141a92eba017087130d6921ba7d877f7fd9048d73f043d56`).
+Nix build and final flake check pass; package identity changed only because the
+probe changed. Fixed targets remain unchanged and unmet.
+
+Next compare private-window GPU allocation after repeated redraws without
+history against the history workload, then extend resize/image lifecycle
+coverage. Do not label all post-RIS retention a leak or change scan workspace
+policy without measuring its repeated-workload cost.
+
+## Font staging mapping experiment rejected
+
+The previous turn was progress: it measured history/reset retention but did not
+attribute the retained bytes. This increment tested one bounded host allocation
+hypothesis from the earlier constructor-phase evidence. Before editing,
+`bench/font-map-gates.json` required at least 1 MiB paired PSS and private-memory
+reduction, while preserving the fixed 78 MB PSS target and other existing
+performance/correctness requirements.
+
+The experiment replaced temporary font-file vectors with read-only private
+file mappings, released after the CUDA copies. Existing atlas/content validation
+remained in the constructor. A new Nix-run loader test covered data preservation,
+invalid/missing/empty/oversized files, descriptor cleanup after rejection, and
+unmapping at destruction. The first build omitted the untracked header from
+Nix's Git source; after including the new files, the candidate built and its
+check phase passed (`bench/font-map-build-validated.log`/`.stderr`). Font assets
+were assumed immutable during their short mapped lifetime, as in the Nix store.
+
+The private idle mapping run used before/candidate/candidate/before ordering.
+PSS reductions were only 224,256 and 258,048 bytes, and private reductions were
+221,184 bytes in both pairs (216 KiB). Before PSS was 80,760,832/80,803,840 bytes;
+candidate PSS was 80,536,576/80,545,792. Both reduction gates fail, and all four
+samples remain above 78 MB. These are settled snapshots, not peaks or proof
+that all constructor allocations explain retention. Full candidate Unicode,
+Ekko and performance acceptance was not pursued after this failed memory gate.
+
+The experiment was rejected, including its extra loader/test code. The complete
+patch is retained in `bench/font-map-rejected.patch`, along with raw smaps,
+commands and evaluation (`bench/font-map-idle-checks.json`,
+`bench/font-map-evaluation.json`). Restoration verified that engine/flake edits
+were limited to this experiment before restoring their backups. The original
+vector loader and provisional coalescing checkpoint 055j2 are restored. Fresh
+Nix build and flake check pass and resolve to 055j2
+(`bench/font-map-restored.json`). Existing unrelated work is preserved.
+
+The smaller retained implementation is justified by the measured sub-gate
+benefit; mapped staging did not deliver the hypothesized material reduction.
+Next separate engine-accounted allocations from CUDA/GL context/backbuffer
+retention during the existing fill/reset workload, and continue the missing
+resize/image multiwindow lifecycle stages. Fixed targets and the broader
+daily-driver/Unicode requirements remain open; this rejection is progress,
+not a completed-goal or global-blocker claim.
+
+## Multiwindow history/reset retention
+
+The previous turn was progress: it established one/three-window idle costs and
+process cleanup. The same private runner now supports explicit history cycles
+and post-close settling. The original idle helper bytes are preserved in
+`bench/multiwindow_resources_idle_baseline.py`; pass that path as the summary
+helper's second argument when validating the original baseline. Current runs
+use explicit `--output`, `--history-cycles` and `--post-close-seconds` options.
+
+The new run covers both grids and all three terminals in reversed orders,
+36 parents/children total. Each of the three concurrent windows completes three
+cycles of 10,000 short Unicode/SGR lines followed by ED3 and RIS, acknowledging
+each operation with CSI6n. That is 108 history/reset cycles and 216 operation
+acknowledgments. All geometry checks and exits pass. These acknowledgments
+establish parser progress, not identical history-clearing policies or visual
+correctness. There is still no resize or image-upload/delete workload here.
+
+Three-parent PSS after the last reset is approximately 38.8 MB Foot, 21.8 MB
+Monstar and 225.6 MB cudaterm at 80×24; at 318×89 it is 132.7 MB Foot, 81.6 MB
+Monstar and 225.6–225.8 MB cudaterm. Cudaterm grows about 1.6 MB across the
+three resets, mostly by the second/third cycle. Three cycles are insufficient
+to prove a leak or indefinite stability. Raw per-process/child/compositor
+stages remain available, rather than only these aggregate values.
+
+NVIDIA compute allocation for the three cudaterm parents is 768 MiB after the
+first small-grid fill and 738 MiB after reset; at the large grid it is
+1122 MiB after fill and 1002 MiB after reset. Both rounds reproduce those
+values. The earlier idle three-parent baseline was 726/900 MiB; reset does not
+return the NVIDIA total to that idle level. The listing does not distinguish
+engine allocations from CUDA/GL context, backbuffer or driver caches, so no
+ownership/leak conclusion is established. Comparator graphics-device memory
+remains unknown rather than zero.
+
+After all windows close and a five-second settle, compositor descriptor counts
+again return to 48. Compositor PSS still varies above its empty baseline,
+including about 46–50 MB in large-grid Monstar groups, 26–39 MB for Foot and
+0.18–4.38 MB for cudaterm. A longer settle alone therefore does not eliminate
+all observed retention; reset semantics, renderer caches and allocator state
+need separate attribution. Do not subtract these costs silently or label them
+leaks from short snapshots.
+
+Raw data is `bench/multiwindow-history/report.json`; validated distributions
+and lifecycle/workload stages are in `bench/multiwindow-history-summary.json`.
+Both old/new summary checks pass through Nix (`bench/multiwindow-history-checks.json`),
+as do final build and flake check (`bench/multiwindow-history-validation.json`).
+The application remains provisional 055j2, with unchanged fixed targets.
+
+Next profile the concrete retained CUDA/GL and host allocations across fill and
+reset, and extend the window workload to resize and image upload/delete. The
+existing font constructor also still allocates transient atlas/width/offset
+vectors; prior allocator-phase evidence identifies their lifetime, so a mapped
+staging experiment is a bounded host-memory candidate once its before/after
+gates are frozen. Preserve all font-data validation and CUDA architecture.
+
+## One/three-window resource and cleanup baseline
+
+The previous turn was progress: GPU telemetry located slow tabs timing in feed
+spans without proving a candidate-specific cause. This increment fills an
+independent resource evidence gap. `bench/multiwindow_resources.py` now records
+one then three simultaneous same-terminal processes at both grids in two
+reversed terminal orders, with fresh private Weston per group. All 36 terminal
+parents exit zero and all known children are absent after reaping. Each of the
+12 compositor groups returns to its original 48 descriptors after closing the
+windows. No application source or acceptance limits changed.
+
+At 318×89, aggregate three-parent PSS medians are 38.12 MB Foot, 78.58 MB Monstar
+and 224.07 MB cudaterm. NVIDIA compute allocation for the three cudaterm parents
+is 900 MiB; comparator GPU allocation is unknown, not zero. This exposes a
+material multi-process cost rather than a parity claim. Parents, children and
+compositor samples remain separate. Short post-close compositor memory differs:
+large-grid Monstar groups are 55–64 MB above their empty baseline, while
+cudaterm is near 0.1 MB. No leak/ownership conclusion follows from that snapshot.
+
+`docs/multiwindow-evidence.md` contains the table and scope limits. Raw stages,
+commands, geometry, GPU readings and cleanup checks are in
+`bench/multiwindow-current/report.json`; validated statistics/provenance are in
+`bench/multiwindow-current-summary.json`. Nix execution, summary, final build
+and flake-check evidence is in `bench/multiwindow-invocation.json` and
+`bench/multiwindow-validation.json`. The current app remains provisional 055j2.
+
+Next extend these windows through history fill, resizing, graphics upload/delete
+and repeated reopen/close stages, including a longer post-close compositor
+settle to distinguish transient retention. Then profile attributable retained
+allocations before changing resource policy. The 128-byte CUDA stack limit is
+already present in Engine construction, so proposing that existing optimization
+again would not advance the goal. Physical latency, full Unicode/grapheme and
+remaining performance/daily-driver requirements remain open.
+
+## Tabs diagnostic: slow feed spans correlate with aggregate GPU state
+
+The previous turn was progress: it retained all variable tabs samples and
+measured idle thread/memory behavior. This diagnostic adds six alternating
+before/candidate rounds with exactly one traced launch and 200 barriers per
+variant/round (2,400 samples). One launch per trace avoids overwriting earlier
+launch traces. `bench/coalesce-tabs-trace/` retains raw PTY and phase files;
+`bench/coalesce-tabs-telemetry.jsonl` records concurrent aggregate NVIDIA
+telemetry with receipt monotonic/realtime timestamps. Only the owned telemetry
+process was stopped. No user-desktop windows or processes were manipulated.
+
+The large slowdown reproduces for both executables. Later before/candidate
+median barriers are 19.170/20.388 ms, followed by candidate/before
+20.696/31.247 ms. Corresponding median feed-phase overlaps are
+13.114/14.068/14.445/22.835 ms. Faster rounds have approximately
+0.375–0.521 ms barriers and 0.266–0.384 ms feed overlaps. High-latency rounds
+coincide with 100% aggregate GPU utilization and reported SM clocks falling
+through roughly 855–540 MHz; most faster readings are 1–10% utilization at
+about 2520–2580 MHz. Exact ranges and each sample's phase intersections are in
+`bench/coalesce-tabs-telemetry-summary.json`.
+
+This locates much of the variable cost in feed spans, which include host/device
+transfers, synchronization and terminal processing. It does not identify the
+GPU workload owner, prove a throttling cause, or separate kernel execution from
+waiting. Device utilization uses coarse internal averaging; receipt timestamps
+are approximate. One fast launch has no in-interval telemetry sample, recorded
+as null. Synchronous tracing and telemetry can perturb timing. These results
+are diagnostic, not new acceptance limits or filtered replacement benchmarks.
+
+All 12 diagnostic launches exit zero, phase arithmetic and source hashes
+validate through Nix, and final build/flake check pass
+(`bench/coalesce-telemetry-validation.json`). Main application source remains
+055j2, still a provisional coalescing experiment. Current evidence does not
+isolate a consistent tabs regression attributable to it, but also does not
+prove regression-free acceptance or meet the fixed performance targets.
+
+Next fill the independent one/three-window resource and lifecycle gap on
+private Weston, recording per-process and compositor memory, descriptors,
+owned-child exit and aggregate GPU context alongside telemetry. Keep parser,
+submission, compositor observation and physical latency scopes separate.
+Further timing acceptance needs comparable GPU conditions or controlled
+concurrent-load experiments; do not change system GPU clocks, disturb other
+workloads, discard slow samples, or treat this as a global goal blocker.
+
+## Coalescing follow-up: tabs variability and idle evidence
+
+The prior turn made progress by implementing and validating a provisional
+coalescing candidate. This follow-up preserves that candidate at 055j2 while
+checking unresolved effects. No application source changed in this increment.
+
+`bench/coalesce-tabs-paired/` adds 720 uninstrumented tabs barriers: six
+alternating before/candidate rounds, each with one warmup and three measured
+launches of 20 intervals. All samples remain in the report. The first-round
+before/candidate medians are 14.959/21.324 ms; later rounds span approximately
+0.387–1.591 ms. The direction changes across rounds. Neither a stable gain nor
+regression is established, and there was no concurrent GPU-load/clock record
+to attribute these outliers. `bench/coalesce-tabs-paired-summary.json` preserves
+the pairs without filtering or post-hoc target changes. Next collect aggregate
+GPU clock/load alongside paired feed/render traces rather than repeat the same
+uninstrumented timing comparison or infer a cause from timing alone.
+
+Four separate three-second instrumented idle intervals (before/candidate/
+candidate/before) show zero main-thread context-switch and CPU-tick deltas and
+no draws overlapping the interval. This is resolution-limited evidence, not
+zero CPU usage or zero process wakeups. The cuda-EvtHandlr thread has 426–724
+voluntary switches per interval, and another thread has 29–30. Thread names
+alone do not establish exact allocation/driver cost ownership.
+`bench/coalesce-idle-summary.json` retains every thread delta and raw hashes;
+commands/exits are in `bench/coalesce-followup-checks.json`.
+
+Four additional settled 80×24 process mapping samples show candidate PSS
+82,184,192 bytes in both observations and private memory 71,544,832 bytes.
+Before PSS is 82,194,432 then 81,527,808 bytes; private clean sharing changes
+in the latter sample. RSS is 122,449,920 bytes in all four. These samples do
+not establish a memory reduction; the fixed 78 MB PSS target remains missed.
+Raw smaps/rollups and executable identity are preserved in
+`bench/coalesce-idle-maps-*`; `bench/coalesce-idle-maps-checks.json` records the
+Nix commands. GPU memory/utilization, peaks, long soaks and compositor/child
+resource totals were not measured by this idle helper.
+
+Nix summary validation, build and flake check pass
+(`bench/coalesce-followup-validation.json`). Candidate acceptance remains open:
+visible-marker delivery improves and functional checks pass, while fixed
+performance targets, tabs attribution and the broader resource/daily-driver
+requirements remain unresolved. Other evidence gaps may proceed independently
+of this benchmark uncertainty; this is not a global blocker.
+
+## Bounded input coalescing — provisional candidate 055j2
+
+The previous trace turn was progress: it identified a render between partial
+feeds followed by an approximately 8 ms deadline wait. `src/main.cu` now tests
+whether more PTY input is immediately available before an eligible draw. It
+continues feeding only within a one-millisecond coalescing budget, services
+GLFW events between feeds, and bypasses coalescing for explicit synchronized
+update boundaries. There is no added wait for input and no larger buffer.
+The budget limits deferral decisions; it does not preempt a CUDA feed already
+running or bound driver calls. CUDA parsing/state/rasterization are unchanged.
+
+Before this edit, `bench/coalesce-gates.json` froze additional parser and
+capture-completion median/p90 limits from the better comparator in the
+uninstrumented persistent baseline. Existing historical, PTY and resource
+limits remain unchanged. The prior main source is preserved in
+`bench/main.before-coalesce.cu`, with the isolated edit in
+`bench/coalesce-candidate.patch`. The candidate store is
+`/nix/store/055j2d1lxshypp94yw0hiviwkjbr31bl-cudaterm-0.1.0`;
+vjw4 remains the before checkpoint. This is a provisional worktree experiment,
+not performance acceptance, a push or a Finix activation.
+
+The 120-marker three-terminal run (`bench/paired-visible-coalesce/`) reduces
+loaded cudaterm capture-completion medians from 27.844/27.820 ms to
+11.492/11.313 ms at small/large grids. Parser medians fall from 1.381/1.340 ms
+to 0.727/0.898 ms. The marker-only parser results and several fixed limits
+still miss (`bench/coalesce-visible-evaluation.json`). The 1,723- and
+1,725-line boundary-adjacent runs each capture all 120 measured markers;
+all 20 loaded cudaterm samples in each run appear on the first capture.
+These are capture-paced framebuffer observations, not physical display/input
+latency. Exact commands and Nix exits are in `bench/coalesce-checks.json`.
+
+A diagnostic 64 MiB continuous write in two reversed before/candidate orders
+shows 27–29 submitted frames during 232–250 ms, with maximum gaps around
+9.01–9.06 ms for both checkpoints (`bench/coalesce-sustained/report.json`).
+This verifies bounded frame delivery for that short write, not a long soak,
+physical presentation or full memory-lifecycle acceptance.
+
+Both the candidate and a fresh retained checkpoint completed separate
+900-barrier PTY matrices (`bench/coalesce-pty-summary.json` and
+`bench/coalesce-retained-pty-summary.json`). Small-grid tails/tabs and fixed
+historical targets remain unmet. The fresh retained large-grid ANSI median
+is 0.480 ms versus candidate 0.498 ms, rather than the much older 0.336 ms;
+sequential full matrices alone do not isolate small changes from drift.
+A focused alternating comparison adds 720 samples (three workloads, both
+orders, three measured launches with 20 barriers each). ANSI and DEC-graphics
+candidate medians improve in both orders. Tabs medians are 0.507→0.503 ms in
+one order but 0.407→0.496 ms in the other (`bench/coalesce-focused/report.json`).
+That unresolved variation prevents a claim of regression-free acceptance.
+Its 20-barrier distribution is separate from the five-barrier full matrix.
+
+Synchronized graphics/clipboard/input/child-exit tests, headless history search,
+explicit Ekko graphics and flake check pass on the candidate. Final build,
+Finix checks and exact executable/source hashes are recorded in
+`bench/coalesce-final-validation.json`; summary validation is in
+`bench/coalesce-summary-checks.json`. Helper snapshots preserve prior raw
+hashes: use `paired_visible_probe_coalesce_baseline.py` for the candidate's
+original paired report and `paired_visible_probe_persistent_baseline.py` for
+the persistent before report. Current helper accepts `--cudaterm` and
+`--load-lines` for explicit candidate and boundary cases.
+
+Next resolve tabs variability with paired feed/render attribution and evaluate
+idle/wakeup resource effects before accepting or reverting this candidate.
+The visible improvement supports continued investigation, but does not erase
+fixed misses or prove the full daily-driver/Unicode/multiwindow requirements.
+
+## Feed/render/capture correlation identifies early partial rendering
+
+The previous observer increment was progress: its capture counts exposed a
+repeatable visible-marker delay. The new `--trace` option records cudaterm's
+existing synchronous phase trace per launch while preserving parser and
+capture timestamps. `bench/paired-visible-trace/` contains a completed two-order,
+two-grid three-terminal run. This instrumented run is diagnostic, not a new
+performance acceptance baseline. The prior helper is preserved as
+`bench/paired_visible_probe_persistent_baseline.py` for hash-matched reproduction.
+
+`bench/paired_trace_summary.py` correlates all 20 loaded cudaterm samples.
+Every one contains a texture/draw/swap between the first feed and the final
+feed; every next post-reply swap starts 7.759–8.222 ms after the reply. In 18
+samples the first feed fills the 65,536-byte buffer, leaving 10 or 11 trailing
+bytes. Two others split earlier (9,728/55,819 and 56,832/8,715 bytes). The trailing
+marker and CSI6n are therefore parsed after an already-submitted partial update.
+The next update waits for the 8.333 ms deadline set after that swap. This
+correlation explains a controllable contributor to the measured delay; it does
+not attribute all compositor timing or establish physical display latency.
+Raw selected events and source hashes are in
+`bench/paired-visible-trace-analysis.json`.
+
+Next implement a bounded input-coalescing experiment before rendering an
+unfinished burst, with a time bound that still presents under sustained output
+and preserves explicit synchronized-update boundaries. Merely enlarging the
+64 KiB buffer would not cover the two earlier partial reads and would shift the
+boundary for larger output. Freeze experimental comparison limits from the
+uninstrumented persistent baseline before edits, while retaining all existing
+PTY, resource and historical limits. Validate both parser barriers and observed
+markers, boundary-adjacent payload sizes and sustained-output frame delivery;
+reject a parser-only improvement that worsens visible output or fairness.
+
+## Persistent private-compositor capture observer
+
+The prior paired-marker turn was progress: it established visible marker
+correctness but found that PNG screenshots were too slow to assess rendering.
+The new test-only `bench/capture_observer.c` uses the pinned Weston 16 capture
+protocol and a persistent SHM buffer. It records capture request, completion
+callback and pixel-count completion separately. `nix/capture-observer.nix`
+builds it through Nix from the pinned protocol XML. It requires the runner's
+explicit private socket name; the runner supplies a fresh private runtime
+directory and removes DISPLAY. The terminal application remains unchanged.
+
+The persistent run repeats 12 launches and 120 measured markers plus 12 warmups
+across both grids, both terminal orders and all three terminals. Every marker
+was observed and every owned client exited zero. Exact commands, observer hash,
+raw timestamps and color counts are in `bench/paired-visible-persistent/report.json`.
+`bench/paired-visible-persistent-summary.json` validates executable identities,
+geometry, counts and timing arithmetic. `bench/capture-observer-validation.json`
+records Nix build, both old/new summary checks, flake check and the display-name
+rejection check. Original screenshot helper bytes are archived in
+`bench/paired_visible_probe_screenshot.py`; pass that path as the summary
+helper's second argument when reproducing the old screenshot report.
+
+Median capture-request-to-completion is 11.076 ms; full-output pixel counting
+adds a separately measured median 4.540 ms. Unlike the PNG path, this exposes a
+repeatable scheduling difference: 19 of 20 loaded cudaterm samples require two
+captures to observe the new color, across both grids/orders. All 40 loaded
+Foot/Monstar samples need only one. Counts/attempts are preserved in
+`bench/paired-visible-persistent-attempts.json`. Loaded cudaterm write-to-capture
+completion medians are 27.844/27.820 ms at small/large grids, versus Monstar
+11.327/11.324 ms, despite cudaterm parser medians of 1.381/1.340 ms. In the
+second large-grid Foot launch, even first-attempt captures take about 28 ms;
+this variance must remain visible rather than being filtered away.
+
+Capture requests follow parser replies and cause compositor work; callbacks
+include scheduling and framebuffer transfer. The probe does not measure first
+presentation, physical scanout or input latency. Pixel counting delays retries
+and sample pacing, and a missed capture is not an exact display timestamp.
+Nevertheless, the repeated missing-color first captures change the next
+profiling action: trace cudaterm feed completion and texture/swap submission
+against these capture timestamps, including the 8.333 ms frame deadline and
+partial reads. Keep all better-comparator/historical limits unchanged and
+measure both parser and visible-marker outcomes before retaining any scheduling
+change. Full goal completion remains unproven.
+
+## Paired parser and visible-marker probe
+
+The previous turn made progress by restoring the rejected experiment and
+validating the retained application. This increment adds
+`bench/paired_visible_probe.py`: a private Weston-only runner for all three
+pinned terminals, 80×24 and 318×89 grids, two reversed launch orders, and
+zero-load/1,724-line ASCII cases. Each launch has one warmup marker and ten
+measured markers. The child records a CSI6n reply timestamp, then keeps the
+marker alive until the parent captures enough pixels of its distinct color.
+Every marker alternates color, preventing reuse of the immediately prior frame.
+All 12 launches exited zero; all 120 measured markers and 12 warmups were
+captured. PNGs, exact commands, payload hashes, parser/capture timestamps and
+capture attempts are retained in `bench/paired-visible-current/`.
+
+`bench/paired_visible_summary.py` validates geometry, timestamp ordering,
+payload-independent sample counts, executable-run records and every saved PNG
+hash. It produces `bench/paired-visible-current-summary.json`; Nix invocation
+results and environment provenance are in `bench/paired-visible-validation.json`.
+The application is unchanged at vjw4. No performance targets were relaxed.
+
+This observation path is too slow for render-scheduling acceptance: pooled
+capture-completion medians are about 352–371 ms, including screenshot startup,
+compositor scheduling, transfer and PNG decoding. Those stages were not timed
+separately, so their individual costs are unknown. Parser medians are
+0.054–2.746 ms. Marker-only cudaterm medians are 0.353/0.413 ms at the two grids,
+versus Foot 0.054/0.069 ms. Loaded cudaterm medians are 1.559/1.616 ms versus
+Foot 0.707/1.773 ms, with a 4.267 ms large-grid cudaterm p90. These small,
+capture-paced samples include a full-screen color/erase marker and are not the
+prior throughput workload or proof of display competitiveness.
+
+The marker replaces the preceding load pixels. Capture starts after the reply,
+so its completion is an upper bound, not first presentation or physical scanout.
+This closes a narrow visible-final-output evidence gap and demonstrates that the
+current screenshot observer cannot resolve the scheduling differences under
+investigation. Next profile/separate observer stages and implement a persistent
+private-compositor frame observer before another scheduling change. Keep the
+same marker verification and report parser, submission, compositor observation
+and physical display evidence separately. Full resource/multiwindow matrices,
+remaining daily-driver gaps and fixed performance targets are still open.
+
+## Query-redraw experiment rejected; restored checkpoint
+
+A GPU-derived redraw hint was implemented and passed the CSI regression and
+seven relevant CUDA suites through Nix (`bench/query-redraw-core.json` and
+`bench/query-redraw-csi.log`). It conservatively retained redraw for selection
+invalidation, mixed output and interrupted UTF-8. A separate private Weston
+matrix collected 900 barriers with the same two grids, workloads and reversed
+terminal orders (`bench/query-redraw-pty-matrix.json`).
+
+The candidate did not meet the existing targets. Small-grid text, ANSI and
+Unicode p90 and tabs median still miss the frozen contemporaneous limits;
+large-grid Unicode median also exceeds the historical limit. Most pooled
+medians increased. `bench/query-redraw-evaluation.json` records rejection.
+`bench/query-redraw-gates.json` materializes limits from the already recorded
+baseline; this file was made after implementation but before candidate runs,
+and does not change those earlier limits. Historical small-grid figures remain
+scope-mismatched references, not matched acceptance gates.
+
+The first-interval median fell from 1.355 to 0.708 ms, but the second interval
+now has a 0.956 ms median. A single instrumented burst confirms rendering can
+move into the second pending reply: 0.521 ms overlaps texture upload/draw/swap.
+This is diagnostic phase overlap, not isolated causal attribution or physical
+display latency (`bench/query-redraw-burst-analysis.json`). The helper's five
+parser barriers can finish before the next frame deadline. Further scheduling
+experiments therefore need joint parser and frame-submission evidence and a
+visible final marker, rather than acceptance from the first reply alone.
+
+Recovery found that the earlier restoration failed on Nix's nested derivation
+JSON format. The rejected five-file patch is now preserved in
+`bench/query-redraw-rejected.patch`; only those files were restored from the
+verified vjw4 Nix source. Pre-experiment source hashes are in
+`bench/query-redraw-before.json`. Fresh daemon, Unix bind/listen and NVIDIA
+checks succeeded (`bench/access-query-restoration.json`). Restored `nix build . --no-link --print-out-paths`, `nix flake check`,
+`nix run .#sync-test`, `nix run .#window-search-test` and the private
+`nix run .#headless-test` with explicit Ekko all exited zero. Exact commands and
+log hashes are in `bench/query-redraw-restored.json`; binary/source identity is
+in `bench/query-redraw-restored-identity.json`. These checks establish the
+retained checkpoint, not completion of the outstanding performance targets.
+No desktop benchmark, push or Finix activation was performed.
+
+Benchmark CLI support is retained. The original matrix helper is archived as
+`bench/current_pty_matrix_baseline.py`, matching the baseline's recorded hash.
+To reproduce its summary, run `nix develop --command python3
+bench/current_pty_summary.py --matrix bench/current-pty-matrix.json --helper
+bench/current_pty_matrix_baseline.py --output <new-summary.json>`. Candidate
+summaries instead use `--helper bench/current_pty_matrix.py`; new matrices accept
+`--prefix <unique-prefix> --cudaterm <store-executable>`. Existing evidence is
+preserved. Overall performance and daily-driver completion remain open.
+
+## Current three-terminal PTY matrix and query redraw diagnostic
+
+The current vjw4 executable completed the full five-workload, two-grid private
+PTY matrix in both terminal orders: 900 measured barriers, 180 measured launches
+and 60 warmup launches. `docs/current-pty-comparison.md` contains the table and
+scope limits; `bench/current-pty-matrix.json` and `bench/current-pty-summary.json`
+retain exact commands, hashes, geometry, raw samples, per-launch and per-round
+statistics. All large-grid matched median/p90 checks pass in both orders, while
+small-grid tails and tabs remain behind. Historical limits are unchanged and
+remain unmet for four of five large-grid workloads. No parity is claimed.
+
+A first-interval pattern changed the next profiling action: all 60 first cudaterm
+intervals exceed 1 ms, versus four of 240 later intervals. An instrumented launch
+shows 0.560 ms texture/draw/swap overlap in the first 1.131 ms barrier, immediately
+after the helper's initialization cursor query. `bench/current-pty-burst-analysis.json`
+records exact phase intersections and raw hashes. The query feed marks the app
+dirty despite no ordinary cursor-query screen mutation; selection invalidation
+and search generation side effects must also be examined before skipping redraw.
+The CUDA-derived nonvisual-feed experiment below was subsequently rejected.
+Next measure parser completion and frame submission together before changing
+render scheduling; the evidence does not support an assumed one-millisecond timer.
+Full memory, display latency, grapheme and lifecycle requirements remain open.
+
+## VS16 lookup experiment and retained-engine lifecycle
+
+A binary-search predicate was tested against both the retained linear vjw4
+checkpoint and the pre-VS16 bhsg checkpoint. `bench/vs16-binary-cost-raw.json`
+contains 96 engine-host launches in two reversed orders, with the same grids,
+payloads, 20 warmups and 30 samples per launch. The raw file identifies all three
+executables. Candidate Unicode tests passed through Nix. Several affected median
+barriers improved roughly 3–7% versus the contemporaneous linear variant, but
+other results were mixed and 23 of 32 checks still exceeded a frozen limit
+(`bench/vs16-binary-evaluation.json`). The gate file SHA remains
+`a025761d5ef4ed7cb09d1e513220775b86c591216d00f90f9da2a59a429391aa`.
+
+The binary-search change was rejected and only that header edit was restored;
+`bench/vs16-binary-rejected.patch` preserves it. Production retains vjw4 and its
+correctness fixes, including styled inline VS16 support. Final restored build
+and flake-check exits, source hashes and executable identity are in
+`bench/vs16-lookup-restored.json`. Performance acceptance remains open.
+
+The retained engine then passed `nix develop --command python3
+tests/test_lifecycle.py --host <vjw4>/bin/cudaterm-engine-host --cycles 5
+--processes 3 --output bench/vs16-retained-lifecycle.json`. The actual argv/store
+is available in the saved invocation and the report's host field. Across 15
+cycles and three fresh processes, each cycle writes 5,000 lines, confirms the
+4,096-row history bound, resizes to 318×89 then 40×12, uploads RGB/RGBA graphics
+(raw and compressed cases), verifies every 64×32 image pixel, deletes the image,
+and resets/resizes to 80×24. All owned hosts exited.
+
+After every cycle, engine-accounted device allocations returned to 10,600,142
+bytes with history reservation 128 and zero image/transfer bytes. Post-cycle
+PSS was 56,897 KiB and private host memory 52,868 KiB in all 15 observations.
+Raw stage samples and summary hashes are in `bench/vs16-retained-lifecycle.json`
+and `bench/vs16-retained-lifecycle-summary.json`. These are engine-host lifecycle
+samples, not full terminal-window memory, total device/context memory or true
+instantaneous peaks. The payload is the existing ASCII/history/graphics corpus;
+this does not prove a long-running VS16 or full-grapheme soak.
+
+Next update the current three-terminal PTY/resource comparison and profile the
+remaining styled overhead, preserving the existing limits. Full window lifecycle,
+physical display latency, grapheme/shaping support and several fixed performance
+targets remain incomplete; none is promoted from this bounded engine evidence.
+
+## VS16 styled-output cost — material regression found
+
+The new `bench/vs16_cost_probe.py` uses the existing CUDA engine-host transport,
+without a window or compositor. It measures wall time around a complete F
+feed/reply operation, not a PTY, renderer or display event. Two reversed rounds
+cover four workloads, two payload sizes and both grids, with 20 warmups and 30
+raw samples per launch: 64 launches in `bench/vs16-cost-raw.json`.
+`bench/vs16-cost-summary.json` records paired comparisons. The original helper
+bytes are preserved as `bench/vs16_cost_probe_baseline.py`; its SHA matches the
+raw record before CLI support was added for separate candidate/output paths.
+
+The wcp2 candidate's all-VS16 styled fallback causes a clear regression: 64 KiB
+VS16/SGR-VS16 median feed barriers are 237–320 times the prior bhsg checkpoint in
+both run orders, roughly 47–60 ms rather than about 0.2 ms. This changes the next
+action: correctness alone is insufficient to retain that fallback as finished
+work. These engines share the desktop GPU but create no desktop windows.
+Before/after allocation and proc-memory snapshots are diagnostic stages, not
+instantaneous peaks or full terminal resource acceptance.
+
+Before editing the styled implementation, `bench/vs16-styled-gates.json` froze
+median/p90 ceilings per grid, size and workload from the larger corresponding
+bhsg observation across the two rounds. The full better-Foot/Monstar targets
+remain separate and unchanged. No ceiling comes from the slower candidate.
+
+The revised candidate recognizes a complete inline sanctioned base+FE0F sequence
+in layout and painting. Suffixes requiring prior-feed state still reject the
+styled line before commit. The scalar parser remains CUDA-based and keeps eager
+promotion. Existing whole-versus-byte tests cover inline sequences; a new
+large suffix-start/history search regression checks the prior-feed case. The
+revised candidate uses package vjw4; its new paired run is
+`bench/vs16-styled-cost-raw.json`, with per-launch medians in
+`bench/vs16-styled-paired-summary.json`. The 64 KiB affected workloads now take
+139.7–232.0 microseconds across both grids and rounds, rather than the former
+47–60 milliseconds. Against the contemporaneous bhsg control, affected medians
+are still about 2–10% higher; smaller workloads also retain overhead.
+
+`bench/vs16-styled-evaluation.json` reports 25 of 32 candidate checks exceeding
+at least one frozen median/p90 ceiling, including some control-workload tails.
+The exact limits are unchanged. This removes the catastrophic fallback cost but
+does not pass performance acceptance. The experimental implementation remains
+in the worktree for further measurement and correction, with no push or activation.
+Next profile the remaining inline predicate/layout overhead and resolve control
+tail variability, then repeat the same frozen evaluation. Full terminal memory,
+PTY/compositor/display comparison and broad lifecycle requirements remain open.
+
+Final Nix/integration commands and current source hashes are recorded in
+`bench/vs16-styled-checks.json`; complete validation requires every listed command
+to exit zero. All 13 commands exited zero, current source/binary hashes match,
+and Finix's nested desktop assertion list is empty with integration guards intact.
+These checks do not substitute for the failed performance gates.
+
+## VS16 presentation candidate — implementation and validation
+
+The review candidate promotes an already emitted, eligible scalar when its
+immediate FE0F suffix arrives. It preserves base and suffix UTF-8 in the existing
+Cell representation, creates a valid wide pair, relocates a final-column base
+with soft-wrap metadata, and queues padding edits before bottom-scroll history
+copies. Insert mode shifts the additional cell and preserves a populated next
+row on wrap. There is no delayed-output buffer or Cell-size increase.
+
+The qualifying predicate is generated from the exact Unicode 17 variation
+sequence data in `data/emoji-variation-sequences-17.0.0.txt`, with Unicode's
+license retained beside it. `bench/vs16-data-provenance.json` records independently
+verified download hashes; Nix checks that the header ranges match the data.
+Styled lines containing FE0F fall back to the CUDA streaming path before commit.
+Search-prompt layout uses the same predicate before truncation. The affected
+styled-path performance cost is unmeasured and must pass the unchanged gates
+before performance acceptance.
+
+New CUDA regressions cover immediate base output, all byte splits, narrow and
+last-column wrapping, exact UTF-8 copy/search, reflow, bottom scrolling, insert
+mode, repeated selectors, unsupported bases and styled-versus-scalar feeds.
+Prompt pixels verify placement of a following ASCII character. The first
+candidate i2bj passed these initial suites, private sync/Ekko, Finix evaluation
+and flake check; final review added a wrapped-insert fix and its regression.
+`bench/vs16-checkpoint.json` tracks the final checkpoint's actual commands,
+exits and source hashes; earlier logs are not substituted for that checkpoint.
+
+The first candidate's private-compositor probes matched Foot and Monstar for
+heart/keycap width and all tested margin conditions; raw paths and hashes are
+in `bench/vs16-comparator-summary.json`. Its three launch width run remains a
+functional sample, not a performance distribution or visual-shaping proof.
+The final wcp2 checkpoint passed all 13 recorded commands: build, seven CUDA
+suites, private sync/Ekko, Finix build/evaluation and flake check. Source hashes
+still match the checked files; executable hashes are in
+`bench/vs16-checkpoint-binaries.json`. Final comparator results follow in the
+companion `bench/vs16-final-comparator-summary.json`.
+
+Limitations remain explicit: right-edge cursor clipping with autowrap disabled
+requires better preceding-cell tracking, so this case retains existing scalar
+behavior. One-column presentation remains scalar. Full ZWJ/skin-tone clustering,
+long cluster storage, shaping, styled-path cost, broader lifecycle stability and
+fixed resource targets remain open. This candidate is neither full Unicode
+parity nor performance acceptance; existing result links and system activation
+are untouched. Next work must close those behavior gaps and measure the affected
+path, rather than declare success from the heart/keycap improvement.
+
+## Unicode margin comparison — 2026-09-06
+
+`nix develop --command python3 bench/grapheme_margin_probe.py` exited zero.
+The authoritative final run is `bench/grapheme-margin-20260906-015856-24592.json`;
+`bench/grapheme-margin-summary.json` records its hash and the independently
+verified 84 exact CPR replies across three launches at stable 80×24 geometry.
+Earlier margin runs predate final helper corrections; use the named final run
+for reproducibility. No application source changed.
+Final `nix build . --no-link --print-out-paths` and `nix flake check`
+exited zero; raw logs are indexed in `bench/unicode-margin-final-validation.json`.
+
+Both tested sequences (heart+VS16 and digit+VS16+keycap) have the following
+one-based cursor coordinates. Foot and Monstar agree in every case. Contiguous
+input and input with a CPR query between base and suffix also agree for these
+cases; this is not proof about arbitrary controls or pure transport splits.
+
+| Starting column | Terminal | After complete sequence | After following X |
+| --- | --- | --- | --- |
+| 79 | Foot / Monstar | (1,80) | (2,2) |
+| 79 | cudaterm | (1,80) | (1,80) |
+| 80 | Foot / Monstar | (2,3) | (2,4) |
+| 80 | cudaterm | (1,80) | (2,2) |
+
+The following X is necessary to expose pending wrap at column 79. These are
+cursor observations, not a visual or clipboard test. The failure requires
+correct width promotion and wrapping, with exact text preservation still to be
+validated. `docs/unicode-increment-design.md` records source paths, required
+regressions and the rejected delayed-base design: output must remain immediate
+when the application sends no subsequent scalar. No fix or Unicode parity is
+claimed. The next implementation must use sanctioned variation-sequence data,
+handle the scalar and styled paths, and retain complete UTF-8 through selection,
+search and reflow. Full ZWJ storage/shaping remains a separate unmet requirement.
+
+## Recovery recheck and constructor allocation diagnostic — 2026-09-06
+
+Fresh recovery checks again passed Nix daemon access, private Unix socket
+bind/connect/send/receive, and NVIDIA enumeration (RTX 4090, driver 595.91.07).
+Raw results are in `bench/access-recovery-recheck.json`. No desktop windows,
+system activation, push, or reset was performed; newer local work is preserved.
+
+The saved V3 diagnostic build completed successfully before recovery. Production
+engine/main hashes match the retained checkpoint. A new private Weston run of
+`/nix/store/ac3rxpmnyv4a002p4kgpirczj2f590k4-cudaterm-0.1.0` exited zero at
+80×24 and captured all six allocator phases in one process. Raw stdout, stderr
+and smaps are under `bench/heap-phases-v3-runtime*`; the exact diagnostic-only
+patch is `bench/heap-phases-diagnostic-v3.patch`. The first recovery launch used
+an absent Weston store path and was retried with the pinned existing compositor.
+That failure was an invocation error, not a restored-access failure.
+
+Across the three font-buffer reads, mallinfo2 allocated arena bytes increased
+2,228,496 and mmap-backed allocator bytes increased 4,632,576. Immediately across
+successful constructor-scope exit, allocated arena bytes decreased 2,228,256,
+free arena bytes increased by the same amount, and mmap-backed allocator bytes
+decreased 4,632,576; total arena size stayed at 14,934,016 bytes. These counters
+bracket temporary-buffer cleanup in the same process. They are not RSS/PSS,
+allocation stack ownership, a peak measurement, or evidence that all free arena
+pages can be returned. Heaptrack preload/injection attempts failed before a first
+frame with a CUDA runtime/driver error; a settled allocation-stack profile remains
+unknown. The normal private run succeeds, so those failures do not establish a
+host-driver blocker. No allocator optimization is retained from this diagnostic.
+
+The independently reviewed `bench/grapheme-summary.json` contains 99 valid cursor
+replies from nine launches of the pinned three terminals. Cudaterm differs from
+both comparators for heart VS16, emoji skin tone, two ZWJ sequences and keycap;
+`docs/feature-evidence.md` records exact widths. This proves layout differences,
+not visual shaping or copy fidelity. The full remaining requirement/evidence
+matrix is `docs/remaining-evidence.md`. A fix must preserve complete UTF-8 through
+copy, feed splits, margins and reflow rather than merely correcting the cursor.
+
+On restored production source, `nix build . --no-link --print-out-paths` and
+`nix flake check` both exited zero, recorded with raw logs and hashes in
+`bench/recovery-final-validation.json`. The output remains the retained bhsg
+word-selection package. Fixed performance targets, complete grapheme behavior,
+matched display/latency evidence and broad current-checkpoint lifecycle work
+remain unmet; the goal stays active. Next bounded optimization work should test
+font staging only under frozen resource and workload gates, or address a measured
+Unicode failure with exact copy/reflow regression coverage.
+
+## Current goal status — access restored, validation resumed
+
+The newly restored unrestricted turn on September 6 successfully queried the
+RTX 4090/595.91.07 driver, bound a private Unix socket, and built the current
+source through Nix. `nix flake check` also succeeds. Earlier environment
+failures were real observations of the restricted workers, not evidence that
+the host driver or Nix service had failed. `bench/access-restored.json` records
+the fresh successful checks. New Luna workers perform the pending validation.
+
+The parent-pushed snapshot is `af470c1`; local work is preserved and no system
+activation or desktop benchmark is performed here. Private headless functional
+checks and final Nix/Finix validation now pass, including explicit Ekko
+presentation. The candidate fails the fixed PSS gates on both grids and is
+not accepted; the full goal remains incomplete. Existing result and result-finix
+links are preserved; review links select the freshly tested checkpoint.
+
+Restored headless testing exposed two fixture assumptions. Private Weston's
+Alt-F4 delivery did not close the idle window; a private-seat opcode now sends
+the desktop-surface close request directly and that close test passes. The
+new wake test queried `CSI 5 n`, while the frozen idle-checkpoint engine implemented only
+`CSI 6 n` in its DSR handler. The fixture now uses an explicit cursor position
+and the implemented query to isolate transport wakeups. Missing `CSI 5 n`
+status replies were a confirmed source-level VT gap, addressed by the separate increment below;
+no full VT compatibility is claimed. Failed logs are preserved under
+`bench/idle-restored-functional-sync*.log`; complete sync and search reruns
+passed through Nix. Exact checkpoint commands, source hashes and Ekko evidence
+are recorded in `bench/idle-restored-functional.json`.
+
+## Restored idle checkpoint — fixed performance limits unmet
+
+The controlled run in `bench/idle-event-controlled.json` completed all 18
+launches, with three samples per terminal per grid. Cudaterm voluntary context
+switch medians are 338 (80×24) and 339 (318×89) per three-second interval;
+linear p90 values are 338.8 and 341.4. These improve on the fixed historical
+361/401 medians but remain above the better comparator target of zero.
+CPU, RSS, private host memory and measured GPU memory (242/300 MiB) satisfy
+this increment's fixed ceilings. Maximum PSS is 80,644,096/80,652,288 bytes,
+exceeding the unchanged 78,086,144/78,073,856-byte ceilings. Collection success
+is not acceptance success.
+
+The contemporaneous reference run uses executable SHA256
+`370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00`,
+identical to the old accepted v513 executable despite a different store path.
+It also exceeds the historical PSS ceilings. This supports an environmental
+contribution but does not isolate its cause, replace the baseline or waive
+limits. Raw evidence is `bench/idle-event-reference-current.json`.
+
+The settled trace shows the main event loop and PTY worker blocked in
+indefinite waits across the measured interval. An initial worker attribution
+for another thread's 100 ms polls was unsupported by thread name alone;
+a separate same-executable stack run resolves the matching eventfd/pipe wait
+inside libcuda (`bench/idle-event-settled-stacks-analysis.json`). No recurring
+100 ms timeouts occur in either own loop during the measured interval. This
+passes the own-polling gate, while PSS still fails overall acceptance. Do not describe all process
+wakeups as application polling or all driver-associated costs as irreducible.
+The instrumented trace is diagnostic, not a resource acceptance run.
+
+## VT increment — normal device-status reply
+
+Normal CSI 5n now returns exactly ESC[0n. The new branch excludes private
+requests; existing CSI 6n handling is unchanged. CUDA regression coverage checks
+normal status bytes, every feed split, private/malformed silence, parameter
+overflow beginning with 5, and an explicit cursor-position response. Review
+corrected a test's cursor-column expectation before the final passing run.
+`nix run .#csi-test`, `nix run .#test`, `nix run .#vt-test`,
+`nix run .#reference-test`, `nix build --out-link result-vt-status-review`,
+and `nix flake check` all exit zero. `bench/vt-status-validation.json` records
+source and executable hashes; its companion log is a manually assembled
+command/result summary, not captured test stdout.
+
+The private-window delayed-output fixture now requests both CSI 5n and CSI 6n
+and requires their exact concatenated 10-byte response after waking from idle.
+The full sync suite passes, as does explicit Ekko presentation on private
+Weston. Finix preview build and evaluation pass with no failed assertions.
+Raw output is in `bench/vt-status-sync.log`, `bench/vt-status-ekko.log`, and
+`bench/vt-status-finix-*.log`. No desktop benchmark or system activation was
+performed. Existing result/result-finix links remain unchanged.
+
+The VT increment is separate from the frozen idle resource measurements; those
+numbers do not measure this new executable. Broader memory, workload, Unicode
+and feature targets remain incomplete. Next prioritize attribution of the PSS
+change and the existing feature-comparison gaps without relaxing fixed limits.
+
+## Word selection across soft wraps
+
+Word-mode selection now follows existing positive wrap lengths across visible
+rows, checking the neighboring character class before crossing each boundary.
+This fixes double-click copying of a word split across rows. It stops at hard
+breaks, separators and viewport edges, and skips synthetic padding before a
+wrapped wide glyph. Line-mode selection remains physical-row based. No new
+allocation, cell representation or CPU terminal-state path was introduced.
+This is still the existing simple character-class policy, not Unicode word
+segmentation or full grapheme support; off-viewport expansion is not provided.
+
+Literal-byte CUDA regressions cover both click directions, multiple wraps,
+separator boundaries, history rows, wide/combining text and resize reflow.
+Parent review corrected boundary-class checks and malformed test literals
+before the final passing build. Selection, reflow, CSI and reference tests,
+Nix build and flake check pass (`bench/word-wrap-validation.json`). A new
+private-window mode double-clicks the continuation of 96 W characters followed
+by a space and END; clipboard roundtrip must contain precisely the 96-character
+word. The full sync suite including this mode passes through Nix.
+History-search interaction, explicit Ekko presentation, engine tests and Finix
+preview/evaluation also pass on the same final executable; commands, logs and
+hashes are in `bench/word-wrap-functional.json`. Existing accepted result links
+remain unchanged. The full performance and feature goal remains incomplete.
+
+## Mapping-level memory investigation — allocator experiment only
+
+Nine private-headless 80×24 launches captured raw smaps and smaps_rollup:
+three old accepted executables, three frozen VT-status executables, and three
+VT-status executables with MALLOC_TRIM_THRESHOLD_=0 applied to the terminal
+process environment. Weston did not inherit the experimental setting.
+`bench/pss-maps-summary.json` links raw captures, read bounds, byte counts,
+identities and reviewed hashes. This diagnostic uses a 960×640 compositor and
+is not a replacement for the controlled two-grid resource baseline.
+
+Old/current private memory was 69,758,976/69,914,624 bytes. Heap residency
+was identical at 16,580,608 bytes, as were NVIDIA/DRI mapping totals at
+24,813,568 private bytes. The difference was mainly executable-backed private
+pages plus one anonymous page. Mapping names identify backing objects, not
+which allocator or application component owns their contents. Historical
+captures lack mapping detail, so this cannot explain the original PSS drift.
+
+The temporary allocator setting reduced total private memory by 2,932,736
+bytes in all three runs: heap private decreased 5,718,016 bytes while unnamed
+anonymous private increased 2,785,280 bytes. PSS was 76,435,456–76,441,600
+bytes. This is a reproducible diagnostic effect, not accepted optimization or
+proof that all freed startup buffers caused the saving. Explicit trim
+configuration disables dynamic threshold adjustment, as described in the
+[glibc allocator manual](https://sourceware.org/glibc/manual/latest/html_node/Memory-Allocation-Tunables.html).
+No allocator setting was added to the application or Finix defaults. A future
+isolated experiment should compare scoped reclamation against fixed resource,
+startup/throughput and lifecycle limits before adopting any change.
+
+## Scoped heap-reclamation experiment — rejected and restored
+
+A new frozen word-selection baseline measured all three terminals at 80×24 and
+318×89, plus matched 80×24 plain/ANSI/Unicode PTY workloads and three startup
+profiles. `bench/reclaim-baseline.json` contains the controlled 18-launch raw
+resource matrix; `bench/reclaim-pty-{text,ansi,unicode}.json` and corresponding
+Foot/Monstar files contain three measured launches, one warmup and three
+intervals per launch. The older startup attempts lack a launch timestamp and
+are diagnostic only. Valid profiles record process-launch monotonic time and
+the first GL texture-swap return; this is not physical presentation latency.
+
+Before editing main, `bench/reclaim-experiment-gates.json` froze the minimum
+1 MiB private-memory reduction, existing PSS/GPU ceilings, CPU limits and
+baseline dispersion envelopes for context switches, PTY barriers, whole-process
+launches and first-swap startup. Full-goal comparator and historical targets
+remain separate and unchanged. The baseline already exceeded fixed idle
+context-switch targets: medians 1354/831 per three seconds, compared with
+338/339 in the previous checkpoint. That variation is not attributed to a
+source change or an irreducible driver cost.
+
+The candidate added only malloc.h and one malloc_trim(0) call after engine and
+optional face setup. Its engine-host executable was byte-identical to the
+baseline. In the acceptance matrix, private memory was 71,618,560/71,626,752
+bytes, above the baseline by 1,634,304 bytes; PSS also exceeded the fixed limits.
+The small-grid CPU gate and text/ANSI whole-process launch envelopes failed.
+First-swap startup passed its envelope (median 83.328 ms, linear p90 90.943 ms),
+and the measured PTY barriers improved, but these do not waive other failures.
+`bench/reclaim-evaluation.json` records all gate calculations and raw hashes.
+
+A later paired smaps capture of both frozen executables finds only 69,632 bytes
+less heap/RSS/PSS in the candidate, with identical file/library and device
+private accounting. The baseline itself now has 71,688,192 private bytes,
+so the earlier measured 1.63 MB increase is not established as patch-caused.
+The earlier controlled runs lack mapping data sufficient to isolate that
+accounting change. Even the paired saving is far below the predeclared minimum;
+this diagnostic does not replace the original baseline or gate decision.
+
+The two experimental main additions were removed, preserving the word-selection
+and CSI fixes. `bench/reclaim-rejected.patch` keeps the rejected change.
+The retained Nix build again resolves to the word-selection package bhsg with
+app SHA256 fcd4d7551dab8736dd513820d21dfd1b1406f29dc2765ca430031234dc2a1cba;
+Nix build and flake check both exit zero (`bench/reclaim-retained.json`). No
+allocator default, Finix activation or desktop benchmark was introduced.
+
+Next investigate which medium-lived host allocations change placement under
+the allocator environment experiment. File-backed startup font data versus
+heap staging is a hypothesis to profile before another implementation; the
+scoped trim result does not establish that constructor buffers are the cause.
+Broader memory retention, workload and daily-driver requirements remain open.
+
+## Historical restricted recovery — superseded by restored validation
 
 The preceding work made progress through source changes and diagnostic evidence,
 but the idle candidate was not accepted before shutdown. Old background jobs

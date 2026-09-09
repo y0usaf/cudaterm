@@ -8,6 +8,22 @@ from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFont
 
 
+# Terminal rules join at cell centres, regardless of the font's glyph bearings.
+BOX_ARMS = {'─': 'lr', '│': 'ud', '┌': 'rd', '┐': 'ld', '└': 'ru', '┘': 'lu',
+            '├': 'urd', '┤': 'uld', '┬': 'lrd', '┴': 'lru', '┼': 'lrud'}
+
+
+def box_glyph(character, width, height):
+    image = Image.new('L', (width * 2, height))
+    draw = ImageDraw.Draw(image)
+    x, y = (width - 1) // 2, (height - 1) // 2
+    for arm in BOX_ARMS[character]:
+        end = {'l': (0, y), 'r': (width - 1, y),
+               'u': (x, 0), 'd': (x, height - 1)}[arm]
+        draw.line([(x, y), end], fill=255)
+    return image.tobytes()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--font', action='append', required=True)
@@ -41,6 +57,8 @@ def main():
             image.paste(canvas, (0,0))
             glyphs[cp] = image.tobytes()
     if not glyphs: raise ValueError('font chain contains no usable glyphs')
+    for character in BOX_ARMS:
+        glyphs[ord(character)] = box_glyph(character, width, args.height)
     pixels = b''.join(glyphs.values())
     if len(pixels) > 64 * 1024 * 1024: raise ValueError('font atlas exceeds 64 MiB')
     pages = {}

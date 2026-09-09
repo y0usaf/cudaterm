@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -11,7 +12,7 @@ namespace ct {
 struct Cell {
   uint32_t cp, fg, bg, flags;
   uint32_t combining[3] = {};
-  // Bit 0 distinguishes an explicitly printed space from erased padding.
+  // Bit 0 records an explicit space; higher bits hold the immutable mark head.
   uint32_t reserved = 0;
 };
 
@@ -21,10 +22,13 @@ struct Snapshot {
   bool synchronized_updates;
   int cell_width, cell_height;
   bool alternate_screen;
+  bool application_keypad, numlock_override;
+  int cursor_style;
 };
 struct MemoryUsage {
   size_t device_bytes, image_bytes, transfer_bytes;
   int history_capacity;
+  size_t mark_bytes, mark_nodes;
 };
 struct FeedResult {
   size_t consumed;
@@ -37,7 +41,7 @@ struct SearchMatch {
   int start_row, start_col, end_row, end_col, view_offset;
 };
 
-enum class SelectionMode { Cell, Word, Line };
+enum class SelectionMode { Cell, Word, Line, Rectangle, Link };
 
 class Engine {
 public:
@@ -57,7 +61,7 @@ public:
   std::vector<Cell> cells();
   std::string take_replies();
   void select(int start_row, int start_col, int end_row, int end_col,
-              SelectionMode mode = SelectionMode::Cell);
+              SelectionMode mode = SelectionMode::Cell, bool history = false);
   void clear_selection();
   SearchMatch search(const std::string &, SearchDirection, bool restart = false);
   void clear_search();
@@ -77,6 +81,10 @@ public:
   void set_theme(const Theme &theme);
   void set_cell_size(int width, int height);
   void load_face(const std::string &path);
+  void load_faces(const std::array<std::vector<unsigned char>, 4> &faces);
+  void set_presentation(int padding_x, int padding_y, int cursor_style);
+  void set_cursor_phase(bool visible, bool focused);
+  void set_cursor_position(float col, float row);
   void set_background_opacity(float opacity);
   bool take_title(std::string &title);
   // Pump host input while image decompression runs independently. The callback

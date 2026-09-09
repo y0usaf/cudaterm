@@ -82,6 +82,40 @@ static void prompt_and_cleanup() {
   size_t boundary = 80 * 8 * 23 * 16;
   check(std::memcmp(before.data(), after.data(), boundary * 4) == 0, "prompt only overlays bottom row");
   check(std::memcmp(before.data() + boundary, after.data() + boundary, (before.size() - boundary) * 4) != 0, "prompt visible in CUDA pixels");
+  e.set_search_prompt("  X");
+  e.render(pixels, 80 * 8, 24 * 16);
+  check(cudaMemcpy(before.data(), pixels, before.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess, "prompt marker reference");
+  for (const std::string text : {std::string("\u2764\ufe0fX"), std::string("1\ufe0f\u20e3X"), std::string("👍🏽X"),
+                                 std::string("☝🏽X"), std::string("☝️🏽X"),
+                                 std::string("👩‍💻X"), std::string("👩́‍💻X"),
+                                 std::string("❤‍🔥X"), std::string("©‍®X")}) {
+    e.set_search_prompt(text);
+    e.render(pixels, 80 * 8, 24 * 16);
+    check(cudaMemcpy(after.data(), pixels, after.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess, "emoji prompt render");
+    for (int y = 23 * 16; y < 24 * 16; ++y)
+      for (int x = 2 * 8; x < 4 * 8; ++x)
+        check(before[y * 80 * 8 + x] == after[y * 80 * 8 + x],
+              "prompt places following X after two-cell emoji sequence");
+  }
+  e.set_search_prompt("    X"); e.render(pixels, 80 * 8, 24 * 16);
+  check(cudaMemcpy(before.data(), pixels, before.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess,
+        "negative GB11 reference render");
+  for (const std::string text : {std::string("👩‍́💻X"), std::string("👩‍‍💻X")}) {
+    e.set_search_prompt(text); e.render(pixels, 80 * 8, 24 * 16);
+    check(cudaMemcpy(after.data(), pixels, after.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess,
+          "negative GB11 prompt render");
+    for (int y = 23 * 16; y < 24 * 16; ++y)
+      for (int x = 4 * 8; x < 6 * 8; ++x)
+        check(before[y * 80 * 8 + x] == after[y * 80 * 8 + x], "negative GB11 prompt width");
+  }
+  e.set_search_prompt(std::string(79, ' ') + "…"); e.render(pixels, 80 * 8, 24 * 16);
+  check(cudaMemcpy(before.data(), pixels, before.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess,
+        "GB11 prompt truncation reference");
+  e.set_search_prompt(std::string(79, ' ') + "©‍®X"); e.render(pixels, 80 * 8, 24 * 16);
+  check(cudaMemcpy(after.data(), pixels, after.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess,
+        "GB11 prompt truncation render");
+  check(std::memcmp(before.data(), after.data(), before.size() * 4) == 0,
+        "narrow GB11 prompt reserves width before truncation");
   auto final_cells = e.cells();
   check(std::memcmp(cells.data(), final_cells.data(), cells.size() * sizeof(ct::Cell)) == 0, "search/prompt leave terminal cells unchanged");
   e.set_search_prompt("");
@@ -92,7 +126,7 @@ static void prompt_and_cleanup() {
 static void invalid_queries() {
   Engine e(4, 2);
   for (const std::string &q : {std::string("\x80"), std::string("\xED\xA0\x80"),
-       std::string("\xF4\x90\x80\x80"), std::string("\xE0\x80\x80"), std::string(257, 'x')}) {
+       std::string("\xF4\x90\x80\x80"), std::string("\xE0\x80\x80"), std::string(513, 'x')}) {
     bool threw = false;
     try { e.search(q, SearchDirection::Forward, true); }
     catch (const std::invalid_argument &) { threw = true; }
@@ -178,9 +212,75 @@ static void logical_corpus_oracle() {
     }
   }
 }
+
+static std::string marked(int n) {
+  const char *marks[] = {"\xcc\x81", "\xcc\x88", "\xcc\xa3", "\xcc\xb2"};
+  std::string text = "A";
+  for (int i = 0; i < n; ++i) text += marks[i % 4];
+  return text;
+}
+static void variable_mark_search() {
+  Engine e(8, 3);
+  auto four = marked(4);
+  feed(e, four + "B" + four.substr(1));
+  for (int col : {0, 1, 0}) {
+    auto m = e.search("\xcc\xb2", SearchDirection::Forward);
+    check(m.found && m.start_col == col, "overflow-only search order and wrap");
+  }
+  check(e.search("\xcc\xb2", SearchDirection::Backward).start_col == 1,
+        "overflow-only search direction reversal");
+  check(e.search("\xcc\x88\xcc\xa3\xcc\xb2" "B", SearchDirection::Forward, true).found,
+        "search crosses inline marks, overflow, and following cell");
+  e.clear_search();
+  const auto text = marked(256);
+  feed(e, "\033c" + text);
+  check(e.search(text, SearchDirection::Backward, true).found && e.selected_text() == text,
+        "full 257-codepoint marked-cell query");
+  auto short_copy = e.selected_text();
+  feed(e, "\r\n" + std::string(40, 'x'));
+  e.resize(4, 4);
+  check(e.search(text, SearchDirection::Backward, true).found && e.selected_text() == short_copy,
+        "search marked history after reflow");
+}
+static void variable_mark_prompt() {
+  Engine e(8, 3); feed(e, "\033[?25l");
+  constexpr int W = 64, H = 48;
+  uint32_t *pixels = nullptr;
+  check(cudaMalloc(&pixels, W * H * sizeof(uint32_t)) == cudaSuccess, "mark prompt pixels");
+  auto capture = [&](const std::string &text) {
+    e.set_search_prompt(text); e.render(pixels, W, H);
+    std::vector<uint32_t> out(W * H);
+    check(cudaMemcpy(out.data(), pixels, out.size() * sizeof(uint32_t), cudaMemcpyDeviceToHost) == cudaSuccess,
+          "mark prompt capture");
+    return out;
+  };
+  auto first = capture(marked(3));
+  auto fourth = capture("A\xcc\xb2");
+  auto all = capture(marked(4));
+  bool adds_ink = false;
+  for (int y = 32; y < H; ++y) for (int x = 0; x < 8; ++x) {
+    int i = y * W + x;
+    check(all[i] == (first[i] & fourth[i]), "overflow prompt equals union of inline glyph coverage");
+    adds_ink |= all[i] != first[i];
+  }
+  check(adds_ink, "fourth mark contributes independent visible coverage");
+  auto long_prompt = capture(marked(256));
+  for (int i = 0; i < 16; ++i) feed(e, "\r" + marked(256));
+  e.render(pixels, W, H);
+  std::vector<uint32_t> after(W * H);
+  check(cudaMemcpy(after.data(), pixels, after.size() * sizeof(uint32_t), cudaMemcpyDeviceToHost) == cudaSuccess,
+        "prompt after pool compaction");
+  for (int y = 32; y < H; ++y) for (int x = 0; x < W; ++x)
+    check(after[y * W + x] == long_prompt[y * W + x], "prompt root survives main-grid allocation and GC");
+  e.set_search_prompt(""); e.clear_search(); feed(e, "\033c");
+  check(e.memory_usage().mark_bytes == 0, "cleared prompt and reset release pool");
+  cudaFree(pixels);
+}
+
 int main() {
   try {
     unicode_and_boundaries(); repeat_and_invalidation(); history_and_alternate();
     prompt_and_cleanup(); invalid_queries(); logical_corpus_oracle();
+    variable_mark_search(); variable_mark_prompt();
   } catch (const std::exception &e) { std::fprintf(stderr, "%s\n", e.what()); return 1; }
 }

@@ -342,6 +342,73 @@ void insert_mode() {
   wrap.select(0, 0, 0, 3);
   require(wrap.selected_text() == "abcd", "IRM wrap preserves evicted history");
 }
+
+void keypad_modes() {
+  Engine initial(8, 2);
+  auto s = initial.snapshot();
+  require(!s.application_keypad && s.numlock_override,
+          "keypad defaults are wrong");
+
+  Engine esc(8, 2);
+  feed(esc, "\033");
+  feed(esc, "=");
+  require(esc.snapshot().application_keypad, "split DECKPAM was not applied");
+  feed(esc, "\033");
+  feed(esc, ">");
+  require(!esc.snapshot().application_keypad, "split DECPNM was not applied");
+
+  const std::string modes[] = {"\033[?66h", "\033[?66l", "\033[?1035h",
+                               "\033[?1035l"};
+  for (const auto &sequence : modes) {
+    for (size_t split = 0; split <= sequence.size(); ++split) {
+      Engine e(8, 2);
+      if (sequence == "\033[?66l")
+        feed(e, "\033=");
+      if (sequence == "\033[?1035h")
+        feed(e, "\033[?1035l");
+      if (sequence == "\033[?1035l")
+        feed(e, "\033[?1035h");
+      feed(e, "\033[2;3H");
+      const auto before = e.snapshot();
+      feed(e, sequence.substr(0, split));
+      feed(e, sequence.substr(split));
+      s = e.snapshot();
+      require(s.row == before.row && s.col == before.col,
+              "keypad mode changed cursor");
+      if (sequence == "\033[?66h") require(s.application_keypad, "CSI DECKPAM");
+      if (sequence == "\033[?66l") require(!s.application_keypad, "CSI DECPNM");
+      if (sequence == "\033[?1035h") require(s.numlock_override, "NumLock override set");
+      if (sequence == "\033[?1035l") require(!s.numlock_override, "NumLock override clear");
+    }
+  }
+
+  Engine listed(8, 2);
+  feed(listed, "\033[2;3H\033[?1035l");
+  feed(listed, "\033[?66;1035h");
+  s = listed.snapshot();
+  require(s.application_keypad && s.numlock_override, "listed keypad modes");
+  feed(listed, "\033[?1035l");
+  s = listed.snapshot();
+  require(s.application_keypad && !s.numlock_override,
+          "listed override clear");
+  const int saved_row = s.row, saved_col = s.col;
+  listed.resize(10, 3);
+  s = listed.snapshot();
+  require(s.application_keypad && !s.numlock_override && s.row == saved_row &&
+              s.col == saved_col,
+          "resize lost keypad modes or cursor");
+  feed(listed, "\033[?1049h");
+  require(listed.snapshot().application_keypad && !listed.snapshot().numlock_override,
+          "alternate entry lost keypad modes");
+  feed(listed, "\033[?1049l");
+  require(listed.snapshot().application_keypad && !listed.snapshot().numlock_override,
+          "alternate exit lost keypad modes");
+  feed(listed, "\033c");
+  s = listed.snapshot();
+  require(!s.application_keypad && s.numlock_override,
+          "RIS did not reset keypad modes");
+}
+
 void run_tests() {
   struct Test {
     const char *name;
@@ -354,6 +421,7 @@ void run_tests() {
                {"tabs", tabs},
                {"saved_cursor", saved_cursor_restores_state},
                {"ris_reset", ris_resets_screens_and_state},
+               {"keypad_modes", keypad_modes},
                {"private_mode_lists", private_mode_lists},
                {"private_saved_cursor", private_saved_cursor},
                {"legacy_alternate", legacy_alternate_screens},

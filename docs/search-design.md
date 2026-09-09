@@ -4,8 +4,10 @@
 
 `Engine::search` decodes a bounded UTF-8 query on the host, then sends only the
 query and small search metadata to CUDA. It does not copy history to the CPU.
-`src/search_kernels.cuh` gives each candidate a cell/codepoint position, including
-three combining slots, and compares up to 256 query codepoints. Wide tails are
+`src/search_kernels.cuh` schedules one thread per cell and enumerates actual
+codepoint positions, including three inline marks and an immutable overflow
+chain. A 64-bit key orders the cell index and mark ordinal. Matching compares
+up to 512 query codepoints. Wide tails are
 skipped. Only positive row-wrap lengths permit continuation to the next row;
 padding before an early wide wrap is excluded. Hard breaks stop comparison.
 The primary source is chronological retained history plus live rows. Alternate
@@ -20,10 +22,13 @@ or ends inside a cell. Long matches may extend beyond the visible viewport and
 are copied in full. New output or resize invalidates continuation positions;
 the UI restarts the query before using them again.
 
-The measured query scratch is 1,072 device bytes, independent of history size.
-The optional prompt uses at most 512 Cells plus 512 codepoints (18,432 bytes).
-Closing search releases these device allocations. Existing selection-output
-storage retains its separately bounded capacity when copying has used it.
+Query scratch is 2,120 device bytes, independent of history size (host ABI
+check in `bench/mark-pool-search-abi.txt`). The optional prompt uses at most
+512 Cells plus 1,024 codepoints (20,480 bytes), with overflow marks in the
+shared bounded arena. Closing search releases query/prompt arrays and compacts
+the arena to remove unreachable prompt suffixes. Copy output uses an exact byte
+count per viewport batch, rejects batches above 64 MiB, and retains at most
+64 KiB of output scratch after copying.
 The smaller visible-grid CPU draft was rejected because it omitted history and
 would move terminal search state off the GPU.
 
@@ -46,7 +51,7 @@ release. The full CUDA, graphics, lifecycle and sanitizer evidence is in
 `bench/search-validation.json`. Private clipboard/PTY evidence is in
 `bench/window-search.json`; read its individual checks for capture scope.
 
-`bench/search-cost-summary.json` is the first functional cost baseline. Three
+`bench/search-cost-summary.json` is the frozen pre-mark-pool cost baseline. Three
 launches per case each retain 40 samples after five warmups at 80×24 and 318×24.
 Ordinary full-history literal search has medians of 49.55/98.05 microseconds;
 a 256-character query in a long repeated-X stream has medians of 6.82/27.62

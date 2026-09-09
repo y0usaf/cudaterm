@@ -40,6 +40,9 @@
       cp COPYING OFL-1.1.txt $out/
       sed -n '/^COPYRIGHT /p' unifont.bdf > $out/font-copyright.txt
     '';
+    testTerminal = pkgs.writeShellScript "cudaterm-test-terminal" ''
+      exec ${package}/bin/cudaterm --no-config --font-family bitmap --theme classic --padding-x 0 --padding-y 0 "$@"
+    '';
     package = stdenv.mkDerivation {
       pname = "cudaterm";
       version = "0.1.0";
@@ -47,15 +50,15 @@
         root = ./.;
         fileset = pkgs.lib.fileset.intersection
           (pkgs.lib.fileset.fileFilter (file: ! file.hasExt "pyc") ./.)
-          (pkgs.lib.fileset.unions [ ./src ./tests ./tools ./bench/pty_throughput.py ./bench/visible_output.py ./bench/private_baseline.py ./bench/engine_bench.cu ]);
+          (pkgs.lib.fileset.unions [ ./src ./tests ./tools ./data ./bench/pty_throughput.py ./bench/visible_output.py ./bench/private_baseline.py ./bench/engine_bench.cu ]);
       };
       nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.python3 ];
-      buildInputs = [ cuda.cuda_cudart glfw pkgs.glew pkgs.libGL pkgs.libvterm-neovim ];
+      buildInputs = [ cuda.cuda_cudart glfw pkgs.glew pkgs.libGL pkgs.libvterm-neovim pkgs.freetype pkgs.fontconfig ];
       buildPhase = ''
         runHook preBuild
         nvcc -O3 -lineinfo -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -c src/engine.cu -o engine.o
-        nvcc -O3 -std=c++17 -arch=sm_89 -I src src/main.cu engine.o \
-          $(pkg-config --cflags --libs glfw3 glew) -lutil -o cudaterm
+        nvcc -O3 -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -DCUDATERM_XDG_OPEN='"${pkgs.xdg-utils}/bin/xdg-open"' src/main.cu engine.o \
+          $(pkg-config --cflags --libs glfw3 glew freetype2 fontconfig) -lutil -o cudaterm
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/engine_test.cu engine.o -o engine-test
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/appearance_test.cu engine.o -o appearance-test
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/memory_probe.cu engine.o -lEGL -lGL -o memory-probe
@@ -77,6 +80,8 @@
         nvcc -O3 -std=c++17 -I src tests/reference_test.cu engine.o \
           $(pkg-config --cflags --libs vterm) -o reference-test
         $CXX -O2 -std=c++17 -Isrc tests/input_test.cpp -o input-test
+        $CXX -O2 -std=c++17 -Isrc -DCUDATERM_DATA_DIR='"${fontData}"' tests/font_test.cpp \
+          $(pkg-config --cflags --libs freetype2 fontconfig) -o font-test
         runHook postBuild
       '';
       doCheck = true;
@@ -87,7 +92,13 @@
         python3 tests/test_window_cleanup.py
         python3 tests/test_font.py
         python3 tests/test_widths.py
+        python3 tools/build_emoji_vs16.py data/emoji-variation-sequences-17.0.0.txt --check src/emoji_vs16.cuh
+        python3 tools/build_emoji_modifiers.py data/emoji-data-17.0.0.txt --check src/emoji_modifiers.cuh
+        python3 tools/build_grapheme_properties.py --check
+        python3 tests/test_grapheme_properties.py
         ./input-test
+        ./font-test ${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSansMono.ttf \
+          ${pkgs.nerd-fonts.symbols-only}/share/fonts/truetype/NerdFonts/Symbols/SymbolsNerdFontMono-Regular.ttf
       '';
       installPhase = ''
         mkdir -p $out/share
@@ -157,19 +168,25 @@
     headless-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-headless-test" ''
       exec ${pkgs.python3.withPackages (p: [ p.pillow ])}/bin/python3 ${./tests/window_headless.py} \
         --weston ${pkgs.weston}/bin/weston --seat ${headlessSeat}/lib/seat.so \
-        --terminal ${package}/bin/cudaterm --idle-probe ${./bench/idle_resources.py} "$@"
+        --terminal ${testTerminal} --idle-probe ${./bench/idle_resources.py} "$@"
     ''}"; };
     sync-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-sync-test" ''
       export PYTHONPATH=${./tests}
       exec ${pkgs.python3.withPackages (p: [ p.pillow ])}/bin/python3 ${./tests/window_sync.py} \
         --weston ${pkgs.weston}/bin/weston --seat ${headlessSeat}/lib/seat.so \
-        --terminal ${package}/bin/cudaterm --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy "$@"
+        --terminal ${testTerminal} --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy "$@"
+    ''}"; };
+    window-appearance-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-window-appearance-test" ''
+      export FONTCONFIG_FILE=${pkgs.makeFontsConf { fontDirectories = [ pkgs.dejavu_fonts ]; }}
+      exec ${pkgs.python3.withPackages (p: [ p.pillow ])}/bin/python3 ${./tests/window_appearance.py} \
+        --weston ${pkgs.weston}/bin/weston --seat ${headlessSeat}/lib/seat.so \
+        --terminal ${package}/bin/cudaterm --wl-paste ${pkgs.wl-clipboard}/bin/wl-paste "$@"
     ''}"; };
     window-search-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-window-search-test" ''
       export PYTHONPATH=${./tests}
       exec ${pkgs.python3.withPackages (p: [ p.pillow ])}/bin/python3 ${./tests/window_search.py} \
         --weston ${pkgs.weston}/bin/weston --seat ${headlessSeat}/lib/seat.so \
-        --terminal ${package}/bin/cudaterm --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy "$@"
+        --terminal ${testTerminal} --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy "$@"
     ''}"; };
     };
     checks.${system}.build = package;

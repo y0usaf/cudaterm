@@ -18,9 +18,9 @@ __device__ int primary_wrap(const DeviceState &s, int row) {
   int y = row - s.history_count;
   return s.alt_active ? s.alt_row_wrap[s.alt_rowmap[y]] : s.row_wrap[s.rowmap[y]];
 }
-__device__ bool reflow_blank(const Cell &v) {
+__device__ bool reflow_blank(const Cell &v, const mark_pool::Arena &marks) {
   return v.cp == 32 && !v.reserved && v.fg == DEFAULT_FG && v.bg == DEFAULT_BG && !v.flags &&
-         !v.combining[0] && !v.combining[1] && !v.combining[2];
+         mark_pool::mark_count(v, marks) == 0;
 }
 struct ReflowRow {
   int used, wide, base, count;
@@ -32,7 +32,7 @@ __global__ void inspect_reflow_rows(const DeviceState *s, ReflowRow *info) {
   int used = 0, wide = 0;
   for (int x = threadIdx.x; x < s->cols; x += blockDim.x) {
     Cell v = primary_cell(*s, y, x);
-    if (!reflow_blank(v)) used = dmax(used, x + 1);
+    if (!reflow_blank(v, s->marks)) used = dmax(used, x + 1);
     wide |= v.flags & (WIDE | TAIL);
   }
   for (int delta = 16; delta; delta >>= 1) {

@@ -57,6 +57,16 @@ static int keys(int fd, uint32_t mask, void *data) {
       }
       continue;
     }
+    if (packet[0] == 771) {
+      struct weston_keyboard *keyboard = weston_seat_get_keyboard(&test->seat);
+      if (keyboard && keyboard->focus && weston_surface_is_desktop_surface(keyboard->focus)) {
+        struct weston_desktop_surface *surface =
+          weston_surface_get_desktop_surface(keyboard->focus);
+        if (surface)
+          weston_desktop_surface_close(surface);
+      }
+      continue;
+    }
     if (packet[0] > 767 || packet[1] > 1) continue;
     struct weston_key_event event;
     weston_key_event_init(&event, &now, &test->seat, packet[0], packet[1], STATE_UPDATE_AUTOMATIC);
