@@ -1,7 +1,8 @@
 { pkgs, terminal, widths, fontCacheBuilder, fontFile, fontSize ? 16, lineHeight ? 24 }:
 let
   pixels = builtins.floor (fontSize * 96.0 / 72.0 + 0.5);
-  fontCache = pkgs.runCommand "cudaterm-finix-font-cache" {} ''
+  # Runtime-only path strings remain usable without becoming build inputs.
+  fontCache = if !(builtins.hasContext "${fontFile}") then null else pkgs.runCommand "cudaterm-finix-font-cache" {} ''
     mkdir -p $out
     ${fontCacheBuilder}/bin/cudaterm-build-font-cache \
       ${pkgs.lib.escapeShellArg "${fontFile}"} \
@@ -19,7 +20,7 @@ let
   '';
   wrapper = pkgs.writeShellScriptBin "cudaterm-finix" ''
     export TERMINAL=cudaterm-finix
-    export CUDATERM_PREPARED_FONTS=${fontCache}/cudaterm/fonts
+    ${pkgs.lib.optionalString (fontCache != null) "export CUDATERM_PREPARED_FONTS=${fontCache}/cudaterm/fonts"}
     theme="''${XDG_CACHE_HOME:-$HOME/.cache}/wallust/colors_monstar"
     if [ -r "$theme" ]; then
       set -- --theme "$theme" "$@"

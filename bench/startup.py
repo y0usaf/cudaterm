@@ -26,8 +26,10 @@ with tempfile.TemporaryDirectory(prefix='cudaterm-startup-bench-') as folder:
  if a.weston:
   env.update(XDG_RUNTIME_DIR=folder, WAYLAND_DISPLAY='startup-benchmark')
   env.pop('DISPLAY',None)
+  weston_config=root/'weston.ini'
+  weston_config.write_text('[shell]\nstartup-animation=none\n')
   log=(output/'weston.log').open('w')
-  weston=subprocess.Popen([a.weston,'--backend=headless','--renderer=gl','--shell=desktop','--socket=startup-benchmark','--no-config','--width=1500','--height=1000','--modules='+a.seat],env=env,stdout=log,stderr=log)
+  weston=subprocess.Popen([a.weston,'--backend=headless','--renderer=gl','--shell=desktop','--socket=startup-benchmark','--config='+str(weston_config),'--width=1500','--height=1000','--modules='+a.seat],env=env,stdout=log,stderr=log)
   deadline=time.monotonic()+20
   while not (root/'startup-benchmark').exists():
    if weston.poll() is not None or time.monotonic()>deadline:
@@ -40,6 +42,7 @@ with tempfile.TemporaryDirectory(prefix='cudaterm-startup-bench-') as folder:
  try:
   def run(label,binary,mode,index):
    cache=root/label
+   cache.mkdir(parents=True,exist_ok=True)
    if mode=='cold':shutil.rmtree(cache/'cudaterm/fonts',ignore_errors=True)
    trace=output/f'{label}-{mode}-{index}.csv'
    run_env=dict(env,XDG_CACHE_HOME=str(cache),CUDATERM_TRACE=str(trace))
