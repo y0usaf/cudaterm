@@ -26,6 +26,47 @@ int main(int argc, char **argv) {
   auto regular = glyph(primary.faces[0], 'A');
   if (regular.empty() || regular == glyph(primary.faces[1], 'A') || regular == glyph(primary.faces[2], 'A'))
     throw std::runtime_error("standalone font styles are missing or identical");
+  // Every italic source row must retain its coverage, including ink outside
+  // the advance width. Compare against FreeType before cell clipping.
+  FT_Library library;
+  FT_Face face;
+  if (FT_Init_FreeType(&library) || FT_New_Face(library, argv[1], 0, &face) ||
+      FT_Set_Char_Size(face, 0, 21 * 64, 72, 72))
+    throw std::runtime_error("cannot open italic regression fixture");
+  bool overhang = false;
+  for (int style : {2, 3}) for (unsigned cp = 33; cp < 127; ++cp) {
+    FT_Load_Char(face, cp, FT_LOAD_DEFAULT);
+    if (style & 1) FT_GlyphSlot_Embolden(face->glyph);
+    FT_GlyphSlot_Oblique(face->glyph);
+    FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+    const auto &bitmap = face->glyph->bitmap;
+    overhang |= face->glyph->bitmap_left < 0 ||
+      face->glyph->bitmap_left + int(bitmap.width) > primary.width;
+    int ascent = (face->size->metrics.ascender + 63) / 64;
+    int descent = (-face->size->metrics.descender + 63) / 64;
+    int baseline = (primary.height - ascent - descent) / 2 + ascent;
+    auto rendered = glyph(primary.faces[style], cp);
+    for (unsigned y = 0; y < bitmap.rows; ++y) {
+      int dy = baseline - face->glyph->bitmap_top + int(y);
+      if (dy < 0 || dy >= primary.height) continue;
+      auto row = bitmap.buffer + y * bitmap.pitch;
+      unsigned expected = 0, actual = 0;
+      unsigned width = std::min(bitmap.width, unsigned(primary.width));
+      for (unsigned x = 0; x < width; ++x) {
+        unsigned first = x * bitmap.width / width;
+        unsigned last = (x + 1) * bitmap.width / width;
+        unsigned coverage = 0;
+        for (unsigned sx = first; sx < last; ++sx) coverage += row[sx];
+        expected += coverage / (last - first);
+      }
+      for (int x = 0; x < primary.width; ++x)
+        actual += rendered[dy * primary.width * 2 + x];
+      if (actual != expected) throw std::runtime_error("italic ink clipped at cell boundary");
+    }
+  }
+  FT_Done_Face(face);
+  FT_Done_FreeType(library);
+  if (!overhang) throw std::runtime_error("italic fixture has no overhanging glyphs");
   if (!glyph(primary.faces[0], 0xf07c).empty()) throw std::runtime_error("primary fixture already has Nerd icon");
   auto fallback = ct::rasterize_font(std::string("file:") + argv[1], 21, 1.142857f,
                                    std::string("file:") + argv[2]);
