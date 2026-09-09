@@ -50,12 +50,15 @@ nix run . -- -e nix run path:$HOME/dev/maintaining/ekko_v2#workspace -- \
 ```
 
 The Kitty graphics subset used by Ekko runs entirely in CUDA: streaming APC and
-base64 parsing, RGB/RGBA uploads, zlib decompression, native-size placements,
-cropping, alpha blending, queries, and image deletion. Decoded images stay in
+base64 parsing, RGB/RGBA uploads, zlib decompression, native-size and cell-sized
+placements, cropping, alpha blending, queries, and image deletion. Multiple
+placements share one decoded image; `c`/`r` scale the source crop, preserving its
+aspect ratio when only one dimension is given. Decoded images stay in
 VRAM; transient upload storage is freed after each completed transfer. Limits
-are 128 images, 32 MiB per image and 64 MiB retained image data. PNG, file/shared
-memory transport, animation, scaling, Unicode placeholders and multiple
-placements per image are not implemented. This is Ekko compatibility, not full
+are 128 images, 256 placements, 32 MiB per image and 64 MiB retained image data.
+Scaling uses nearest-neighbor sampling. PNG, file/shared-memory transport,
+animation, z ordering, and Unicode/relative placements are not implemented.
+This is a bounded Kitty implementation, not full
 Kitty/Foot/Monstar feature parity.
 
 At 318×89 cells on the development RTX 4090, a private headless Weston comparison
@@ -103,7 +106,8 @@ colors, responsive input during image decoding, Wayland clipboard verification,
 and terminal/launcher integration. Broader VT compatibility, full grapheme
 handling, and physical display-latency measurements remain open.
 
-See [completion requirements](docs/acceptance.md) and the
+See the [Monstar parity matrix](docs/monstar-parity.md),
+[completion requirements](docs/acceptance.md) and the
 [benchmark procedure](bench/README.md). The initial JSON files used different geometries. New `*-matched-*.json` runs
 verify 318×89 cells, settle before timing, and reject geometry changes. Font
 rendering still differs between implementations.
@@ -171,7 +175,15 @@ OSC 4/10/11/12 updates/queries palette and default colors, with reset variants.
 Theme files are read at startup. See `cudaterm --help` for invocation syntax.
 
 Ctrl-Plus/Minus/0 zooms and resets; runtime font families are rerasterized at the
-new size. Ctrl-Shift-Comma reloads configuration. Ctrl-drag makes a rectangular
+new size. Ctrl-Shift-Comma or SIGUSR1 reloads configuration. Ctrl-drag makes a rectangular
 selection; dragging at the text edge extends through history. Ctrl-click opens
-a detected URI, and Ctrl-Shift-N opens a shell in the current directory. See the
+an OSC 8 hyperlink or detected URI, and Ctrl-Shift-N opens a shell in the current
+directory. Copied selections also populate native primary selection where
+supported; middle-click pastes it, with Shift overriding application mouse capture.
+File drops paste quoted shell paths. See the
 [complete configuration and feature limits](docs/configuration.md).
+
+Wayland text-input-v3 supports IME composition, including transient CUDA
+preedit and local search input. Applications can negotiate Kitty keyboard
+disambiguation (flag 1); advanced event/text-reporting flags remain unsupported.
+The private acceptance fixture is `nix run .#window-ime-test`.

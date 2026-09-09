@@ -389,6 +389,14 @@ void zwj_boundaries() {
     {"woman_zwj_acute_laptop", "\360\237\221\251\342\200\215\314\201\360\237\222\273", 1, 1, 5, 1, 6},
     {"woman_acute_zwj_laptop", "\360\237\221\251\314\201\342\200\215\360\237\222\273", 1, 1, 3, 1, 4},
     {"woman_zwj_zwj_laptop", "\360\237\221\251\342\200\215\342\200\215\360\237\222\273", 1, 1, 5, 1, 6},
+    {"woman_zwj_hand_tone", "\360\237\221\251\342\200\215\342\234\213\360\237\x8f\xbd", 1, 1, 3, 1, 4},
+    {"woman_zwj_hand_tone_zwj_girl", "\360\237\221\251\342\200\215\342\234\213\360\237\x8f\xbd\342\200\215\360\237\221\247", 1, 1, 3, 1, 4},
+    {"woman_zwj_woman_tone_zwj_girl", "\360\237\221\251\342\200\215\360\237\221\251\360\237\x8f\xbd\342\200\215\360\237\221\247", 1, 1, 3, 1, 4},
+    {"woman_halfwidth_voiced_zwj_laptop", "\360\237\221\251\357\xbe\236\342\200\215\360\237\222\273", 1, 1, 3, 1, 4},
+    {"woman_halfwidth_semivoiced_zwj_laptop", "\360\237\221\251\357\xbe\237\342\200\215\360\237\222\273", 1, 1, 3, 1, 4},
+    {"woman_u1add_zwj_laptop", "\360\237\221\251\341\253\235\342\200\215\360\237\222\273", 1, 1, 3, 1, 4},
+    {"woman_zero_width_space_zwj_laptop", "\360\237\221\251\342\200\213\342\200\215\360\237\222\273", 1, 1, 3, 1, 4},
+    {"woman_zwj_zero_width_space_laptop", "\360\237\221\251\342\200\215\342\200\213\360\237\222\273", 1, 1, 3, 1, 4},
     {"heart_no_vs16_zwj_fire", "\342\235\244\342\200\215\360\237\224\245", 1, 1, 3, 1, 4},
     {"copyright_zwj_laptop", "\302\251\342\200\215\360\237\222\273", 1, 1, 3, 1, 4},
     {"copyright_zwj_registered", "\302\251\342\200\215\302\256", 1, 1, 3, 1, 4},
@@ -417,6 +425,49 @@ void zwj_boundaries() {
       no_orphans(e);
     }
   }
+}
+void grapheme_tailoring() {
+  const std::string woman = "\360\237\221\251";
+  const std::string joiner = "\342\200\215";
+  const std::string laptop = "\360\237\222\273";
+  const std::string cases[] = {
+      woman + joiner + "\342\234\213\360\237\x8f\xbd",
+      woman + joiner + "\342\234\213\360\237\x8f\xbd" + joiner + "\360\237\221\247",
+      woman + joiner + woman + "\360\237\x8f\xbd" + joiner + "\360\237\221\247",
+      woman + "\357\xbe\236" + joiner + laptop,
+      woman + "\357\xbe\237" + joiner + laptop,
+      woman + "\341\253\235" + joiner + laptop,
+      woman + "\342\200\213" + joiner + laptop,
+      woman + joiner + "\342\200\213" + laptop,
+  };
+  for (const auto &text : cases) {
+    Engine e(8, 3); feed(e, text);
+    check(e.snapshot().row == 0 && e.snapshot().col == 2,
+          "tailored grapheme remains two cells");
+    check(copy_cell_text(e) == text, "tailored grapheme preserves exact marks");
+    no_orphans(e);
+  }
+  for (const std::string mark : {std::string("\357\xbe\236"),
+                                 std::string("\357\xbe\237")}) {
+    Engine e(8, 2); feed(e, "A" + mark);
+    check(e.snapshot().col == 2 && (at(e, 0, 0).flags & WIDE),
+          "widthful Extend promotes a narrow base");
+    check(copy_cell_text(e) == "A" + mark,
+          "widthful Extend stays in the base cell");
+    no_orphans(e);
+  }
+  Engine combining(8, 2);
+  const std::string u1add = "\341\253\235";
+  feed(combining, "A" + u1add);
+  check(combining.snapshot().col == 1 && !(at(combining, 0, 0).flags & WIDE),
+        "Mn Extend leaves a narrow cluster width unchanged");
+  check(copy_cell_text(combining) == "A" + u1add,
+        "Mn Extend stays in the base cell");
+  no_orphans(combining);
+  Engine standalone(8, 2);
+  feed(standalone, "\357\xbe\236X");
+  check(standalone.snapshot().col == 2,
+        "halfwidth Extend remains one cell when standalone");
 }
 void zwj_storage() {
   const std::string woman = "👩", joiner = "‍", laptop = "💻";
@@ -608,6 +659,7 @@ int main(int argc, char **argv) {
     skin_tones();
     variable_marks();
     zwj_boundaries();
+    grapheme_tailoring();
     zwj_storage();
     wide_cells();
     wide_wrap_resize_and_edit();

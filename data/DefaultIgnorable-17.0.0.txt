@@ -1,0 +1,34 @@
+# Default_Ignorable_Code_Point extracted from Unicode 17.0.0
+#
+# These are the complete property records from DerivedCoreProperties.txt,
+# retained in a compact source because the generator needs only this property.
+# Full source SHA256: 24c7fed1195c482faaefd5c1e7eb821c5ee1fb6de07ecdbaa64b56a99da22c08
+# Source: https://www.unicode.org/Public/17.0.0/ucd/DerivedCoreProperties.txt
+# Unicode data license: data/UNICODE-LICENSE.txt
+00AD          ; Default_Ignorable_Code_Point
+034F          ; Default_Ignorable_Code_Point
+061C          ; Default_Ignorable_Code_Point
+115F..1160    ; Default_Ignorable_Code_Point
+17B4..17B5    ; Default_Ignorable_Code_Point
+180B..180D    ; Default_Ignorable_Code_Point
+180E          ; Default_Ignorable_Code_Point
+180F          ; Default_Ignorable_Code_Point
+200B..200F    ; Default_Ignorable_Code_Point
+202A..202E    ; Default_Ignorable_Code_Point
+2060..2064    ; Default_Ignorable_Code_Point
+2065          ; Default_Ignorable_Code_Point
+2066..206F    ; Default_Ignorable_Code_Point
+3164          ; Default_Ignorable_Code_Point
+FE00..FE0F    ; Default_Ignorable_Code_Point
+FEFF          ; Default_Ignorable_Code_Point
+FFA0          ; Default_Ignorable_Code_Point
+FFF0..FFF8    ; Default_Ignorable_Code_Point
+1BCA0..1BCA3  ; Default_Ignorable_Code_Point
+1D173..1D17A  ; Default_Ignorable_Code_Point
+E0000         ; Default_Ignorable_Code_Point
+E0001         ; Default_Ignorable_Code_Point
+E0002..E001F  ; Default_Ignorable_Code_Point
+E0020..E007F  ; Default_Ignorable_Code_Point
+E0080..E00FF  ; Default_Ignorable_Code_Point
+E0100..E01EF  ; Default_Ignorable_Code_Point
+E01F0..E0FFF  ; Default_Ignorable_Code_Point

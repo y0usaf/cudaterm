@@ -31,7 +31,11 @@ def build(combining, out, offsets_out, version_out):
     widths = bytearray(1 for _ in range(MAX))
     for cp in range(MAX):
         ch = chr(cp)
-        if (unicodedata.combining(ch) or
+        if cp == 0x00AD:
+            # Monstar/ghostty deliberately renders SOFT HYPHEN as a visible
+            # standalone character even though it is default-ignorable.
+            widths[cp] = 1
+        elif (unicodedata.combining(ch) or
                 unicodedata.category(ch) in ("Mn", "Me", "Cf")):
             widths[cp] = 0
         elif unicodedata.category(ch) != "Cn" and unicodedata.east_asian_width(ch) in ("W", "F"):

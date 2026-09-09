@@ -7,6 +7,81 @@ __device__ int image_slot(const GraphicsState &g, uint32_t id) {
     if (g.images[i].pixels && g.images[i].id == id) return i;
   return -1;
 }
+__device__ int graphic_placement_slot(const GraphicsState &g, int image, uint32_t id) {
+  if (image < 0 || !id) return -1;
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
+    if (g.placements[i].occupied && g.placements[i].image_slot == image &&
+        g.placements[i].placement == id)
+      return i;
+  return -1;
+}
+__device__ int graphic_free_placement(const GraphicsState &g) {
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
+    if (!g.placements[i].occupied) return i;
+  return -1;
+}
+__device__ void graphic_remove_image_placements(GraphicsState &g, int image) {
+  if (image < 0 || image >= IMAGE_SLOTS) return;
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
+    if (g.placements[i].occupied && g.placements[i].image_slot == image)
+      g.placements[i] = {};
+}
+__device__ bool graphic_placement_matches(const GraphicsState &g,
+                                          const GraphicPlacement &placement,
+                                          const GraphicsParams &p, unsigned which,
+                                          int screen) {
+  if (!placement.occupied || placement.screen != screen ||
+      placement.image_slot < 0 || placement.image_slot >= IMAGE_SLOTS)
+    return false;
+  if ((which == 'i' || which == 'I') &&
+      g.images[placement.image_slot].id != graphic_value(p, 'i'))
+    return false;
+  uint32_t id = graphic_value(p, 'p');
+  return !id || placement.placement == id;
+}
+__device__ void graphic_visible(GraphicsState &g) {
+  g.visible_count = 0;
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
+    if (g.placements[i].occupied && g.placements[i].visible)
+      g.visible[g.visible_count++] = i;
+}
+// Resolve Kitty's destination size from a source crop.  c and r are cell
+// counts: both set requests an exact rectangle, while one set preserves the
+// crop aspect ratio.  The result is deliberately bounded because the values
+// are untrusted terminal input and are later used by cursor/history code.
+__device__ bool graphic_destination_size(const DeviceState &s, int source_width,
+                                         int source_height, const GraphicsParams &p,
+                                         int &dest_width, int &dest_height) {
+  if (source_width <= 0 || source_height <= 0 || s.cell_width <= 0 || s.cell_height <= 0)
+    return false;
+  const uint32_t columns = graphic_value(p, 'c');
+  const uint32_t rows = graphic_value(p, 'r');
+  unsigned long long width = source_width, height = source_height;
+  if (columns) {
+    if (static_cast<unsigned long long>(columns) > static_cast<unsigned long long>(GRAPHIC_DEST_LIMIT) /
+                                      unsigned(s.cell_width)) return false;
+    width = static_cast<unsigned long long>(columns) * unsigned(s.cell_width);
+  }
+  if (rows) {
+    if (static_cast<unsigned long long>(rows) > static_cast<unsigned long long>(GRAPHIC_DEST_LIMIT) /
+                                  unsigned(s.cell_height)) return false;
+    height = static_cast<unsigned long long>(rows) * unsigned(s.cell_height);
+  }
+  if (columns && !rows) {
+    if (width > GRAPHIC_DEST_LIMIT) return false;
+    height = (width * unsigned(source_height) + unsigned(source_width) / 2) /
+             unsigned(source_width);
+  } else if (rows && !columns) {
+    if (height > GRAPHIC_DEST_LIMIT) return false;
+    width = (height * unsigned(source_width) + unsigned(source_height) / 2) /
+            unsigned(source_height);
+  }
+  if (!width || !height || width > GRAPHIC_DEST_LIMIT || height > GRAPHIC_DEST_LIMIT)
+    return false;
+  dest_width = int(width);
+  dest_height = int(height);
+  return true;
+}
 __device__ void graphic_begin(GraphicsState &g) {
   g.command = {};
   g.chunk_size = g.invalid = g.phase = g.key = g.digits = g.header_size = 0;
@@ -26,7 +101,7 @@ __device__ void graphic_header(GraphicsState &g, unsigned char c) {
   if (c == ',') { graphic_parameter(g); return; }
   if (g.phase == 0) {
     bool known = false;
-    const char *keys = "atfovsiphwxyXYmCqd";
+    const char *keys = "atfovsiphwxyXYmCqdcr";
     for (int i = 0; keys[i]; ++i) known |= keys[i] == c;
     if (!known) { g.invalid = 1; return; }
     g.key = c; g.phase = 1;
@@ -72,6 +147,18 @@ __device__ void graphic_plan(DeviceState &s) {
         g.chunk_size % 4) g.invalid = 1;
     g.request.input_bytes = g.used + size_t(g.chunk_size / 4) * 3;
     if (g.request.input_bytes > IMAGE_LIMIT + (1u << 16)) g.invalid = 1;
+    if (!g.invalid && action == 'T') {
+      unsigned sx = graphic_value(u, 'x'), sy = graphic_value(u, 'y');
+      unsigned w = graphic_value(u, 'w', unsigned(width));
+      unsigned h = graphic_value(u, 'h', unsigned(height));
+      if (sx >= width || sy >= height || !w || !h) g.invalid = 1;
+      else {
+        w = dmin(w, unsigned(width) - sx);
+        h = dmin(h, unsigned(height) - sy);
+        int dw = 0, dh = 0;
+        if (!graphic_destination_size(s, int(w), int(h), u, dw, dh)) g.invalid = 1;
+      }
+    }
     if (!graphic_value(p, 'm') && !g.invalid) {
       uint32_t id = graphic_value(u, 'i');
       if (!id) {
@@ -94,21 +181,59 @@ __device__ void graphic_plan(DeviceState &s) {
   } else if (action == 'd') {
     unsigned which = graphic_value(p, 'd', 'a');
     if (which != 'a' && which != 'A' && which != 'i' && which != 'I') g.invalid = 1;
-    for (int i = 0; i < IMAGE_SLOTS && !g.invalid; ++i) {
-      auto &im = g.images[i];
-      if (!im.pixels || im.screen != s.alt_active) continue;
-      if ((which == 'i' || which == 'I') && im.id != graphic_value(p, 'i')) continue;
-      if (which == 'A' || which == 'I') g.request.release[i / 32] |= 1u << (i % 32);
+    for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS && !g.invalid; ++i) {
+      const auto &placement = g.placements[i];
+      if (!graphic_placement_matches(g, placement, p, which, s.alt_active)) continue;
+      if (which == 'A' || which == 'I')
+        g.request.release[placement.image_slot / 32] |= 1u << (placement.image_slot % 32);
+    }
+    // Uppercase all/image deletes also discard an image that has no current
+    // placement.  Keep the image screen check so switching screens retains
+    // the other screen's image store, matching the existing behavior.
+    if (which == 'A' || which == 'I') {
+      for (int i = 0; i < IMAGE_SLOTS && !g.invalid; ++i) {
+        const auto &im = g.images[i];
+        if (im.pixels && im.screen == s.alt_active &&
+            (which == 'A' || im.id == graphic_value(p, 'i')))
+          g.request.release[i / 32] |= 1u << (i % 32);
+      }
     }
   } else if (action != 'p') g.invalid = 1;
   // Placement can scroll hundreds of rows even for a tiny compressed command.
   // Tell the allocator that bound before executing it, without CPU parsing.
   if (!g.invalid && !s.alt_active) {
-    if (g.active && action == 'T' && g.request.output_bytes && !graphic_value(g.upload, 'C'))
-      g.request.history_growth = (graphic_value(g.upload, 'v') + 2 * s.cell_height - 2) / s.cell_height;
+    if (g.active && action == 'T' && g.request.output_bytes && !graphic_value(g.upload, 'C')) {
+      unsigned sx = graphic_value(g.upload, 'x'), sy = graphic_value(g.upload, 'y');
+      unsigned source_width = graphic_value(g.upload, 's');
+      unsigned source_height = graphic_value(g.upload, 'v');
+      unsigned width = graphic_value(g.upload, 'w', source_width);
+      unsigned height = graphic_value(g.upload, 'h', source_height);
+      int dw = 0, dh = 0;
+      if (sx < source_width && sy < source_height) {
+        width = dmin(width, source_width - sx);
+        height = dmin(height, source_height - sy);
+        if (graphic_destination_size(s, int(width), int(height), g.upload, dw, dh))
+          g.request.history_growth = (dh + 2 * s.cell_height - 2) / s.cell_height;
+      }
+    }
     else if (!g.active && action == 'p' && !graphic_value(p, 'C')) {
       int slot = image_slot(g, graphic_value(p, 'i'));
-      if (slot >= 0) g.request.history_growth = (g.images[slot].height + 2 * s.cell_height - 2) / s.cell_height;
+      if (slot >= 0) {
+        const auto &im = g.images[slot];
+        unsigned sx = graphic_value(p, 'x'), sy = graphic_value(p, 'y');
+        unsigned source_width = unsigned(im.width), source_height = unsigned(im.height);
+        unsigned width = graphic_value(p, 'w', source_width);
+        unsigned height = graphic_value(p, 'h', source_height);
+        int dw = 0, dh = 0;
+        if (sx < source_width && sy < source_height) {
+          width = dmin(width, source_width - sx);
+          height = dmin(height, source_height - sy);
+        } else {
+          width = height = 0;
+        }
+        if (graphic_destination_size(s, int(width), int(height), p, dw, dh))
+          g.request.history_growth = (dh + 2 * s.cell_height - 2) / s.cell_height;
+      }
     }
   }
   if (g.invalid) {
@@ -168,30 +293,41 @@ __device__ bool graphic_decode(GraphicsState &g, unsigned char *input) {
   __syncthreads();
   return valid;
 }
-__device__ bool graphic_place(DeviceState &s, Image &image, const GraphicsParams &p) {
-  unsigned sx = graphic_value(p, 'x'), sy = graphic_value(p, 'y');
+__device__ bool graphic_place(DeviceState &s, GraphicPlacement &placement,
+                              const Image &image, int image_index,
+                              const GraphicsParams &p) {
+  unsigned source_x = graphic_value(p, 'x'), source_y = graphic_value(p, 'y');
   unsigned w = graphic_value(p, 'w', image.width), h = graphic_value(p, 'h', image.height);
   unsigned x = graphic_value(p, 'X'), y = graphic_value(p, 'Y');
-  if (sx >= unsigned(image.width) || sy >= unsigned(image.height) ||
+  if (source_x >= unsigned(image.width) || source_y >= unsigned(image.height) ||
       !w || !h || x >= unsigned(s.cell_width) || y >= unsigned(s.cell_height) || graphic_value(p, 'C') > 1) return false;
-  image.sx = sx; image.sy = sy;
-  image.width_crop = dmin(w, unsigned(image.width) - sx);
-  image.height_crop = dmin(h, unsigned(image.height) - sy);
-  image.px = s.col * s.cell_width + x; image.py = s.row * s.cell_height + y;
-  image.screen = s.alt_active; image.visible = 1;
-  image.placement = graphic_value(p, 'p');
+  w = dmin(w, unsigned(image.width) - source_x);
+  h = dmin(h, unsigned(image.height) - source_y);
+  int dest_width = 0, dest_height = 0;
+  if (!graphic_destination_size(s, int(w), int(h), p, dest_width, dest_height)) return false;
+  // sx/sy are destination offsets consumed by graphics_scroll when the
+  // placement is clipped.  Keep the source crop separately so a scaled
+  // placement can map every remaining destination pixel safely.
+  placement.occupied = 1; placement.image_slot = image_index;
+  placement.placement = graphic_value(p, 'p');
+  placement.screen = s.alt_active; placement.visible = 1;
+  placement.sx = placement.sy = 0;
+  placement.source_x = source_x; placement.source_y = source_y;
+  placement.source_width = w; placement.source_height = h;
+  placement.dest_width = dest_width; placement.dest_height = dest_height;
+  placement.width_crop = dest_width; placement.height_crop = dest_height;
+  placement.px = s.col * s.cell_width + x; placement.py = s.row * s.cell_height + y;
   return true;
 }
-__device__ void graphic_cursor(DeviceState &s, const Image &image, const GraphicsParams &p,
+__device__ void graphic_cursor(DeviceState &s, const GraphicPlacement &placement,
+                               const GraphicsParams &p,
                                 FillJob *jobs) {
   if (graphic_value(p, 'C')) return;
   auto &g = *s.graphics;
-  g.visible_count = 0;
-  for (int i = 0; i < IMAGE_SLOTS; ++i)
-    if (g.images[i].visible) g.visible[g.visible_count++] = i;
+  graphic_visible(g);
   s.jobs = jobs;
   s.job_count = 0;
-  int rows = (image.height_crop + graphic_value(p, 'Y') + s.cell_height - 1) / s.cell_height;
+  int rows = (placement.dest_height + graphic_value(p, 'Y') + s.cell_height - 1) / s.cell_height;
   for (int i = 1; i < rows; ++i) {
     newline(s);
     for (int j = 0; j < s.job_count; ++j) {
@@ -201,7 +337,7 @@ __device__ void graphic_cursor(DeviceState &s, const Image &image, const Graphic
     }
     s.job_count = 0;
   }
-  s.col = dmin(s.cols - 1, s.col + (image.width_crop + int(graphic_value(p, 'X')) + s.cell_width - 1) / s.cell_width);
+  s.col = dmin(s.cols - 1, s.col + (placement.dest_width + int(graphic_value(p, 'X')) + s.cell_width - 1) / s.cell_width);
   s.wrap_pending = 0; s.jobs = nullptr;
 }
 __global__ void graphics_decode(DeviceState *s, unsigned char *input,
@@ -237,8 +373,11 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
   auto &g = *s->graphics;
   auto &r = g.request;
   if (r.reset) {
-    for (int i = 0; i < IMAGE_SLOTS; ++i)
-      if (r.release[i / 32] & (1u << (i % 32))) g.images[i] = {};
+    for (int i = 0; i < IMAGE_SLOTS; ++i) {
+      if (!(r.release[i / 32] & (1u << (i % 32)))) continue;
+      graphic_remove_image_placements(g, i);
+      g.images[i] = {};
+    }
     g.command = {}; g.active = 0; g.used = 0;
   }
   bool ok = !g.invalid && !allocation_failed;
@@ -253,10 +392,40 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
         im.pixels = output; im.id = graphic_value(g.upload, 'i');
         im.width = graphic_value(g.upload, 's'); im.height = graphic_value(g.upload, 'v');
         im.channels = graphic_value(g.upload, 'f', 32) / 8; im.screen = s->alt_active;
-        if (action == 'T') ok = graphic_place(*s, im, g.upload);
-        if (ok) {
+        int placement = -1;
+        if (action == 'T') {
+          // Reserve a placement before replacing an image.  If the table is
+          // full, one of the old image's records can be recycled because a
+          // successful retransmission removes every old placement.
+          int old_slot = image_slot(g, im.id);
+          uint32_t id = graphic_value(g.upload, 'p');
+          placement = id ? graphic_placement_slot(g, old_slot, id)
+                         : -1;
+          if (placement < 0) placement = graphic_free_placement(g);
+          if (placement < 0 && old_slot >= 0)
+            for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
+              if (g.placements[i].occupied && g.placements[i].image_slot == old_slot) {
+                placement = i;
+                break;
+              }
+          GraphicPlacement next{};
+          if (placement < 0 || !graphic_place(*s, next, im, r.slot, g.upload))
+            ok = false;
+          else {
+            if (old_slot >= 0) graphic_remove_image_placements(g, old_slot);
+            g.images[r.slot] = im;
+            g.placements[placement] = next;
+            r.committed = 1;
+            graphic_cursor(*s, g.placements[placement], g.upload, jobs);
+          }
+        } else if (action == 't') {
+          int old_slot = image_slot(g, im.id);
+          if (old_slot >= 0) graphic_remove_image_placements(g, old_slot);
           g.images[r.slot] = im; r.committed = 1;
-          if (action == 'T') graphic_cursor(*s, g.images[r.slot], g.upload, jobs);
+        } else {
+          // The query action validates and decodes its payload, but does not
+          // retain an image or placement.
+          ok = false;
         }
       }
       graphic_reply(*s, g.upload, ok);
@@ -266,15 +435,37 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
     unsigned action = graphic_value(g.command, 'a', 't');
     if (action == 'p' && ok) {
       int slot = image_slot(g, graphic_value(g.command, 'i'));
-      ok = slot >= 0 && graphic_place(*s, g.images[slot], g.command);
-      if (ok) graphic_cursor(*s, g.images[slot], g.command, jobs);
+      int placement = -1;
+      uint32_t id = graphic_value(g.command, 'p');
+      if (slot >= 0)
+        placement = id ? graphic_placement_slot(g, slot, id) : -1;
+      if (slot >= 0 && placement < 0) placement = graphic_free_placement(g);
+      GraphicPlacement next{};
+      ok = slot >= 0 && placement >= 0 &&
+           graphic_place(*s, next, g.images[slot], slot, g.command);
+      if (ok) {
+        g.placements[placement] = next;
+        graphic_cursor(*s, g.placements[placement], g.command, jobs);
+      }
     } else if (action == 'd' && ok) {
       unsigned which = graphic_value(g.command, 'd', 'a');
+      for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i) {
+        if (graphic_placement_matches(g, g.placements[i], g.command, which,
+                                      s->alt_active))
+          g.placements[i] = {};
+      }
       for (int i = 0; i < IMAGE_SLOTS; ++i) {
-        if (r.release[i / 32] & (1u << (i % 32))) g.images[i] = {};
-        else if (g.images[i].screen == s->alt_active &&
-                 ((which == 'a') || (which == 'i' &&
-                  g.images[i].id == graphic_value(g.command, 'i')))) g.images[i].visible = 0;
+        if (!(r.release[i / 32] & (1u << (i % 32)))) continue;
+        bool referenced = false;
+        for (int j = 0; j < GRAPHIC_PLACEMENT_SLOTS; ++j)
+          if (g.placements[j].occupied && g.placements[j].image_slot == i) {
+            referenced = true;
+            break;
+          }
+        if (referenced)
+          r.release[i / 32] &= ~(1u << (i % 32));
+        else
+          g.images[i] = {};
       }
     }
     graphic_reply(*s, g.command, ok);
@@ -283,20 +474,30 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
   if (!g.active) { g.input = nullptr; g.input_capacity = 0; }
   r.history_rows = s->history_count;
   r.alternate = s->alt_active;
-  g.visible_count = 0;
-  for (int i = 0; i < IMAGE_SLOTS; ++i)
-    if (g.images[i].visible) g.visible[g.visible_count++] = i;
+  graphic_visible(g);
   r.ready = 0;
 }
 __device__ uint32_t graphic_pixel(const DeviceState &s, int x, int y, uint32_t color, unsigned &opacity) {
   const auto &g = *s.graphics;
   for (int i = 0; i < g.visible_count; ++i) {
-    const auto &im = g.images[g.visible[i]];
-    if (!im.visible || im.screen != s.alt_active) continue;
-    int dx = x - im.px, dy = y - im.py - s.view_offset * s.cell_height;
-    if (dx < 0 || dy < 0 || dx >= im.width_crop || dy >= im.height_crop) continue;
+    const auto &placement = g.placements[g.visible[i]];
+    if (!placement.occupied || !placement.visible || placement.screen != s.alt_active ||
+        placement.image_slot < 0 || placement.image_slot >= IMAGE_SLOTS) continue;
+    const auto &im = g.images[placement.image_slot];
+    if (!im.pixels) continue;
+    int dx = x - placement.px, dy = y - placement.py - s.view_offset * s.cell_height;
+    if (dx < 0 || dy < 0 || dx >= placement.width_crop || dy >= placement.height_crop) continue;
+    unsigned long long dest_x = unsigned(dx + placement.sx), dest_y = unsigned(dy + placement.sy);
+    unsigned source_x = unsigned(placement.source_x) +
+        unsigned((dest_x * unsigned(placement.source_width)) /
+                 unsigned(placement.dest_width));
+    unsigned source_y = unsigned(placement.source_y) +
+        unsigned((dest_y * unsigned(placement.source_height)) /
+                 unsigned(placement.dest_height));
+    source_x = dmin(source_x, unsigned(placement.source_x + placement.source_width - 1));
+    source_y = dmin(source_y, unsigned(placement.source_y + placement.source_height - 1));
     const unsigned char *pixel = im.pixels +
-        (size_t(dy + im.sy) * im.width + dx + im.sx) * im.channels;
+        (size_t(source_y) * im.width + source_x) * im.channels;
     unsigned a = im.channels == 4 ? pixel[3] : 255;
     opacity = a + (opacity * (255 - a) + 127) / 255;
     unsigned r = (pixel[0] * a + ((color >> 16) & 255) * (255 - a) + 127) / 255;

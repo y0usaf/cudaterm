@@ -1,5 +1,5 @@
 #pragma once
-#include "face.hpp"
+#include "font_cache.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SYNTHESIS_H
@@ -8,64 +8,94 @@
 #include <array>
 #include <cmath>
 #include <memory>
+#include <future>
 #include <vector>
 
 namespace ct {
 // Font discovery and glyph coverage preparation are host work. Terminal text,
 // layout and pixel composition remain on the GPU. Rebuild at the actual pixel
 // size, rather than magnifying a previously rasterized atlas.
-struct FontAtlas {
-  int width = 0, height = 0;
-  std::array<std::vector<unsigned char>, 4> faces;
-};
+struct ResolvedFont { std::string path; int index = 0; bool direct = false; };
+inline ResolvedFont resolve_font(const std::string &family, int style) {
+  if (family.empty()) return {};
+  if (family.rfind("file:", 0) == 0) return {family.substr(5), 0, true};
+  std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> pattern(FcPatternCreate(), FcPatternDestroy);
+  if (!pattern) throw std::bad_alloc();
+  FcPatternAddString(pattern.get(), FC_FAMILY, (const FcChar8 *)family.c_str());
+  FcPatternAddInteger(pattern.get(), FC_WEIGHT, style & 1 ? FC_WEIGHT_BOLD : FC_WEIGHT_REGULAR);
+  FcPatternAddInteger(pattern.get(), FC_SLANT, style & 2 ? FC_SLANT_ITALIC : FC_SLANT_ROMAN);
+  FcConfigSubstitute(nullptr, pattern.get(), FcMatchPattern);
+  FcDefaultSubstitute(pattern.get());
+  FcResult result;
+  std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> match(FcFontMatch(nullptr, pattern.get(), &result), FcPatternDestroy);
+  FcChar8 *path = nullptr;
+  int index = 0;
+  if (!match || FcPatternGetString(match.get(), FC_FILE, 0, &path) != FcResultMatch)
+    throw std::runtime_error("cannot resolve font family: " + family);
+  FcPatternGetInteger(match.get(), FC_INDEX, 0, &index);
+  return {reinterpret_cast<const char *>(path), index, false};
+}
 inline FontAtlas rasterize_font(const std::string &family, float pixels, float line_height, const std::string &fallback = {}) {
-  FT_Library library = nullptr;
-  if (FT_Init_FreeType(&library)) throw std::runtime_error("cannot initialize FreeType");
-  struct LibraryGuard { FT_Library p; ~LibraryGuard() { FT_Done_FreeType(p); } } guard{library};
+  std::array<ResolvedFont, 8> fonts;
+  std::string key = "CTFONT-CACHE-2";
+  cache_field(key, std::string(reinterpret_cast<const char *>(&pixels), sizeof pixels));
+  cache_field(key, std::string(reinterpret_cast<const char *>(&line_height), sizeof line_height));
+  const char *properties = std::getenv("FREETYPE_PROPERTIES");
+  cache_field(key, properties ? properties : "");
+#ifdef CUDATERM_FONT_CACHE_ID
+  // Nix fingerprints the renderer and its dependencies, so unrelated rebuilds
+  // can reuse the atlas. Native builds conservatively use executable identity.
+  cache_field(key, CUDATERM_FONT_CACHE_ID);
+  bool cacheable = true;
+#else
+  bool cacheable = cache_file_identity(key, "/proc/self/exe");
+#endif
+  cacheable = cache_file_identity(key, std::string(CUDATERM_DATA_DIR) + "/widths.bin") && cacheable;
+  for (int style = 0; style < 4; ++style) {
+    for (int i = 0; i < 2; ++i) {
+      auto &font = fonts[style * 2 + i];
+      font = resolve_font(i ? fallback : family, style);
+      cache_field(key, std::to_string(font.index));
+      cache_field(key, font.direct ? "direct" : "matched");
+      if (font.path.empty()) cache_field(key, "");
+      else if (!cache_file_identity(key, font.path)) cacheable = false;
+    }
+  }
+  std::string cache = cacheable ? font_cache_path(key) : "";
+  FontAtlas cached;
+  if (read_font_cache(cache, key, cached)) return cached;
+  if (cacheable && read_font_cache(prepared_font_cache_path(key), key, cached)) return cached;
   std::ifstream widths_file(std::string(CUDATERM_DATA_DIR) + "/widths.bin", std::ios::binary);
   std::vector<unsigned char> widths(0x110000);
   if (!widths_file.read((char *)widths.data(), widths.size()))
     throw std::runtime_error("cannot read font width data");
   FontAtlas atlas;
-  for (int style = 0; style < 4; ++style) {
+  auto rasterize_style = [&](int style, bool metrics_only) {
+    FT_Library library = nullptr;
+    if (FT_Init_FreeType(&library)) throw std::runtime_error("cannot initialize FreeType");
+    struct LibraryGuard { FT_Library p; ~LibraryGuard() { FT_Done_FreeType(p); } } guard{library};
     std::vector<unsigned char> data(24);
     std::vector<uint32_t> pages(0x1100, 0xffffffffu), slots;
     uint32_t count = 0;
     for (int font_index = 0; font_index < 2; ++font_index) {
       const std::string &font_family = font_index ? fallback : family;
       if (font_family.empty()) continue;
-      bool direct = font_family.rfind("file:", 0) == 0;
-      std::string direct_path = direct ? font_family.substr(5) : "";
-      std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> pattern(FcPatternCreate(), FcPatternDestroy);
-      if (!pattern) throw std::bad_alloc();
-      FcPatternAddString(pattern.get(), FC_FAMILY, (const FcChar8 *)font_family.c_str());
-      FcPatternAddInteger(pattern.get(), FC_WEIGHT, style & 1 ? FC_WEIGHT_BOLD : FC_WEIGHT_REGULAR);
-      FcPatternAddInteger(pattern.get(), FC_SLANT, style & 2 ? FC_SLANT_ITALIC : FC_SLANT_ROMAN);
-      FcConfigSubstitute(nullptr, pattern.get(), FcMatchPattern);
-      FcDefaultSubstitute(pattern.get());
-      FcResult result;
-      std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> match(direct ? nullptr : FcFontMatch(nullptr, pattern.get(), &result), FcPatternDestroy);
-      FcChar8 *path = nullptr;
-      int index = 0;
-      if (direct) path = (FcChar8 *)direct_path.c_str();
-      else {
-        if (!match || FcPatternGetString(match.get(), FC_FILE, 0, &path) != FcResultMatch)
-          throw std::runtime_error("cannot resolve font family: " + font_family);
-        FcPatternGetInteger(match.get(), FC_INDEX, 0, &index);
-      }
+      const auto &resolved = fonts[style * 2 + font_index];
+      bool direct = resolved.direct;
       FT_Face face = nullptr;
-      if (FT_New_Face(library, (const char *)path, index, &face))
+      if (FT_New_Face(library, resolved.path.c_str(), resolved.index, &face))
         throw std::runtime_error("cannot open resolved font: " + font_family);
       struct FaceGuard { FT_Face p; ~FaceGuard() { FT_Done_Face(p); } } face_guard{face};
       if (FT_Select_Charmap(face, FT_ENCODING_UNICODE) ||
           FT_Set_Char_Size(face, 0, std::lround(pixels * 64), 72, 72))
         throw std::runtime_error("font does not support the requested Unicode pixel size");
-      if (!style && !font_index) {
+      if (metrics_only) {
         if (FT_Load_Char(face, 'M', FT_LOAD_DEFAULT)) throw std::runtime_error("font has no M glyph");
         atlas.width = std::max(1, int((face->glyph->advance.x + 63) / 64));
         atlas.height = std::max(1, int(std::ceil(pixels * line_height - 0.001f)));
         if (atlas.width > 64 || atlas.height > 128)
           throw std::runtime_error("requested font exceeds 64 x 128 cell dimensions");
+        return std::vector<unsigned char>{};
       }
       int ascent = (face->size->metrics.ascender + 63) / 64;
       int descent = (-face->size->metrics.descender + 63) / 64;
@@ -139,8 +169,17 @@ inline FontAtlas rasterize_font(const std::string &family, float pixels, float l
       size_t offset = data.size(); data.resize(offset + table->size() * 4);
       std::memcpy(data.data() + offset, table->data(), table->size() * 4);
     }
-    atlas.faces[style] = std::move(data);
-  }
+    return data;
+  };
+  // Read regular-face metrics before workers access the shared dimensions.
+  // Each worker owns its FreeType library; deferred execution handles thread limits.
+  rasterize_style(0, true);
+  std::array<std::future<std::vector<unsigned char>>, 4> styles;
+  for (int style = 0; style < 4; ++style)
+    styles[style] = std::async(std::launch::async | std::launch::deferred, rasterize_style, style, false);
+  for (int style = 0; style < 4; ++style)
+    atlas.faces[style] = styles[style].get();
+  write_font_cache(cache, key, atlas);
   return atlas;
 }
 }

@@ -307,6 +307,73 @@ void short_feed_replies_consistency() {
   check(ah == eh, "mouse handling parity");
   drain(actual, expected, "mouse reply parity");
 }
+
+void kitty_keyboard_modes() {
+  auto feed = [](Engine &e, const std::string &s) {
+    e.feed(reinterpret_cast<const unsigned char *>(s.data()), s.size());
+  };
+  auto split = [&](const std::string &s, auto check_state) {
+    for (size_t cut = 0; cut <= s.size(); ++cut) {
+      Engine e(12, 4);
+      feed(e, s.substr(0, cut));
+      feed(e, s.substr(cut));
+      check_state(e);
+    }
+  };
+
+  Engine e(12, 4);
+  check(e.snapshot().keyboard_flags == 0, "Kitty keyboard defaults enabled");
+  split("\033[?u", [](Engine &state) {
+    check(state.take_replies() == "\033[?0u", "Kitty keyboard zero query");
+  });
+  feed(e, "\033[=31u");
+  check(e.snapshot().keyboard_flags == 1,
+        "unsupported Kitty flags must not be advertised");
+  feed(e, "\033[?u");
+  check(e.take_replies() == "\033[?1u", "Kitty keyboard masked query");
+
+  feed(e, "\033[=0;2u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard OR preserves flags");
+  feed(e, "\033[=0;3u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard NOT ignores clear zero");
+  feed(e, "\033[=1;2u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard OR sets disambiguation");
+  feed(e, "\033[=1;3u");
+  check(e.snapshot().keyboard_flags == 0, "Kitty keyboard NOT clears disambiguation");
+
+  feed(e, "\033[=1u\033[>0u");
+  check(e.snapshot().keyboard_flags == 0, "Kitty keyboard push value");
+  feed(e, "\033[<u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard omitted pop count");
+  feed(e, "\033[<0u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard explicit zero pop no-op");
+  feed(e, "\033[>0 u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard intermediate rejected");
+
+  // Popping eight saved levels is valid and restores the value below the
+  // stack. A larger request has no predecessor and resets it.
+  feed(e, "\033[=1u");
+  for (int i = 0; i < 8; ++i)
+    feed(e, "\033[>0u");
+  feed(e, "\033[<8u");
+  check(e.snapshot().keyboard_flags == 1, "Kitty keyboard full-depth pop");
+  for (int i = 0; i < 9; ++i)
+    feed(e, "\033[>1u");
+  feed(e, "\033[<9u");
+  check(e.snapshot().keyboard_flags == 0, "Kitty keyboard over-pop resets");
+
+  feed(e, "\033[=1u\033[?1049h");
+  check(e.snapshot().alternate_screen && e.snapshot().keyboard_flags == 0,
+        "Kitty keyboard alternate stack starts independently");
+  feed(e, "\033[=1u\033[?1049l");
+  check(!e.snapshot().alternate_screen && e.snapshot().keyboard_flags == 1,
+        "Kitty keyboard primary stack survives alternate screen");
+  feed(e, "\033c");
+  check(e.snapshot().keyboard_flags == 0, "RIS clears Kitty keyboard modes");
+  feed(e, "\033[?1049h\033[?u");
+  check(e.take_replies() == "\033[?0u" && e.snapshot().keyboard_flags == 0,
+        "RIS clears alternate Kitty keyboard modes");
+}
 } // namespace
 
 int main() {
@@ -322,6 +389,7 @@ int main() {
                {"private_modes", private_modes},
                {"overflow_and_clamp", overflow_and_clamp},
                {"cancellation_and_controls", cancellation_and_controls},
+               {"kitty_keyboard_modes", kitty_keyboard_modes},
                {"short_feed_replies_consistency", short_feed_replies_consistency}};
   int failures = 0;
   for (const auto &test : tests)

@@ -9,7 +9,7 @@
     # GLFW 3.4 discards the coordinates supplied by Wayland pointer enter.
     # Deliver them before a click can start selection with stale coordinates.
     glfw = pkgs.glfw.overrideAttrs (old: {
-      patches = (old.patches or []) ++ [ ./nix/glfw-pointer-enter.patch ];
+      patches = (old.patches or []) ++ [ ./nix/glfw-pointer-enter.patch ./nix/glfw-primary-selection.patch ./nix/glfw-ime.patch ];
     });
     headlessSeat = pkgs.stdenv.mkDerivation {
       name = "cudaterm-headless-seat";
@@ -21,6 +21,37 @@
           $(pkg-config --cflags --libs libweston-16 wayland-server pixman-1 xkbcommon) -o seat.so
       '';
       installPhase = "install -Dm755 seat.so $out/lib/seat.so";
+    };
+    headlessInput = pkgs.stdenv.mkDerivation {
+      name = "cudaterm-wayland-test-input";
+      dontUnpack = true;
+      nativeBuildInputs = [ pkgs.pkg-config pkgs.wayland-scanner ];
+      buildInputs = [ pkgs.wayland pkgs.libxkbcommon ];
+      buildPhase = ''
+        for protocol in virtual-keyboard-unstable-v1 wlr-virtual-pointer-unstable-v1; do
+          wayland-scanner client-header ${pkgs.wlrctl.src}/protocol/$protocol.xml $protocol-client.h
+          wayland-scanner private-code ${pkgs.wlrctl.src}/protocol/$protocol.xml $protocol.c
+        done
+        wayland-scanner client-header ${pkgs.wlr-protocols}/share/wlr-protocols/unstable/wlr-data-control-unstable-v1.xml wlr-data-control-unstable-v1-client.h
+        wayland-scanner private-code ${pkgs.wlr-protocols}/share/wlr-protocols/unstable/wlr-data-control-unstable-v1.xml wlr-data-control-unstable-v1.c
+        $CC -std=c11 -Wall -Wextra -Werror -I. ${./tests/wayland_input.c} \
+          virtual-keyboard-unstable-v1.c wlr-virtual-pointer-unstable-v1.c wlr-data-control-unstable-v1.c \
+          $(pkg-config --cflags --libs wayland-client xkbcommon) -o wayland-input
+      '';
+      installPhase = "install -Dm755 wayland-input $out/bin/cudaterm-wayland-input";
+    };
+    headlessIme = pkgs.stdenv.mkDerivation {
+      name = "cudaterm-wayland-test-ime";
+      dontUnpack = true;
+      nativeBuildInputs = [ pkgs.pkg-config pkgs.wayland-scanner ];
+      buildInputs = [ pkgs.wayland ];
+      buildPhase = ''
+        wayland-scanner client-header ${pkgs.wlroots_0_20.src}/protocol/input-method-unstable-v2.xml input-method-unstable-v2-client.h
+        wayland-scanner private-code ${pkgs.wlroots_0_20.src}/protocol/input-method-unstable-v2.xml input-method-unstable-v2.c
+        $CC -std=c11 -Wall -Wextra -Werror -I. ${./tests/wayland_ime.c} \
+          input-method-unstable-v2.c $(pkg-config --cflags --libs wayland-client) -o wayland-ime
+      '';
+      installPhase = "install -Dm755 wayland-ime $out/bin/cudaterm-wayland-ime";
     };
     fontData = pkgs.runCommand "cudaterm-unifont-17.0.05" {
       nativeBuildInputs = [ pkgs.python3 pkgs.gnutar pkgs.gzip ];
@@ -43,6 +74,26 @@
     testTerminal = pkgs.writeShellScript "cudaterm-test-terminal" ''
       exec ${package}/bin/cudaterm --no-config --font-family bitmap --theme classic --padding-x 0 --padding-y 0 "$@"
     '';
+    fontRendererId = builtins.hashString "sha256" (
+      builtins.readFile ./src/font.hpp + builtins.readFile ./src/font_cache.hpp
+      + "${pkgs.freetype}:${stdenv.cc}"
+    );
+    fontCacheBuilder = stdenv.mkDerivation {
+      pname = "cudaterm-font-cache-builder";
+      version = "0.1.0";
+      src = pkgs.lib.fileset.toSource {
+        root = ./.;
+        fileset = pkgs.lib.fileset.unions [ ./src/font.hpp ./src/font_cache.hpp ./src/face.hpp ./tools/build_font_cache.cpp ];
+      };
+      nativeBuildInputs = [ pkgs.pkg-config ];
+      buildInputs = [ pkgs.freetype pkgs.fontconfig pkgs.xxhash ];
+      buildPhase = ''
+        $CXX -O3 -std=c++17 -Isrc -DCUDATERM_DATA_DIR='"${fontData}"' \
+          -DCUDATERM_FONT_CACHE_ID='"${fontRendererId}"' tools/build_font_cache.cpp \
+          $(pkg-config --cflags --libs freetype2 fontconfig libxxhash) -o build-font-cache
+      '';
+      installPhase = "install -Dm755 build-font-cache $out/bin/cudaterm-build-font-cache";
+    };
     package = stdenv.mkDerivation {
       pname = "cudaterm";
       version = "0.1.0";
@@ -53,14 +104,15 @@
           (pkgs.lib.fileset.unions [ ./src ./tests ./tools ./data ./bench/pty_throughput.py ./bench/visible_output.py ./bench/private_baseline.py ./bench/engine_bench.cu ]);
       };
       nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.python3 ];
-      buildInputs = [ cuda.cuda_cudart glfw pkgs.glew pkgs.libGL pkgs.libvterm-neovim pkgs.freetype pkgs.fontconfig ];
+      buildInputs = [ cuda.cuda_cudart glfw pkgs.libGL pkgs.libvterm-neovim pkgs.freetype pkgs.fontconfig pkgs.xxhash pkgs.wayland pkgs.libx11 pkgs.libxrandr ];
       buildPhase = ''
         runHook preBuild
         nvcc -O3 -lineinfo -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -c src/engine.cu -o engine.o
-        nvcc -O3 -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -DCUDATERM_XDG_OPEN='"${pkgs.xdg-utils}/bin/xdg-open"' src/main.cu engine.o \
-          $(pkg-config --cflags --libs glfw3 glew freetype2 fontconfig) -lutil -o cudaterm
+        nvcc -O3 -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -DCUDATERM_FONT_CACHE_ID='"${fontRendererId}"' -DCUDATERM_XDG_OPEN='"${pkgs.xdg-utils}/bin/xdg-open"' src/main.cu engine.o \
+          $(pkg-config --cflags --libs glfw3 gl freetype2 fontconfig libxxhash wayland-client x11) -lutil -o cudaterm
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/engine_test.cu engine.o -o engine-test
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/appearance_test.cu engine.o -o appearance-test
+        nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/hyperlink_oom_test.cu engine.o -Xlinker --wrap=cudaMalloc -o hyperlink-oom-test
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/memory_probe.cu engine.o -lEGL -lGL -o memory-probe
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/engine_host.cu engine.o -o engine-host
         nvcc -O3 -std=c++17 -arch=sm_89 -I src bench/engine_bench.cu engine.o -o engine-bench
@@ -80,8 +132,8 @@
         nvcc -O3 -std=c++17 -I src tests/reference_test.cu engine.o \
           $(pkg-config --cflags --libs vterm) -o reference-test
         $CXX -O2 -std=c++17 -Isrc tests/input_test.cpp -o input-test
-        $CXX -O2 -std=c++17 -Isrc -DCUDATERM_DATA_DIR='"${fontData}"' tests/font_test.cpp \
-          $(pkg-config --cflags --libs freetype2 fontconfig) -o font-test
+        $CXX -O2 -std=c++17 -Isrc -DCUDATERM_DATA_DIR='"${fontData}"' -DCUDATERM_FONT_CACHE_ID='"${fontRendererId}"' tests/font_test.cpp \
+          $(pkg-config --cflags --libs freetype2 fontconfig libxxhash) -o font-test
         runHook postBuild
       '';
       doCheck = true;
@@ -106,6 +158,7 @@
         install -Dm755 cudaterm $out/bin/cudaterm
         install -Dm755 engine-test $out/bin/cudaterm-engine-test
         install -Dm755 appearance-test $out/bin/cudaterm-appearance-test
+        install -Dm755 hyperlink-oom-test $out/bin/cudaterm-hyperlink-oom-test
         install -Dm755 memory-probe $out/bin/cudaterm-memory-probe
         install -Dm755 engine-host $out/bin/cudaterm-engine-host
         install -Dm755 unicode-test $out/bin/cudaterm-unicode-test
@@ -132,15 +185,16 @@
     };
   in {
     lib.mkFinixPackage = args: import ./nix/finix-package.nix ({
-      inherit pkgs;
+      inherit pkgs fontCacheBuilder;
       terminal = package;
       widths = "${fontData}/widths.bin";
     } // args);
     finixModules.default = import ./nix/finix-module.nix;
-    packages.${system} = { default = package; headless-seat = headlessSeat; };
+    packages.${system} = { default = package; headless-seat = headlessSeat; headless-input = headlessInput; headless-ime = headlessIme; };
     apps.${system} = {
     default = { type = "app"; program = "${package}/bin/cudaterm"; };
     appearance-test = { type = "app"; program = "${package}/bin/cudaterm-appearance-test"; };
+    hyperlink-oom-test = { type = "app"; program = "${package}/bin/cudaterm-hyperlink-oom-test"; };
     build-face = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-build-face" ''
       exec ${pkgs.python3.withPackages (p: [ p.pillow p.fonttools ])}/bin/python3 ${./tools/build_face.py} "$@"
     ''}"; };
@@ -182,6 +236,19 @@
         --weston ${pkgs.weston}/bin/weston --seat ${headlessSeat}/lib/seat.so \
         --terminal ${package}/bin/cudaterm --wl-paste ${pkgs.wl-clipboard}/bin/wl-paste "$@"
     ''}"; };
+    window-primary-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-window-primary-test" ''
+      exec ${pkgs.python3}/bin/python3 ${./tests/window_primary.py} \
+        --terminal ${package}/bin/cudaterm --sway ${pkgs.sway}/bin/sway \
+        --input ${headlessInput}/bin/cudaterm-wayland-input \
+        --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy --wl-paste ${pkgs.wl-clipboard}/bin/wl-paste "$@"
+    ''}"; };
+    window-ime-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-window-ime-test" ''
+      exec ${pkgs.python3}/bin/python3 ${./tests/window_primary.py} \
+        --terminal ${package}/bin/cudaterm --sway ${pkgs.sway}/bin/sway \
+        --input ${headlessInput}/bin/cudaterm-wayland-input \
+        --ime ${headlessIme}/bin/cudaterm-wayland-ime --grim ${pkgs.grim}/bin/grim --keyboard \
+        --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy --wl-paste ${pkgs.wl-clipboard}/bin/wl-paste "$@"
+    ''}"; };
     window-search-test = { type = "app"; program = "${pkgs.writeShellScript "cudaterm-window-search-test" ''
       export PYTHONPATH=${./tests}
       exec ${pkgs.python3.withPackages (p: [ p.pillow ])}/bin/python3 ${./tests/window_search.py} \
@@ -189,7 +256,7 @@
         --terminal ${testTerminal} --wl-copy ${pkgs.wl-clipboard}/bin/wl-copy "$@"
     ''}"; };
     };
-    checks.${system}.build = package;
+    checks.${system} = { build = package; headless-input = headlessInput; headless-ime = headlessIme; };
     devShells.${system}.default = pkgs.mkShell.override { inherit stdenv; } {
       inputsFrom = [ package ];
       packages = [ pkgs.python3 ];

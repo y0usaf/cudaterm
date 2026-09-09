@@ -1,8 +1,11 @@
 #include "input.hpp"
+#include "keyboard_protocol.hpp"
 #include "config.hpp"
 #include "motion.hpp"
 #include "uri.hpp"
 #include "clipboard.hpp"
+#include "reload_signal.hpp"
+#include <sys/eventfd.h>
 
 #include <cstdio>
 #include <stdexcept>
@@ -17,6 +20,37 @@ using ct::input::Key;
 using ct::input::Shift;
 
 int main() {
+  {
+    int fd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
+    if (fd < 0) throw std::runtime_error("reload eventfd fixture");
+    struct sigaction before{}, after{};
+    sigaction(SIGUSR1, nullptr, &before);
+    {
+      ct::ReloadSignal reload(fd);
+      raise(SIGUSR1);
+      uint64_t count = 0;
+      if (read(fd, &count, sizeof count) != sizeof count || count != 1 ||
+          !ct::ReloadSignal::pending() || !ct::ReloadSignal::take() || ct::ReloadSignal::take())
+        throw std::runtime_error("SIGUSR1 must wake idle event loop and consume reload once");
+    }
+    sigaction(SIGUSR1, nullptr, &after);
+    close(fd);
+    if (before.sa_handler != after.sa_handler)
+      throw std::runtime_error("reload handler must restore signal ownership");
+  }
+  {
+    const char *paths[] = {"/tmp/plain", "/tmp/a b", "/tmp/it's", "/tmp/$(touch nope)`x`;界"};
+    if (ct::input::dropped_paths(4, paths) !=
+        "'/tmp/plain' '/tmp/a b' '/tmp/it'\\''s' '/tmp/$(touch nope)`x`;界'" ||
+        !ct::input::dropped_paths(0, nullptr).empty())
+      throw std::runtime_error("file drops must preserve literal shell arguments");
+    for (const char *path : {"/tmp/\033[201~", "/tmp/\rcommand", "/tmp/\nline", "/tmp/\177"}) {
+      bool rejected = false;
+      try { ct::input::dropped_paths(1, &path); }
+      catch (const std::invalid_argument &) { rejected = true; }
+      if (!rejected) throw std::runtime_error("file drops must reject terminal controls");
+    }
+  }
   {
     auto check = [](bool ok) { if (!ok) throw std::runtime_error("OSC 52 clipboard writes"); };
     const std::string sequence = "\033]52;c;Y29waWVkIOeVjA==\033\\";
@@ -49,6 +83,9 @@ int main() {
   }
 
   {
+    if (ct::explicit_uri("https://example.org/a).") != "https://example.org/a)." ||
+        !ct::explicit_uri("javascript:alert(1)").empty())
+      throw std::runtime_error("explicit hyperlinks must preserve exact safe targets");
     if (ct::detected_uri("(https://example.org/a(b)).") != "https://example.org/a(b)" ||
         ct::detected_uri("file:///tmp/test") != "file:///tmp/test")
       throw std::runtime_error("URI punctuation handling");
@@ -287,4 +324,61 @@ int main() {
   keypad(Keypad::Subtract, 0, false, false, "-");
   keypad(Keypad::Multiply, Alt, true, false, "\033*");
   keypad(Keypad::Divide, 0, false, false, "/");
+
+  {
+    using K = ct::keyboard::Key;
+    using A = ct::keyboard::Action;
+    auto expect = [](const std::string &got, const char *want) {
+      if (got != want)
+        throw std::runtime_error("Kitty keyboard encoding mismatch");
+    };
+    if (ct::keyboard::first_codepoint("\xC3\xA9") != 0xE9 ||
+        ct::keyboard::first_codepoint("\xC0\x80") != 0 ||
+        ct::keyboard::first_codepoint("\xF4\x90\x80\x80") != 0)
+      throw std::runtime_error("layout UTF-8 decoding mismatch");
+    expect(ct::keyboard::encode_disambiguated(27, 0, K::Escape), "\033[27u");
+    expect(ct::keyboard::encode_disambiguated(13, 0, K::Enter), "\r");
+    expect(ct::keyboard::encode_disambiguated(9, ct::keyboard::Shift, K::Tab), "\033[9;2u");
+    expect(ct::keyboard::encode_disambiguated(127, ct::keyboard::Alt, K::Backspace), "\033[127;3u");
+    expect(ct::keyboard::encode_disambiguated(1, 0, K::Up, true), "\033[A");
+    expect(ct::keyboard::encode_disambiguated(0, 0, K::F1), "\033[P");
+    expect(ct::keyboard::encode_disambiguated(0, 0, K::F3), "\033[13~");
+    expect(ct::keyboard::encode_disambiguated(57399, 0, K::Functional), "\033[57399u");
+
+    ct::keyboard::KeyEvent text{K::Character, 'a', 'a', 0, "a", 0, A::Press, false};
+    expect(ct::keyboard::encode(text, ct::keyboard::DISAMBIGUATE), "a");
+    text.modifiers = ct::keyboard::Control;
+    expect(ct::keyboard::encode(text, ct::keyboard::DISAMBIGUATE), "\033[97;5u");
+    text.modifiers = ct::keyboard::Shift;
+    text.text = "A";
+    expect(ct::keyboard::encode(text, ct::keyboard::DISAMBIGUATE), "A");
+    text.modifiers = ct::keyboard::Control | ct::keyboard::Shift;
+    expect(ct::keyboard::encode(text, ct::keyboard::DISAMBIGUATE), "\033[97;6u");
+    text.modifiers = ct::keyboard::Alt;
+    text.text = "[";
+    text.codepoint = text.unshifted_codepoint = '[';
+    expect(ct::keyboard::encode(text, ct::keyboard::DISAMBIGUATE), "\033[91;3u");
+
+    ct::keyboard::KeyEvent release{K::Escape, 0, 0, 0, {}, 0, A::Release, false};
+    if (!ct::keyboard::encode(release, ct::keyboard::DISAMBIGUATE).empty())
+      throw std::runtime_error("unrequested Kitty release was encoded");
+
+    ct::keyboard::Negotiation state;
+    ct::keyboard::set(state, false, ct::keyboard::DISAMBIGUATE, 1);
+    for (int i = 0; i < ct::keyboard::KEYBOARD_STACK_DEPTH; ++i)
+      ct::keyboard::push(state, false, 0);
+    ct::keyboard::pop(state, false, ct::keyboard::KEYBOARD_STACK_DEPTH);
+    if (ct::keyboard::current(state, false) != ct::keyboard::DISAMBIGUATE)
+      throw std::runtime_error("full Kitty keyboard pop lost base mode");
+    ct::keyboard::set(state, false, ct::keyboard::REPORT_EVENTS | ct::keyboard::REPORT_ALL, 1);
+    if (ct::keyboard::current(state, false) != 0)
+      throw std::runtime_error("unsupported Kitty keyboard flags advertised");
+    ct::keyboard::set(state, true, ct::keyboard::DISAMBIGUATE, 1);
+    if (ct::keyboard::current(state, false) != 0 ||
+        ct::keyboard::current(state, true) != ct::keyboard::DISAMBIGUATE)
+      throw std::runtime_error("primary/alternate Kitty stacks shared state");
+    ct::keyboard::reset(state);
+    if (ct::keyboard::current(state, false) || ct::keyboard::current(state, true))
+      throw std::runtime_error("Kitty keyboard reset left state");
+  }
 }

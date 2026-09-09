@@ -178,6 +178,14 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       }
       inline_selector = inline_vs16(cp, b, pos, dmin(n, i + 4096));
       int width = cp < 127 ? 1 : s->text_widths[cp];
+      // The scalar path owns cluster attachment and promotion for nonzero
+      // GCB Extend values and default ignorables whose width table predates
+      // Unicode 17 (for example U+1ADD and U+3164).
+      if (width > 0 && (grapheme_extend(cp) ||
+                        grapheme_default_ignorable_zero(cp))) {
+        atomicMin(limit, i);
+        return;
+      }
       if (modifier_tone) width = 0;
       if (width == 1 && s->cols > 1 && (inline_selector || modifier_ready)) width = 2;
       if (width == 2 && s->cols == 1)

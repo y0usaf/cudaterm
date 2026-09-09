@@ -126,6 +126,106 @@ def main():
         host.feed(apc('a=p,i=7,p=1,C=1,q=2'))
         assert pixel_at(host.pixels(), host.cols*8, 40, 64) == (0,0,80,255)
         count += 1
+        # c=/r= scales a source crop in device pixels.  Both dimensions set
+        # an exact cell rectangle; a single dimension preserves the crop's
+        # aspect ratio, and cursor movement follows the destination size.
+        host.feed(b'\x1bc\x1b[H\x1b[?25l')
+        quadrants = bytes((255, 0, 0, 255)) * 1 + bytes((0, 255, 0, 255)) + \
+            bytes((0, 0, 255, 255)) + bytes((255, 255, 0, 255))
+        reply = host.feed(upload(quadrants, 2, 2, image_id=31,
+                                 extra=',c=2,r=2'))
+        assert reply == b'\x1b_Gi=31,p=1;OK\x1b\\', reply
+        pixels = host.pixels()
+        # The default 8x16 cell makes c=2,r=2 a 16x32 destination.  The
+        # nearest source coordinate is stable at each source quadrant edge.
+        assert pixel_at(pixels, host.cols*8, 0, 0) == (255, 0, 0, 255)
+        assert pixel_at(pixels, host.cols*8, 7, 15) == (255, 0, 0, 255)
+        assert pixel_at(pixels, host.cols*8, 8, 0) == (0, 255, 0, 255)
+        assert pixel_at(pixels, host.cols*8, 0, 16) == (0, 0, 255, 255)
+        assert pixel_at(pixels, host.cols*8, 15, 31) == (255, 255, 0, 255)
+        state = json.loads(host.command(b'S'))
+        assert state['row'] == 0 and state['col'] == 0, state
+
+        # A c-only placement preserves 2:1 source aspect (16x8 pixels),
+        # while a source crop scales only the selected source rectangle.
+        crop = bytes((10, 20, 30, 255)) + bytes((40, 50, 60, 255)) + \
+            bytes((70, 80, 90, 255)) + bytes((100, 110, 120, 255))
+        host.feed(apc('a=d,d=A,q=2') + b'\x1b[H')
+        host.feed(upload(crop, 4, 1, image_id=32, extra=',x=1,y=0,w=2,h=1,c=2'))
+        pixels = host.pixels()
+        assert pixel_at(pixels, host.cols*8, 0, 0) == (40, 50, 60, 255)
+        assert pixel_at(pixels, host.cols*8, 7, 7) == (40, 50, 60, 255)
+        assert pixel_at(pixels, host.cols*8, 8, 0) == (70, 80, 90, 255)
+        assert pixel_at(pixels, host.cols*8, 15, 7) == (70, 80, 90, 255)
+
+        # C=0 moves by the scaled destination (two columns and two rows).
+        host.feed(apc('a=d,d=A,q=2') + b'\x1b[H')
+        host.feed(upload(bytes((9, 8, 7, 255)) * 4, 2, 2, image_id=33,
+                         extra=',c=2,r=2').replace(b',C=1', b',C=0'))
+        state = json.loads(host.command(b'S'))
+        assert state['row'] == 1 and state['col'] == 2, state
+        count += 3
+
+        # Placements are independent records over one decoded image.  An
+        # explicit p=2 display must leave p=1 visible, and selective delete
+        # removes only the requested placement without duplicating storage.
+        host.feed(b'\x1bc\x1b[?25l\x1b[H')
+        shared = bytes((220, 40, 70, 255)) * 4
+        host.feed(upload(shared, 2, 2, image_id=41))
+        host.feed(b'\x1b[4;6H' + apc('a=p,i=41,p=2,C=1,q=2'))
+        pixels = host.pixels()
+        assert pixel_at(pixels, host.cols*8, 0, 0) == (220, 40, 70, 255)
+        assert pixel_at(pixels, host.cols*8, 40, 48) == (220, 40, 70, 255)
+        assert json.loads(host.command(b'A'))['image_bytes'] == len(shared)
+        host.feed(apc('a=d,d=i,i=41,p=1,q=2'))
+        assert pixel_at(host.pixels(), host.cols*8, 0, 0) == (0, 0, 0, 255)
+        assert pixel_at(host.pixels(), host.cols*8, 40, 48) == (220, 40, 70, 255)
+        count += 2
+
+        # A successful retransmission replaces the image and drops every old
+        # placement, while retaining one allocation for the new pixels.
+        replacement = bytes((30, 160, 210, 255)) * 4
+        host.feed(b'\x1b[H' + upload(replacement, 2, 2, image_id=41))
+        pixels = host.pixels()
+        assert pixel_at(pixels, host.cols*8, 0, 0) == (30, 160, 210, 255)
+        assert pixel_at(pixels, host.cols*8, 40, 48) == (0, 0, 0, 255)
+        assert json.loads(host.command(b'A'))['image_bytes'] == len(replacement)
+        count += 1
+
+        # Primary and alternate placements share the primary image bytes;
+        # leaving the alternate screen removes only its placements.
+        host.feed(b'\x1bc\x1b[H')
+        screen_shared = bytes((80, 190, 50, 255)) * 4
+        host.feed(upload(screen_shared, 2, 2, image_id=42))
+        host.feed(b'\x1b[?1049h\x1b[2;4H' +
+                  apc('a=p,i=42,p=2,C=1,q=2'))
+        assert pixel_at(host.pixels(), host.cols*8, 24, 16) == (80, 190, 50, 255)
+        host.feed(b'\x1b[?1049l')
+        assert pixel_at(host.pixels(), host.cols*8, 0, 0) == (80, 190, 50, 255)
+        assert pixel_at(host.pixels(), host.cols*8, 24, 16) == (0, 0, 0, 255)
+        assert json.loads(host.command(b'A'))['image_bytes'] == len(screen_shared)
+        count += 1
+
+        # Scroll and reflow update every placement anchor independently.
+        host.feed(b'\x1bc\x1b[?25l\x1b[2;1H')
+        scroll_shared = bytes((140, 80, 200, 255)) * (2 * 4)
+        host.feed(upload(scroll_shared, 2, 4, image_id=43))
+        host.feed(b'\x1b[5;4H' + apc('a=p,i=43,p=2,C=1,q=2'))
+        host.feed(b'\x1b[12;1Hline\r\n')
+        pixels = host.pixels()
+        assert pixel_at(pixels, host.cols*8, 0, 0) == (140, 80, 200, 255)
+        assert pixel_at(pixels, host.cols*8, 24, 48) == (140, 80, 200, 255)
+        host.resize(20, 12)
+        assert pixel_at(host.pixels(), host.cols*8, 0, 0) == (140, 80, 200, 255)
+        assert pixel_at(host.pixels(), host.cols*8, 24, 48) == (140, 80, 200, 255)
+        host.resize(40, 12)
+        assert json.loads(host.command(b'A'))['image_bytes'] == len(scroll_shared)
+        count += 2
+
+        # Restore the valid image used by the malformed-transfer checks below
+        # after the scaling cases reset the graphics store.
+        host.feed(b'\x1b[5;6H')
+        host.feed(upload(raw, 13, 9, image_id=7))
         # Truncated/corrupt compression, dimensions and canonical base64 fail
         # without replacing a previously valid image or painting partial data.
         for data in (b'bad', zlib.compress(raw)[:-1], zlib.compress(raw)[:-4]+b'\0'*4):
@@ -135,6 +235,7 @@ def main():
         for command in (apc('a=T,f=32,s=1,v=1,i=8', b'AB=='),
                         apc('a=T,f=32,s=4294967295,v=8192,i=8', b'AAAA'),
                         apc('a=T,f=100,s=1,v=1,i=8', b'AAAA'),
+                        apc('a=T,f=32,s=1,v=1,i=8,c=4294967295', b'AAAA'),
                         apc('a=T,f=32,s=1,v=1,i=8,m=1', b'AA==')):
             assert b'EINVAL' in host.feed(command)
         count += 1

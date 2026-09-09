@@ -1,0 +1,1213 @@
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -105,6 +105,7 @@
+     generate_wayland_protocol("xdg-activation-v1.xml")
+     generate_wayland_protocol("xdg-decoration-unstable-v1.xml")
+     generate_wayland_protocol("primary-selection-unstable-v1.xml")
++    generate_wayland_protocol("text-input-unstable-v3.xml")
+ endif()
+ 
+ if (WIN32 AND GLFW_BUILD_SHARED_LIBRARY)
+--- a/src/wl_platform.h
++++ b/src/wl_platform.h
+@@ -89,6 +89,8 @@
+ 
+ struct wl_shm;
+ struct wl_output;
++struct zwp_text_input_manager_v3;
++struct zwp_text_input_v3;
+ 
+ #define wl_display_interface _glfw_wl_display_interface
+ #define wl_subcompositor_interface _glfw_wl_subcompositor_interface
+@@ -137,6 +139,8 @@
+ #define zwp_primary_selection_device_v1_interface _glfw_zwp_primary_selection_device_v1_interface
+ #define zwp_primary_selection_offer_v1_interface _glfw_zwp_primary_selection_offer_v1_interface
+ #define zwp_primary_selection_source_v1_interface _glfw_zwp_primary_selection_source_v1_interface
++#define zwp_text_input_manager_v3_interface _glfw_zwp_text_input_manager_v3_interface
++#define zwp_text_input_v3_interface _glfw_zwp_text_input_v3_interface
+ 
+ #define GLFW_WAYLAND_WINDOW_STATE         _GLFWwindowWayland  wl;
+ #define GLFW_WAYLAND_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl;
+@@ -349,6 +353,22 @@
+     int32_t                     factor;
+ } _GLFWscaleWayland;
+ 
++#define _GLFW_WAYLAND_TEXT_INPUT_ENTER              1
++#define _GLFW_WAYLAND_TEXT_INPUT_LEAVE              2
++#define _GLFW_WAYLAND_TEXT_INPUT_PREEDIT            3
++#define _GLFW_WAYLAND_TEXT_INPUT_COMMIT             4
++#define _GLFW_WAYLAND_TEXT_INPUT_DELETE_SURROUNDING 5
++#define _GLFW_WAYLAND_TEXT_INPUT_DONE               6
++
++typedef void (*_GLFWwaylandTextInputCallback)(
++    void* user,
++    int event,
++    const char* text,
++    int32_t cursorBegin,
++    int32_t cursorEnd,
++    uint32_t deleteBefore,
++    uint32_t deleteAfter);
++
+ // Wayland-specific per-window data
+ //
+ typedef struct _GLFWwindowWayland
+@@ -410,6 +430,16 @@
+ 
+     struct zwp_idle_inhibitor_v1*   idleInhibitor;
+     struct xdg_activation_token_v1* activationToken;
++
++    struct zwp_text_input_v3*   textInput;
++    GLFWbool                    textInputEntered;
++    GLFWbool                    textInputEnabled;
++    int32_t                     textInputCursorX;
++    int32_t                     textInputCursorY;
++    int32_t                     textInputCursorWidth;
++    int32_t                     textInputCursorHeight;
++    _GLFWwaylandTextInputCallback textInputCallback;
++    void*                       textInputUser;
+ 
+     struct {
+         GLFWbool                    decorations;
+@@ -443,6 +473,7 @@
+     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+     struct zwp_primary_selection_device_manager_v1* primarySelectionManager;
+     struct zwp_primary_selection_device_v1*         primarySelectionDevice;
++    struct zwp_text_input_manager_v3*       textInputManager;
+ 
+     _GLFWofferWayland*          offers;
+     unsigned int                offerCount;
+@@ -679,6 +710,21 @@
+ GLFWbool _glfwWaylandPrimarySelectionSupported(void);
+ void _glfwSetWaylandPrimarySelectionString(const char* string);
+ const char* _glfwGetWaylandPrimarySelectionString(void);
++GLFWbool _glfwWaylandTextInputSupported(void);
++void _glfwSetWaylandTextInputCallback(_GLFWwindow* window,
++                                      _GLFWwaylandTextInputCallback callback,
++                                      void* user);
++void _glfwEnableWaylandTextInput(_GLFWwindow* window,
++                                 int32_t x,
++                                 int32_t y,
++                                 int32_t width,
++                                 int32_t height);
++void _glfwDisableWaylandTextInput(_GLFWwindow* window);
++void _glfwSetWaylandTextInputCursorRectangle(_GLFWwindow* window,
++                                             int32_t x,
++                                             int32_t y,
++                                             int32_t width,
++                                             int32_t height);
+ 
+ EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs);
+ EGLNativeDisplayType _glfwGetEGLNativeDisplayWayland(void);
+--- a/src/wl_init.c
++++ b/src/wl_init.c
+@@ -50,6 +50,7 @@
+ #include "xdg-activation-v1-client-protocol.h"
+ #include "idle-inhibit-unstable-v1-client-protocol.h"
+ #include "primary-selection-unstable-v1-client-protocol.h"
++#include "text-input-unstable-v3-client-protocol.h"
+ 
+ // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
+ //       wl_interface pointers 'types', making it impossible to combine several unmodified
+@@ -94,6 +95,10 @@
+ 
+ #define types _glfw_primary_selection_types
+ #include "primary-selection-unstable-v1-client-protocol-code.h"
++#undef types
++
++#define types _glfw_text_input_types
++#include "text-input-unstable-v3-client-protocol-code.h"
+ #undef types
+ 
+ static void wmBaseHandlePing(void* userData,
+@@ -151,6 +156,15 @@
+             _glfw.wl.dataDeviceManager =
+                 wl_registry_bind(registry, name,
+                                  &wl_data_device_manager_interface, 1);
++        }
++    }
++    else if (strcmp(interface, "zwp_text_input_manager_v3") == 0)
++    {
++        if (!_glfw.wl.textInputManager)
++        {
++            _glfw.wl.textInputManager =
++                wl_registry_bind(registry, name,
++                                 &zwp_text_input_manager_v3_interface, 1);
+         }
+     }
+     else if (strcmp(interface, "zwp_primary_selection_device_manager_v1") == 0)
+@@ -999,6 +1013,8 @@
+         zwp_primary_selection_device_v1_destroy(_glfw.wl.primarySelectionDevice);
+     if (_glfw.wl.primarySelectionManager)
+         zwp_primary_selection_device_manager_v1_destroy(_glfw.wl.primarySelectionManager);
++    if (_glfw.wl.textInputManager)
++        zwp_text_input_manager_v3_destroy(_glfw.wl.textInputManager);
+     if (_glfw.wl.pointer)
+         wl_pointer_destroy(_glfw.wl.pointer);
+     if (_glfw.wl.keyboard)
+--- a/src/wl_window.c
++++ b/src/wl_window.c
+@@ -54,6 +54,7 @@
+ #include "idle-inhibit-unstable-v1-client-protocol.h"
+ #include "fractional-scale-v1-client-protocol.h"
+ #include "primary-selection-unstable-v1-client-protocol.h"
++#include "text-input-unstable-v3-client-protocol.h"
+ 
+ #define GLFW_BORDER_SIZE    4
+ #define GLFW_CAPTION_HEIGHT 24
+@@ -1203,6 +1204,207 @@
+             _glfwInputChar(window, codepoint, mods, plain);
+         }
+     }
++}
++
++static void textInputEmit(_GLFWwindow* window,
++                          int event,
++                          const char* text,
++                          int32_t cursorBegin,
++                          int32_t cursorEnd,
++                          uint32_t deleteBefore,
++                          uint32_t deleteAfter)
++{
++    if (window->wl.textInputCallback)
++    {
++        window->wl.textInputCallback(window->wl.textInputUser,
++                                     event,
++                                     text,
++                                     cursorBegin,
++                                     cursorEnd,
++                                     deleteBefore,
++                                     deleteAfter);
++    }
++}
++
++static void commitTextInputEnable(_GLFWwindow* window);
++
++static void textInputHandleEnter(void* userData,
++                                 struct zwp_text_input_v3* textInput,
++                                 struct wl_surface* surface)
++{
++    _GLFWwindow* window = userData;
++    if (textInput != window->wl.textInput || surface != window->wl.surface)
++        return;
++
++    window->wl.textInputEntered = GLFW_TRUE;
++    if (window->wl.textInputEnabled)
++        commitTextInputEnable(window);
++    textInputEmit(window, _GLFW_WAYLAND_TEXT_INPUT_ENTER,
++                  NULL, 0, 0, 0, 0);
++}
++
++static void textInputHandleLeave(void* userData,
++                                 struct zwp_text_input_v3* textInput,
++                                 struct wl_surface* surface)
++{
++    _GLFWwindow* window = userData;
++    if (textInput != window->wl.textInput || surface != window->wl.surface)
++        return;
++
++    window->wl.textInputEntered = GLFW_FALSE;
++    window->wl.textInputEnabled = GLFW_FALSE;
++    textInputEmit(window, _GLFW_WAYLAND_TEXT_INPUT_LEAVE,
++                  NULL, 0, 0, 0, 0);
++}
++
++static void textInputHandlePreeditString(void* userData,
++                                         struct zwp_text_input_v3* textInput,
++                                         const char* text,
++                                         int32_t cursorBegin,
++                                         int32_t cursorEnd)
++{
++    _GLFWwindow* window = userData;
++    if (textInput != window->wl.textInput || !window->wl.textInputEntered)
++        return;
++
++    textInputEmit(window, _GLFW_WAYLAND_TEXT_INPUT_PREEDIT,
++                  text, cursorBegin, cursorEnd, 0, 0);
++}
++
++static void textInputHandleCommitString(void* userData,
++                                        struct zwp_text_input_v3* textInput,
++                                        const char* text)
++{
++    _GLFWwindow* window = userData;
++    if (textInput != window->wl.textInput || !window->wl.textInputEntered)
++        return;
++
++    textInputEmit(window, _GLFW_WAYLAND_TEXT_INPUT_COMMIT,
++                  text, 0, 0, 0, 0);
++}
++
++static void textInputHandleDeleteSurroundingText(
++    void* userData,
++    struct zwp_text_input_v3* textInput,
++    uint32_t beforeLength,
++    uint32_t afterLength)
++{
++    _GLFWwindow* window = userData;
++    if (textInput != window->wl.textInput || !window->wl.textInputEntered)
++        return;
++
++    textInputEmit(window, _GLFW_WAYLAND_TEXT_INPUT_DELETE_SURROUNDING,
++                  NULL, 0, 0, beforeLength, afterLength);
++}
++
++static void textInputHandleDone(void* userData,
++                                struct zwp_text_input_v3* textInput,
++                                uint32_t serial)
++{
++    _GLFWwindow* window = userData;
++    (void) serial;
++    if (textInput != window->wl.textInput || !window->wl.textInputEntered)
++        return;
++
++    textInputEmit(window, _GLFW_WAYLAND_TEXT_INPUT_DONE,
++                  NULL, 0, 0, 0, 0);
++}
++
++// Version 2 events are currently metadata that the bridge does not expose.
++// Keep non-NULL listeners so a version 2 compositor cannot dispatch through a
++// missing callback.
++static void textInputHandleAction(void* userData,
++                                  struct zwp_text_input_v3* textInput,
++                                  uint32_t action,
++                                  uint32_t serial)
++{
++    (void) userData;
++    (void) textInput;
++    (void) action;
++    (void) serial;
++}
++
++static void textInputHandleLanguage(void* userData,
++                                    struct zwp_text_input_v3* textInput,
++                                    const char* language)
++{
++    (void) userData;
++    (void) textInput;
++    (void) language;
++}
++
++static void textInputHandlePreeditHint(void* userData,
++                                       struct zwp_text_input_v3* textInput,
++                                       uint32_t start,
++                                       uint32_t end,
++                                       uint32_t hint)
++{
++    (void) userData;
++    (void) textInput;
++    (void) start;
++    (void) end;
++    (void) hint;
++}
++
++static const struct zwp_text_input_v3_listener textInputListener =
++{
++    textInputHandleEnter,
++    textInputHandleLeave,
++    textInputHandlePreeditString,
++    textInputHandleCommitString,
++    textInputHandleDeleteSurroundingText,
++    textInputHandleDone,
++    textInputHandleAction,
++    textInputHandleLanguage,
++    textInputHandlePreeditHint
++};
++
++static GLFWbool createTextInput(_GLFWwindow* window)
++{
++    if (window->wl.textInput)
++        return GLFW_TRUE;
++
++    if (!_glfw.wl.textInputManager || !_glfw.wl.seat)
++        return GLFW_FALSE;
++
++    window->wl.textInput =
++        zwp_text_input_manager_v3_get_text_input(_glfw.wl.textInputManager,
++                                                 _glfw.wl.seat);
++    if (!window->wl.textInput)
++    {
++        _glfwInputError(GLFW_PLATFORM_ERROR,
++                        "Wayland: Failed to create text input object");
++        return GLFW_FALSE;
++    }
++
++    if (zwp_text_input_v3_add_listener(window->wl.textInput,
++                                       &textInputListener,
++                                       window) != 0)
++    {
++        zwp_text_input_v3_destroy(window->wl.textInput);
++        window->wl.textInput = NULL;
++        _glfwInputError(GLFW_PLATFORM_ERROR,
++                        "Wayland: Failed to listen for text input events");
++        return GLFW_FALSE;
++    }
++
++    return GLFW_TRUE;
++}
++
++static void commitTextInputEnable(_GLFWwindow* window)
++{
++    zwp_text_input_v3_enable(window->wl.textInput);
++    zwp_text_input_v3_set_content_type(
++        window->wl.textInput,
++        ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE,
++        ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_TERMINAL);
++    zwp_text_input_v3_set_cursor_rectangle(
++        window->wl.textInput,
++        window->wl.textInputCursorX,
++        window->wl.textInputCursorY,
++        window->wl.textInputCursorWidth,
++        window->wl.textInputCursorHeight);
++    zwp_text_input_v3_commit(window->wl.textInput);
+ }
+ 
+ static void handleEvents(double* timeout)
+@@ -2306,6 +2508,9 @@
+     if (window->wl.confinedPointer)
+         zwp_confined_pointer_v1_destroy(window->wl.confinedPointer);
+ 
++    if (window->wl.textInput)
++        zwp_text_input_v3_destroy(window->wl.textInput);
++
+     if (window->context.destroy)
+         window->context.destroy(window);
+ 
+@@ -3636,6 +3841,84 @@
+     return _glfw.wl.clipboardString;
+ }
+ 
++GLFWbool _glfwWaylandTextInputSupported(void)
++{
++    return _glfw.wl.textInputManager && _glfw.wl.seat;
++}
++
++void _glfwSetWaylandTextInputCallback(
++    _GLFWwindow* window,
++    _GLFWwaylandTextInputCallback callback,
++    void* user)
++{
++    window->wl.textInputCallback = callback;
++    window->wl.textInputUser = user;
++    if (callback)
++        createTextInput(window);
++}
++
++void _glfwEnableWaylandTextInput(_GLFWwindow* window,
++                                 int32_t x,
++                                 int32_t y,
++                                 int32_t width,
++                                 int32_t height)
++{
++    if (!createTextInput(window))
++        return;
++
++    window->wl.textInputCursorX = x;
++    window->wl.textInputCursorY = y;
++    window->wl.textInputCursorWidth = width;
++    window->wl.textInputCursorHeight = height;
++    window->wl.textInputEnabled = GLFW_TRUE;
++
++    if (window->wl.textInputEntered)
++        commitTextInputEnable(window);
++}
++
++void _glfwDisableWaylandTextInput(_GLFWwindow* window)
++{
++    if (!window->wl.textInput)
++        return;
++
++    if (window->wl.textInputEnabled && window->wl.textInputEntered)
++    {
++        zwp_text_input_v3_disable(window->wl.textInput);
++        zwp_text_input_v3_commit(window->wl.textInput);
++    }
++    window->wl.textInputEnabled = GLFW_FALSE;
++}
++
++void _glfwSetWaylandTextInputCursorRectangle(_GLFWwindow* window,
++                                             int32_t x,
++                                             int32_t y,
++                                             int32_t width,
++                                             int32_t height)
++{
++    if (!window->wl.textInput)
++        return;
++
++    if (window->wl.textInputCursorX == x &&
++        window->wl.textInputCursorY == y &&
++        window->wl.textInputCursorWidth == width &&
++        window->wl.textInputCursorHeight == height)
++    {
++        return;
++    }
++
++    window->wl.textInputCursorX = x;
++    window->wl.textInputCursorY = y;
++    window->wl.textInputCursorWidth = width;
++    window->wl.textInputCursorHeight = height;
++
++    if (window->wl.textInputEnabled && window->wl.textInputEntered)
++    {
++        zwp_text_input_v3_set_cursor_rectangle(
++            window->wl.textInput, x, y, width, height);
++        zwp_text_input_v3_commit(window->wl.textInput);
++    }
++}
++
+ EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs)
+ {
+     if (_glfw.egl.EXT_platform_base && _glfw.egl.EXT_platform_wayland)
+@@ -3751,4 +4034,90 @@
+     return window->wl.surface;
+ }
+ 
++GLFWAPI int glfwWaylandTextInputSupported(void)
++{
++    _GLFW_REQUIRE_INIT_OR_RETURN(0);
++
++    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
++    {
++        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
++                        "Wayland: Platform not initialized");
++        return 0;
++    }
++
++    return _glfwWaylandTextInputSupported();
++}
++
++GLFWAPI void glfwSetWaylandTextInputCallback(
++    GLFWwindow* handle,
++    _GLFWwaylandTextInputCallback callback,
++    void* user)
++{
++    _GLFWwindow* window = (_GLFWwindow*) handle;
++    _GLFW_REQUIRE_INIT();
++
++    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
++    {
++        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
++                        "Wayland: Platform not initialized");
++        return;
++    }
++
++    _glfwSetWaylandTextInputCallback(window, callback, user);
++}
++
++GLFWAPI void glfwWaylandTextInputEnable(GLFWwindow* handle,
++                                        int x,
++                                        int y,
++                                        int width,
++                                        int height)
++{
++    _GLFWwindow* window = (_GLFWwindow*) handle;
++    _GLFW_REQUIRE_INIT();
++
++    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
++    {
++        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
++                        "Wayland: Platform not initialized");
++        return;
++    }
++
++    _glfwEnableWaylandTextInput(window, x, y, width, height);
++}
++
++GLFWAPI void glfwWaylandTextInputDisable(GLFWwindow* handle)
++{
++    _GLFWwindow* window = (_GLFWwindow*) handle;
++    _GLFW_REQUIRE_INIT();
++
++    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
++    {
++        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
++                        "Wayland: Platform not initialized");
++        return;
++    }
++
++    _glfwDisableWaylandTextInput(window);
++}
++
++GLFWAPI void glfwWaylandTextInputSetCursorRectangle(GLFWwindow* handle,
++                                                    int x,
++                                                    int y,
++                                                    int width,
++                                                    int height)
++{
++    _GLFWwindow* window = (_GLFWwindow*) handle;
++    _GLFW_REQUIRE_INIT();
++
++    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
++    {
++        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
++                        "Wayland: Platform not initialized");
++        return;
++    }
++
++    _glfwSetWaylandTextInputCursorRectangle(window,
++                                            x, y, width, height);
++}
++
+ #endif // _GLFW_WAYLAND
+--- a/include/GLFW/glfw3native.h
++++ b/include/GLFW/glfw3native.h
+@@ -585,6 +585,53 @@
+  */
+ GLFWAPI const char* glfwGetWaylandPrimarySelectionString(void);
+ 
++/*! @brief Event values passed to @ref GLFWwaylandTextInputCallback. */
++#define GLFW_WAYLAND_TEXT_INPUT_ENTER              1
++#define GLFW_WAYLAND_TEXT_INPUT_LEAVE              2
++#define GLFW_WAYLAND_TEXT_INPUT_PREEDIT            3
++#define GLFW_WAYLAND_TEXT_INPUT_COMMIT             4
++#define GLFW_WAYLAND_TEXT_INPUT_DELETE_SURROUNDING 5
++#define GLFW_WAYLAND_TEXT_INPUT_DONE               6
++
++/*! @brief Text-input-v3 event callback.
++ *
++ *  The @p text pointer is only valid for the duration of the callback.  The
++ *  preedit cursor values are UTF-8 byte offsets; delete values are UTF-8 byte
++ *  lengths.  Only the fields belonging to the event are non-zero.
++ */
++typedef void (*GLFWwaylandTextInputCallback)(void* user,
++                                             int event,
++                                             const char* text,
++                                             int32_t cursor_begin,
++                                             int32_t cursor_end,
++                                             uint32_t delete_before,
++                                             uint32_t delete_after);
++
++/*! @brief Returns whether the Wayland text-input-v3 protocol is available. */
++GLFWAPI int glfwWaylandTextInputSupported(void);
++
++/*! @brief Installs or removes the Wayland text-input-v3 event callback. */
++GLFWAPI void glfwSetWaylandTextInputCallback(GLFWwindow* window,
++                                             GLFWwaylandTextInputCallback callback,
++                                             void* user);
++
++/*! @brief Enables terminal text input and sets its cursor rectangle. */
++GLFWAPI void glfwWaylandTextInputEnable(GLFWwindow* window,
++                                        int x,
++                                        int y,
++                                        int width,
++                                        int height);
++
++/*! @brief Disables Wayland text input for the specified window. */
++GLFWAPI void glfwWaylandTextInputDisable(GLFWwindow* window);
++
++/*! @brief Updates the terminal cursor rectangle while text input is enabled. */
++GLFWAPI void glfwWaylandTextInputSetCursorRectangle(GLFWwindow* window,
++                                                    int x,
++                                                    int y,
++                                                    int width,
++                                                    int height);
++
+ #endif
+ 
+ #if defined(GLFW_EXPOSE_NATIVE_EGL)
+--- a/deps/wayland/text-input-unstable-v3.xml
++++ b/deps/wayland/text-input-unstable-v3.xml
+@@ -0,0 +1,604 @@
++<?xml version="1.0" encoding="UTF-8"?>
++
++<protocol name="text_input_unstable_v3">
++  <copyright>
++    Copyright © 2012, 2013 Intel Corporation
++    Copyright © 2015, 2016 Jan Arne Petersen
++    Copyright © 2017, 2018 Red Hat, Inc.
++    Copyright © 2018       Purism SPC
++
++    Permission to use, copy, modify, distribute, and sell this
++    software and its documentation for any purpose is hereby granted
++    without fee, provided that the above copyright notice appear in
++    all copies and that both that copyright notice and this permission
++    notice appear in supporting documentation, and that the name of
++    the copyright holders not be used in advertising or publicity
++    pertaining to distribution of the software without specific,
++    written prior permission.  The copyright holders make no
++    representations about the suitability of this software for any
++    purpose.  It is provided "as is" without express or implied
++    warranty.
++
++    THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
++    SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
++    FITNESS, IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY
++    SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
++    AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
++    ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
++    THIS SOFTWARE.
++  </copyright>
++
++  <description summary="Protocol for composing text">
++    This protocol allows compositors to act as input methods and to send text
++    to applications. A text input object is used to manage state of what are
++    typically text entry fields in the application.
++
++    This document adheres to the RFC 2119 when using words like "must",
++    "should", "may", etc.
++
++    Warning! The protocol described in this file is experimental and
++    backward incompatible changes may be made. Backward compatible changes
++    may be added together with the corresponding interface version bump.
++    Backward incompatible changes are done by bumping the version number in
++    the protocol and interface names and resetting the interface version.
++    Once the protocol is to be declared stable, the 'z' prefix and the
++    version number in the protocol and interface names are removed and the
++    interface version number is reset.
++  </description>
++
++  <interface name="zwp_text_input_v3" version="2">
++    <description summary="text input">
++      The zwp_text_input_v3 interface represents text input and input methods
++      associated with a seat. It provides enter/leave events to follow the
++      text input focus for a seat.
++
++      Requests are used to enable/disable the text-input object and set
++      state information like surrounding and selected text or the content type.
++      The information about the entered text is sent to the text-input object
++      via the preedit_string and commit_string events.
++
++      Text is valid UTF-8 encoded, indices and lengths are in bytes. Indices
++      must not point to middle bytes inside a code point: they must either
++      point to the first byte of a code point or to the end of the buffer.
++      Lengths must be measured between two valid indices.
++
++      Focus moving throughout surfaces will result in the emission of
++      zwp_text_input_v3.enter and zwp_text_input_v3.leave events. The focused
++      surface must commit zwp_text_input_v3.enable and
++      zwp_text_input_v3.disable requests as the keyboard focus moves across
++      editable and non-editable elements of the UI. Those two requests are not
++      expected to be paired with each other, the compositor must be able to
++      handle consecutive series of the same request.
++
++      State is sent by the state requests (set_surrounding_text,
++      set_content_type and set_cursor_rectangle) and a commit request. After an
++      enter event or disable request all state information is invalidated and
++      needs to be resent by the client.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="Destroy the wp_text_input">
++        Destroy the wp_text_input object. Also disables all surfaces enabled
++        through this wp_text_input object.
++      </description>
++    </request>
++
++    <request name="enable">
++      <description summary="Request text input to be enabled">
++        Requests text input on the surface previously obtained from the enter
++        event.
++
++        This request must be issued every time the focused text input changes
++        to a new one, including within the current surface. Use
++        zwp_text_input_v3.disable when there is no longer any input focus on
++        the current surface.
++
++        Clients must not enable more than one text input on the single seat
++        and should disable the current text input before enabling the new one.
++        Requests to enable a text input when another text input is enabled
++        on the same seat must be ignored by compositor.
++
++        This request resets all state associated with previous enable, disable,
++        set_surrounding_text, set_text_change_cause, set_content_type, and
++        set_cursor_rectangle requests, as well as the state associated with
++        preedit_string, commit_string, and delete_surrounding_text events.
++
++        The set_surrounding_text, set_content_type and set_cursor_rectangle
++        requests must follow if the text input supports the necessary
++        functionality.
++
++        State set with this request is double-buffered. It will get applied on
++        the next zwp_text_input_v3.commit request, and stay valid until the
++        next committed enable or disable request.
++
++        The changes must be applied by the compositor after issuing a
++        zwp_text_input_v3.commit request.
++      </description>
++    </request>
++
++    <request name="disable">
++      <description summary="Disable text input on a surface">
++        Explicitly disable text input on the current surface (typically when
++        there is no focus on any text entry inside the surface).
++
++        State set with this request is double-buffered. It will get applied on
++        the next zwp_text_input_v3.commit request.
++      </description>
++    </request>
++
++    <request name="set_surrounding_text">
++      <description summary="sets the surrounding text">
++        Sets the surrounding plain text around the input, excluding the preedit
++        text.
++
++        The client should notify the compositor of any changes in any of the
++        values carried with this request, including changes caused by handling
++        incoming text-input events as well as changes caused by other
++        mechanisms like keyboard typing.
++
++        If the client is unaware of the text around the cursor, it should not
++        issue this request, to signify lack of support to the compositor.
++
++        Text is UTF-8 encoded, and should include the cursor position, the
++        complete selection and additional characters before and after them.
++        There is a maximum length of wayland messages, so text can not be
++        longer than 4000 bytes.
++
++        Cursor is the byte offset of the cursor within text buffer.
++
++        Anchor is the byte offset of the selection anchor within text buffer.
++        If there is no selected text, anchor is the same as cursor.
++
++        If any preedit text is present, it is replaced with a cursor for the
++        purpose of this event.
++
++        Values set with this request are double-buffered. They will get applied
++        on the next zwp_text_input_v3.commit request, and stay valid until the
++        next committed enable or disable request.
++
++        The initial state for affected fields is empty, meaning that the text
++        input does not support sending surrounding text. If the empty values
++        get applied, subsequent attempts to change them may have no effect.
++      </description>
++      <arg name="text" type="string"/>
++      <arg name="cursor" type="int"/>
++      <arg name="anchor" type="int"/>
++    </request>
++
++    <enum name="change_cause">
++      <description summary="text change reason">
++        Reason for the change of surrounding text or cursor posision.
++      </description>
++      <entry name="input_method" value="0" summary="input method caused the change"/>
++      <entry name="other" value="1" summary="something else than the input method caused the change"/>
++    </enum>
++
++    <request name="set_text_change_cause">
++      <description summary="indicates the cause of surrounding text change">
++        Tells the compositor why the text surrounding the cursor changed.
++
++        Whenever the client detects an external change in text, cursor, or
++        anchor posision, it must issue this request to the compositor. This
++        request is intended to give the input method a chance to update the
++        preedit text in an appropriate way, e.g. by removing it when the user
++        starts typing with a keyboard.
++
++        cause describes the source of the change.
++
++        The value set with this request is double-buffered. It must be applied
++        and reset to initial at the next zwp_text_input_v3.commit request.
++
++        The initial value of cause is input_method.
++      </description>
++      <arg name="cause" type="uint" enum="change_cause"/>
++    </request>
++
++    <enum name="content_hint" bitfield="true">
++      <description summary="content hint">
++        Content hint is a bitmask to allow to modify the behavior of the text
++        input.
++      </description>
++      <entry name="none" value="0x0" summary="no special behavior"/>
++      <entry name="completion" value="0x1" summary="suggest word completions"/>
++      <entry name="spellcheck" value="0x2" summary="suggest word corrections"/>
++      <entry name="auto_capitalization" value="0x4" summary="switch to uppercase letters at the start of a sentence"/>
++      <entry name="lowercase" value="0x8" summary="prefer lowercase letters"/>
++      <entry name="uppercase" value="0x10" summary="prefer uppercase letters"/>
++      <entry name="titlecase" value="0x20" summary="prefer casing for titles and headings (can be language dependent)"/>
++      <entry name="hidden_text" value="0x40" summary="characters should be hidden"/>
++      <entry name="sensitive_data" value="0x80" summary="typed text should not be stored"/>
++      <entry name="latin" value="0x100" summary="just Latin characters should be entered"/>
++      <entry name="multiline" value="0x200" summary="the text input is multiline"/>
++      <entry
++        name="on_screen_input_provided" value="0x400" since="2"
++        summary="an on-screen way to fill in the input is already provided by the client"/>
++      <entry
++        name="no_emoji" value="0x800" since="2"
++        summary="prefer not offering emoji support"/>
++      <entry
++        name="preedit_shown" value="0x1000" since="2"
++        summary="the text input will display preedit text in place"/>
++    </enum>
++
++    <enum name="content_purpose">
++      <description summary="content purpose">
++        The content purpose allows to specify the primary purpose of a text
++        input.
++
++        This allows an input method to show special purpose input panels with
++        extra characters or to disallow some characters.
++      </description>
++      <entry name="normal" value="0" summary="default input, allowing all characters"/>
++      <entry name="alpha" value="1" summary="allow only alphabetic characters"/>
++      <entry name="digits" value="2" summary="allow only digits"/>
++      <entry name="number" value="3" summary="input a number (including decimal separator and sign)"/>
++      <entry name="phone" value="4" summary="input a phone number"/>
++      <entry name="url" value="5" summary="input an URL"/>
++      <entry name="email" value="6" summary="input an email address"/>
++      <entry name="name" value="7" summary="input a name of a person"/>
++      <entry name="password" value="8" summary="input a password (combine with sensitive_data hint)"/>
++      <entry name="pin" value="9" summary="input is a numeric password (combine with sensitive_data hint)"/>
++      <entry name="date" value="10" summary="input a date"/>
++      <entry name="time" value="11" summary="input a time"/>
++      <entry name="datetime" value="12" summary="input a date and time"/>
++      <entry name="terminal" value="13" summary="input for a terminal"/>
++    </enum>
++
++    <request name="set_content_type">
++      <description summary="set content purpose and hint">
++        Sets the content purpose and content hint. While the purpose is the
++        basic purpose of an input field, the hint flags allow to modify some of
++        the behavior.
++
++        Values set with this request are double-buffered. They will get applied
++        on the next zwp_text_input_v3.commit request.
++        Subsequent attempts to update them may have no effect. The values
++        remain valid until the next committed enable or disable request.
++
++        The initial value for hint is none, and the initial value for purpose
++        is normal.
++      </description>
++      <arg name="hint" type="uint" enum="content_hint"/>
++      <arg name="purpose" type="uint" enum="content_purpose"/>
++    </request>
++
++    <request name="set_cursor_rectangle">
++      <description summary="set cursor position">
++        Marks an area around the cursor as a x, y, width, height rectangle in
++        surface local coordinates.
++
++        Allows the compositor to put a window with word suggestions near the
++        cursor, without obstructing the text being input.
++
++        If the client is unaware of the position of edited text, it should not
++        issue this request, to signify lack of support to the compositor.
++
++        Values set with this request are double-buffered. They will get applied
++        on the next zwp_text_input_v3.commit request, and stay valid until the
++        next committed enable or disable request.
++
++        The initial values describing a cursor rectangle are empty. That means
++        the text input does not support describing the cursor area. If the
++        empty values get applied, subsequent attempts to change them may have
++        no effect.
++
++        As of version 2, the zwp_text_input_v3.commit request does not apply
++        values sent with this request. Instead, it stores them in a separate
++        "committed" area. The committed values, if still valid, get applied on
++        the next wl_surface.commit request on the surface with text-input focus.
++        Both committed and applied values get invalidated on:
++
++        - the next committed enable or disable request, or
++        - a change of the focused surface of the text-input (leave or enter events).
++
++        This double stage application allows the compositor to position
++        the input method popup in the same frame as the contents
++        of the text on the surface are updated.
++      </description>
++      <arg name="x" type="int"/>
++      <arg name="y" type="int"/>
++      <arg name="width" type="int"/>
++      <arg name="height" type="int"/>
++    </request>
++
++    <request name="commit">
++      <description summary="commit state">
++        Atomically applies state changes recently sent to the compositor.
++
++        The commit request establishes and updates the state of the client, and
++        must be issued after any changes to apply them.
++
++        Text input state (enabled status, content purpose, content hint,
++        surrounding text and change cause, cursor rectangle) is conceptually
++        double-buffered within the context of a text input, i.e. between a
++        committed enable request and the following committed enable or disable
++        request.
++
++        Protocol requests modify the pending state, as opposed to the current
++        state in use by the input method. A commit request atomically applies
++        all pending state, replacing the current state. After commit, the new
++        pending state is as documented for each related request.
++
++        Requests are applied in the order of arrival.
++
++        Neither current nor pending state are modified unless noted otherwise.
++
++        The compositor must count the number of commit requests coming from
++        each zwp_text_input_v3 object and use the count as the serial in done
++        events.
++      </description>
++    </request>
++
++    <event name="enter">
++      <description summary="enter event">
++        Notification that this seat's text-input focus is on a certain surface.
++
++        If client has created multiple text input objects, compositor must send
++        this event to all of them.
++
++        When the seat has the keyboard capability the text-input focus follows
++        the keyboard focus. This event sets the current surface for the
++        text-input object.
++      </description>
++      <arg name="surface" type="object" interface="wl_surface"/>
++    </event>
++
++    <event name="leave">
++      <description summary="leave event">
++        Notification that this seat's text-input focus is no longer on a
++        certain surface. The client should reset any preedit string previously
++        set.
++
++        The leave notification clears the current surface. It is sent before
++        the enter notification for the new focus. After leave event, compositor
++        must ignore requests from any text input instances until next enter
++        event.
++
++        When the seat has the keyboard capability the text-input focus follows
++        the keyboard focus.
++      </description>
++      <arg name="surface" type="object" interface="wl_surface"/>
++    </event>
++
++    <event name="preedit_string">
++      <description summary="pre-edit">
++        Notify when a new composing text (pre-edit) should be set at the
++        current cursor position. Any previously set composing text must be
++        removed. Any previously existing selected text must be removed.
++
++        The argument text contains the pre-edit string buffer.
++
++        The parameters cursor_begin and cursor_end are counted in bytes
++        relative to the beginning of the submitted text buffer. Cursor should
++        be hidden when both are equal to -1.
++
++        They could be represented by the client as a line if both values are
++        the same, or as a text highlight otherwise.
++
++        Values set with this event are double-buffered. They must be applied
++        and reset to initial on the next zwp_text_input_v3.done event.
++
++        The initial value of text is an empty string, and cursor_begin,
++        cursor_end and cursor_hidden are all 0.
++      </description>
++      <arg name="text" type="string" allow-null="true"/>
++      <arg name="cursor_begin" type="int"/>
++      <arg name="cursor_end" type="int"/>
++    </event>
++
++    <event name="commit_string">
++      <description summary="text commit">
++        Notify when text should be inserted into the editor widget. The text to
++        commit could be either just a single character after a key press or the
++        result of some composing (pre-edit).
++
++        Values set with this event are double-buffered. They must be applied
++        and reset to initial on the next zwp_text_input_v3.done event.
++
++        The initial value of text is an empty string.
++      </description>
++      <arg name="text" type="string" allow-null="true"/>
++    </event>
++
++    <event name="delete_surrounding_text">
++      <description summary="delete surrounding text">
++        Notify when the text around the current cursor position should be
++        deleted.
++
++        Before_length and after_length are the number of bytes before and after
++        the current cursor index (excluding the selection) to delete.
++
++        If a preedit text is present, in effect before_length is counted from
++        the beginning of it, and after_length from its end (see done event
++        sequence).
++
++        Values set with this event are double-buffered. They must be applied
++        and reset to initial on the next zwp_text_input_v3.done event.
++
++        The initial values of both before_length and after_length are 0.
++      </description>
++      <arg name="before_length" type="uint" summary="length of text before current cursor position"/>
++      <arg name="after_length" type="uint" summary="length of text after current cursor position"/>
++    </event>
++
++    <event name="done">
++      <description summary="apply changes">
++        Instruct the application to apply changes to state requested by the
++        preedit_string, commit_string delete_surrounding_text, and action
++        events.
++
++        The state relating to these events is double-buffered, and each one
++        modifies the pending state. This event replaces the current state with
++        the pending state.
++
++        The application must proceed by evaluating the changes in the following
++        order:
++
++        1. Replace existing preedit string with the cursor.
++        2. Delete requested surrounding text.
++        3. Insert commit string with the cursor at its end.
++        4. Calculate surrounding text to send.
++        5. Insert new preedit text in cursor position.
++        6. Place cursor inside preedit text.
++        7. Perform the requested action.
++
++        The serial number reflects the last state of the zwp_text_input_v3
++        object known to the compositor. The value of the serial argument must
++        be equal to the number of commit requests already issued on that object.
++
++        When the client receives a done event with a serial different than the
++        number of past commit requests, it must proceed with evaluating and
++        applying the changes as normal, except it should not change the current
++        state of the zwp_text_input_v3 object. All pending state requests
++        (set_surrounding_text, set_content_type and set_cursor_rectangle) on
++        the zwp_text_input_v3 object should be sent and committed after
++        receiving a zwp_text_input_v3.done event with a matching serial.
++      </description>
++      <arg name="serial" type="uint"/>
++    </event>
++
++    <!-- Version 2 additions -->
++    <enum name="error" since="2">
++      <entry name="invalid_action" value="0" summary="an invalid or duplicate action was specified"/>
++    </enum>
++
++    <enum name="action" since="2">
++      <description summary="action">
++        A possible action to perform on a text input.
++
++        The submit action is intended for input entries that expect some sort of
++        activation after user interaction, e.g. the URL entry in a browser.
++      </description>
++      <entry name="none" value="0" summary="no action"/>
++      <entry name="submit" value="1" summary="the action is submitted"/>
++    </enum>
++
++    <event name="action" since="2">
++      <description summary="action performed">
++        An action was performed on this text input.
++
++        Values set with this event are double-buffered. They must be applied
++        and reset to initial on the next zwp_text_input_v3.done event.
++
++        The initial value of action is none.
++      </description>
++      <arg name="action" type="uint" enum="action" summary="action performed"/>
++      <arg name="serial" type="uint" summary="serial number of the action event"/>
++    </event>
++
++    <event name="language" since="2">
++      <description summary="notify of language selection">
++        Notify the application of language used by the input method.
++
++        This event will be sent on creation if known and for all subsequent changes.
++
++        The language should be specified as an IETF BCP 47 tag.
++        Setting an empty string will reset any known language back to the default unknown state.
++      </description>
++      <arg name="language" type="string" summary="new language set by IME"/>
++    </event>
++
++    <request name="set_available_actions" since="2">
++      <description summary="set the available actions">
++        Set the actions available for this text input.
++
++        Values set with this request are double-buffered. They will get applied
++        on the next zwp_text_input_v3.commit request.
++
++        If the available_actions array contains the none action, or contains the
++        same action multiple times, the compositor must raise the invalid_action
++        protocol error.
++
++        Initially, no actions are available.
++      </description>
++      <arg name="available_actions" type="array" summary="available actions"/>
++    </request>
++
++    <request name="show_input_panel" since="2">
++      <description summary="show input panel">
++	Requests an input panel to be shown (e.g. a on-screen keyboard).
++
++	This request only hints the desired interaction pattern from the
++	client side, and its effect may be ignored by compositors given
++	other environmental factors. Repeated calls will be ignored.
++      </description>
++    </request>
++
++    <request name="hide_input_panel" since="2">
++      <description summary="hide input panel">
++	Requests an input panel to be hidden.
++
++	This request only hints the desired interaction pattern from the
++	client side, and its effect may be ignored by compositors given
++	other environmental factors. Repeated calls will be ignored.
++      </description>
++    </request>
++
++    <enum name="preedit_hint">
++      <description summary="preedit style hint">
++	Style hints for the preedit string.
++      </description>
++      <entry name="whole" value="1" summary="simple pre-edit text style, typically underlined"/>
++      <entry name="selection" value="2"
++        summary="hint for a selected piece of text, e.g. per-character navigation and composition"/>
++      <entry name="prediction" value="3" summary="predicted text, not typed by the user"/>
++      <entry name="prefix" value="4"
++        summary="prefixed text not being currently edited, e.g. prior to a 'selection' section"/>
++      <entry name="suffix" value="5"
++        summary="suffixed text not being currently edited, e.g. after a 'selection' section"/>
++      <entry name="spelling_error" value="6" summary="spelling error"/>
++      <entry name="compose_error" value="7"
++        summary="wrong composition, e.g. user input that can not be transliterated"/>
++    </enum>
++
++    <event name="preedit_hint" since="2">
++      <description summary="pre-edit">
++        Notify of contextual hints for the pre-edit string. This
++        event is always sent together with a zwp_text_input_v3.preedit_string
++        event.
++
++        The parameters start and end are counted in bytes relative to the
++        beginning of the text buffer submitted through
++        zwp_text_input_v3.preedit_string, and represent the substring in the
++        pre-edit text affected by the hint.
++
++        Multiple events may be submitted if the preedit string has different
++        sections. The extent of hints may overlap. The parts of the preedit
++        string that are not covered by any zwp_text_input_v3.preedit_hint event,
++        the text will be considered unhinted. This is also the case if no
++        preedit_hint event is sent.
++
++        Clients should provide recognizable visuals to these hints. if they are
++        unable to comply with this requisition, it may be preferable for them
++        keep the preedit_shown content hint disabled.
++
++        Values set with this event are double-buffered. They must be applied
++        and reset on the next zwp_text_input_v3.done event.
++      </description>
++      <arg name="start" type="uint" summary="starting point of the affected substring"/>
++      <arg name="end" type="uint" summary="end point of the affected substring"/>
++      <arg name="hint" type="uint" enum="preedit_hint" summary="hint to apply"/>
++    </event>
++  </interface>
++
++  <interface name="zwp_text_input_manager_v3" version="2">
++    <description summary="text input manager">
++      A factory for text-input objects. This object is a global singleton.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="Destroy the wp_text_input_manager">
++        Destroy the wp_text_input_manager object.
++      </description>
++    </request>
++
++    <request name="get_text_input">
++      <description summary="create a new text input object">
++        Creates a new text-input object for a given seat.
++      </description>
++      <arg name="id" type="new_id" interface="zwp_text_input_v3"/>
++      <arg name="seat" type="object" interface="wl_seat"/>
++    </request>
++  </interface>
++</protocol>
