@@ -80,7 +80,8 @@ def predicate(name, table_name, count):
   return false;
 }}'''
 
-def render(ep, extend, ep_path, gcb_path):
+def render(ep, extend, default_ignorable, extend_widthful, ep_path,
+           gcb_path, default_ignorable_path, extend_widthful_path):
     return f'''#pragma once
 #include <cstdint>
 
@@ -89,37 +90,84 @@ def render(ep, extend, ep_path, gcb_path):
 // Source: https://www.unicode.org/Public/17.0.0/ucd/emoji/emoji-data.txt
 // Grapheme_Cluster_Break=Extend: {gcb_path.name} SHA256 {sha256(gcb_path)}
 // Source: https://www.unicode.org/Public/17.0.0/ucd/auxiliary/GraphemeBreakProperty.txt
+// Default_Ignorable_Code_Point: {default_ignorable_path.name} SHA256 {sha256(default_ignorable_path)}
+// Source: https://www.unicode.org/Public/17.0.0/ucd/DerivedCoreProperties.txt
+// Widthful GCB Extend intersection: {extend_widthful_path.name} SHA256 {sha256(extend_widthful_path)}
 // Unicode data license: https://www.unicode.org/terms_of_use.html
 struct GraphemePropertyRange {{ uint32_t first, last; }};
 
 {table('grapheme_extended_pictographic_ranges', ep)}
 {table('grapheme_extend_ranges', extend)}
+{table('grapheme_default_ignorable_ranges', default_ignorable)}
+{table('grapheme_extend_widthful_ranges', extend_widthful)}
 
 {predicate('grapheme_extended_pictographic', 'grapheme_extended_pictographic_ranges', len(ep))}
 
 {predicate('grapheme_extend', 'grapheme_extend_ranges', len(extend))}
+
+{predicate('grapheme_default_ignorable', 'grapheme_default_ignorable_ranges', len(default_ignorable))}
+
+{predicate('grapheme_extend_widthful', 'grapheme_extend_widthful_ranges', len(extend_widthful))}
+
+// U+00AD is a deliberate Monstar/ghostty width-1 exception despite its
+// Default_Ignorable_Code_Point property. All other default ignorables are
+// zero-width when printed or attached to a cluster.
+__device__ __forceinline__ bool grapheme_default_ignorable_zero(uint32_t cp) {{
+  return grapheme_default_ignorable(cp) && cp != 0x00ad;
+}}
+
+// Default ignorables can occur between an extended pictograph and its ZWJ.
+// Keep ZWJ itself visible to the suffix state machine as the join delimiter.
+__device__ __forceinline__ bool grapheme_zwj_ignorable(uint32_t cp) {{
+  return grapheme_default_ignorable_zero(cp) && cp != 0x200d;
+}}
 '''
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--emoji-data', type=Path, default=Path('data/emoji-data-17.0.0.txt'))
     ap.add_argument('--gcb-data', type=Path, default=Path('data/GraphemeBreakProperty-17.0.0.txt'))
+    ap.add_argument('--default-ignorable-data', type=Path,
+                    default=Path('data/DefaultIgnorable-17.0.0.txt'))
+    ap.add_argument('--extend-widthful-data', type=Path,
+                    default=Path('data/GraphemeExtendWidthful-17.0.0.txt'))
     ap.add_argument('--output', type=Path, default=Path('src/grapheme_properties.cuh'))
     ap.add_argument('--check', action='store_true')
     args = ap.parse_args()
     ep = parse(args.emoji_data, 'Extended_Pictographic')
     extend = parse(args.gcb_data, 'Extend')
+    default_ignorable = parse(args.default_ignorable_data,
+                              'Default_Ignorable_Code_Point')
+    extend_widthful = parse(args.extend_widthful_data,
+                            'Grapheme_Extend_Widthful')
     # Exercise the same binary-search semantics across every Unicode scalar.
-    ep_i = extend_i = 0
+    ep_i = extend_i = default_ignorable_i = extend_widthful_i = 0
     for cp in range(MAX_CP + 1):
         while ep_i < len(ep) and cp > ep[ep_i][1]: ep_i += 1
         while extend_i < len(extend) and cp > extend[extend_i][1]: extend_i += 1
+        while (default_ignorable_i < len(default_ignorable) and
+               cp > default_ignorable[default_ignorable_i][1]):
+            default_ignorable_i += 1
+        while (extend_widthful_i < len(extend_widthful) and
+               cp > extend_widthful[extend_widthful_i][1]):
+            extend_widthful_i += 1
         linear_ep = ep_i < len(ep) and ep[ep_i][0] <= cp <= ep[ep_i][1]
         linear_extend = (extend_i < len(extend) and
                          extend[extend_i][0] <= cp <= extend[extend_i][1])
-        if host_contains(ep, cp) != linear_ep or host_contains(extend, cp) != linear_extend:
+        linear_default_ignorable = (default_ignorable_i < len(default_ignorable) and
+                                    default_ignorable[default_ignorable_i][0] <= cp <=
+                                    default_ignorable[default_ignorable_i][1])
+        linear_extend_widthful = (extend_widthful_i < len(extend_widthful) and
+                                  extend_widthful[extend_widthful_i][0] <= cp <=
+                                  extend_widthful[extend_widthful_i][1])
+        if (host_contains(ep, cp) != linear_ep or
+            host_contains(extend, cp) != linear_extend or
+            host_contains(default_ignorable, cp) != linear_default_ignorable or
+            host_contains(extend_widthful, cp) != linear_extend_widthful):
             raise ValueError(f'binary-search validation failed at U+{cp:04X}')
-    rendered = render(ep, extend, args.emoji_data, args.gcb_data)
+    rendered = render(ep, extend, default_ignorable, extend_widthful,
+                      args.emoji_data, args.gcb_data,
+                      args.default_ignorable_data, args.extend_widthful_data)
     if args.check:
         if not args.output.exists() or args.output.read_text() != rendered:
             raise SystemExit(f'generated output differs: {args.output}')
@@ -127,6 +175,8 @@ def main():
         args.output.write_text(rendered)
     print(f'extended_pictographic_ranges={len(ep)} codepoints={sum(b-a+1 for a,b in ep)}')
     print(f'extend_ranges={len(extend)} codepoints={sum(b-a+1 for a,b in extend)}')
+    print(f'default_ignorable_ranges={len(default_ignorable)} codepoints={sum(b-a+1 for a,b in default_ignorable)}')
+    print(f'extend_widthful_ranges={len(extend_widthful)} codepoints={sum(b-a+1 for a,b in extend_widthful)}')
     print(f'output={args.output}')
 
 if __name__ == '__main__':

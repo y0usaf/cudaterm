@@ -6,6 +6,9 @@
 // Source: https://www.unicode.org/Public/17.0.0/ucd/emoji/emoji-data.txt
 // Grapheme_Cluster_Break=Extend: GraphemeBreakProperty-17.0.0.txt SHA256 d6b51d1d2ae5c33b451b7ed994b48f1f4dc62b2272a5831e7fd418514a6bae89
 // Source: https://www.unicode.org/Public/17.0.0/ucd/auxiliary/GraphemeBreakProperty.txt
+// Default_Ignorable_Code_Point: DefaultIgnorable-17.0.0.txt SHA256 1cfe5f054fca9a795f50a8847d34885fbe8290a1120e9aee25ddea8d1436c304
+// Source: https://www.unicode.org/Public/17.0.0/ucd/DerivedCoreProperties.txt
+// Widthful GCB Extend intersection: GraphemeExtendWidthful-17.0.0.txt SHA256 91c0161544d437bceaa39b71ed28af85b50425551f8370d95e668f2c2c287a0e
 // Unicode data license: https://www.unicode.org/terms_of_use.html
 struct GraphemePropertyRange { uint32_t first, last; };
 
@@ -553,6 +556,74 @@ static __device__ __constant__ const GraphemePropertyRange grapheme_extend_range
   {0xe0020, 0xe007f},
   {0xe0100, 0xe01ef},
 };
+static __device__ __constant__ const GraphemePropertyRange grapheme_default_ignorable_ranges[] = {
+  {0x00ad, 0x00ad},
+  {0x034f, 0x034f},
+  {0x061c, 0x061c},
+  {0x115f, 0x1160},
+  {0x17b4, 0x17b5},
+  {0x180b, 0x180f},
+  {0x200b, 0x200f},
+  {0x202a, 0x202e},
+  {0x2060, 0x206f},
+  {0x3164, 0x3164},
+  {0xfe00, 0xfe0f},
+  {0xfeff, 0xfeff},
+  {0xffa0, 0xffa0},
+  {0xfff0, 0xfff8},
+  {0x1bca0, 0x1bca3},
+  {0x1d173, 0x1d17a},
+  {0xe0000, 0xe0fff},
+};
+static __device__ __constant__ const GraphemePropertyRange grapheme_extend_widthful_ranges[] = {
+  {0x09be, 0x09be},
+  {0x09d7, 0x09d7},
+  {0x0b3e, 0x0b3e},
+  {0x0b57, 0x0b57},
+  {0x0bbe, 0x0bbe},
+  {0x0bd7, 0x0bd7},
+  {0x0cc0, 0x0cc0},
+  {0x0cc2, 0x0cc2},
+  {0x0cc7, 0x0cc8},
+  {0x0cca, 0x0ccb},
+  {0x0cd5, 0x0cd6},
+  {0x0d3e, 0x0d3e},
+  {0x0d57, 0x0d57},
+  {0x0dcf, 0x0dcf},
+  {0x0ddf, 0x0ddf},
+  {0x1715, 0x1715},
+  {0x1734, 0x1734},
+  {0x1b35, 0x1b35},
+  {0x1b3b, 0x1b3b},
+  {0x1b3d, 0x1b3d},
+  {0x1b43, 0x1b44},
+  {0x1baa, 0x1baa},
+  {0x1bf2, 0x1bf3},
+  {0x302e, 0x302f},
+  {0xa953, 0xa953},
+  {0xa9c0, 0xa9c0},
+  {0xff9e, 0xff9f},
+  {0x111c0, 0x111c0},
+  {0x11235, 0x11235},
+  {0x1133e, 0x1133e},
+  {0x1134d, 0x1134d},
+  {0x11357, 0x11357},
+  {0x113b8, 0x113b8},
+  {0x113c2, 0x113c2},
+  {0x113c5, 0x113c5},
+  {0x113c7, 0x113c9},
+  {0x113cf, 0x113cf},
+  {0x114b0, 0x114b0},
+  {0x114bd, 0x114bd},
+  {0x115af, 0x115af},
+  {0x116b6, 0x116b6},
+  {0x11930, 0x11930},
+  {0x1193d, 0x1193d},
+  {0x11f41, 0x11f41},
+  {0x16ff0, 0x16ff1},
+  {0x1d165, 0x1d166},
+  {0x1d16d, 0x1d172},
+};
 
 __device__ __forceinline__ bool grapheme_extended_pictographic(uint32_t cp) {
   uint32_t lo = 0, hi = 156;
@@ -576,4 +647,41 @@ __device__ __forceinline__ bool grapheme_extend(uint32_t cp) {
     else return true;
   }
   return false;
+}
+
+__device__ __forceinline__ bool grapheme_default_ignorable(uint32_t cp) {
+  uint32_t lo = 0, hi = 17;
+  while (lo < hi) {
+    uint32_t mid = lo + (hi - lo) / 2;
+    auto r = grapheme_default_ignorable_ranges[mid];
+    if (cp < r.first) hi = mid;
+    else if (cp > r.last) lo = mid + 1;
+    else return true;
+  }
+  return false;
+}
+
+__device__ __forceinline__ bool grapheme_extend_widthful(uint32_t cp) {
+  uint32_t lo = 0, hi = 47;
+  while (lo < hi) {
+    uint32_t mid = lo + (hi - lo) / 2;
+    auto r = grapheme_extend_widthful_ranges[mid];
+    if (cp < r.first) hi = mid;
+    else if (cp > r.last) lo = mid + 1;
+    else return true;
+  }
+  return false;
+}
+
+// U+00AD is a deliberate Monstar/ghostty width-1 exception despite its
+// Default_Ignorable_Code_Point property. All other default ignorables are
+// zero-width when printed or attached to a cluster.
+__device__ __forceinline__ bool grapheme_default_ignorable_zero(uint32_t cp) {
+  return grapheme_default_ignorable(cp) && cp != 0x00ad;
+}
+
+// Default ignorables can occur between an extended pictograph and its ZWJ.
+// Keep ZWJ itself visible to the suffix state machine as the join delimiter.
+__device__ __forceinline__ bool grapheme_zwj_ignorable(uint32_t cp) {
+  return grapheme_default_ignorable_zero(cp) && cp != 0x200d;
 }

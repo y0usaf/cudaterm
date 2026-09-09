@@ -24,6 +24,7 @@ struct Snapshot {
   bool alternate_screen;
   bool application_keypad, numlock_override;
   int cursor_style;
+  uint32_t keyboard_flags;
 };
 struct MemoryUsage {
   size_t device_bytes, image_bytes, transfer_bytes;
@@ -67,7 +68,11 @@ public:
   SearchMatch search(const std::string &, SearchDirection, bool restart = false);
   void clear_search();
   void set_search_prompt(const std::string &);
+  // Transient composition at the terminal cursor; never changes terminal cells.
+  void set_preedit(const std::string &);
   std::string selected_text();
+  // Explicit OSC 8 target at a viewport cell; empty after close/eviction.
+  std::string hyperlink_at(int row, int col);
   void render(uint32_t *device_pixels, int width, int height);
   void scroll_view(int delta);
   void follow_output();
@@ -94,6 +99,7 @@ public:
   void set_decode_pump(void (*pump)(void *, bool), void *context);
 
 private:
+  void set_overlay(const std::string &, bool preedit);
   FeedResult enqueue_feed(const unsigned char *bytes, size_t length, bool stop_at_frame = false);
   struct Impl;
   Impl *p;

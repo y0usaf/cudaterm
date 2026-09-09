@@ -1,9 +1,26 @@
 #pragma once
 
 #include <string>
+#include <stdexcept>
 #include <vector>
 
 namespace ct::input {
+// File drops insert shell arguments without evaluating filenames as shell code.
+inline std::string dropped_paths(int count, const char *const *paths) {
+  std::string text;
+  for (int i = 0; i < count; ++i) {
+    if (i) text += ' ';
+    text += '\'';
+    for (const char *p = paths[i]; *p; ++p) {
+      if (static_cast<unsigned char>(*p) < 0x20 || *p == 0x7f)
+        throw std::invalid_argument("dropped filename contains a terminal control character");
+      if (*p == '\'') text += "'\\''";
+      else text += *p;
+    }
+    text += '\'';
+  }
+  return text;
+}
 // PTY writes may consume only a prefix. Keep that prefix as an offset rather
 // than moving a large paste after every write, and release it when drained.
 class PendingBytes {

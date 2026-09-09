@@ -81,7 +81,58 @@ __device__ void finish_osc(DeviceState &s, bool bell) {
   const char *p = s.osc_text, *end = p + s.osc_len;
   int command = osc_number(p, end);
   if (command < 0 || (p < end && *p++ != ';')) return;
-  if (command == 0 || command == 2) {
+  if (command == 8) {
+    // Parameters (including id=) are opaque; the URI begins at the next ';'.
+    const char *uri = p;
+    while (uri < end && *uri != ';') ++uri;
+    if (uri == end) return;
+    ++uri;
+    if (!title_utf8(uri, end)) return;
+    if (uri == end) {
+      // An empty URI closes the link only when no non-empty id parameter is
+      // present. Ghostty treats `id=foo;` as malformed, preserving the
+      // current link, while `;;` and `id=;` are valid closes.
+      const char *params_end = uri - 1;
+      for (const char *param = p; param < params_end;) {
+        const char *stop = param;
+        while (stop < params_end && *stop != ':') ++stop;
+        const char *equal = param;
+        while (equal < stop && *equal != '=') ++equal;
+        if (equal - param == 2 && param[0] == 'i' && param[1] == 'd' &&
+            equal + 1 < stop)
+          return;
+        param = stop < params_end ? stop + 1 : params_end;
+      }
+      s.hyperlink_id = 0;
+      return;
+    }
+    if (s.hyperlinks_disabled) { s.hyperlink_id = 0; return; }
+    if (!s.hyperlinks) {
+      // Stop at the OSC boundary. The host allocates storage, then a CUDA
+      // kernel retries this same buffered command before any following text.
+      s.graphics->request = {};
+      s.graphics->request.ready = 1;
+      s.graphics->request.barrier = 3;
+      return;
+    }
+    auto &links = *s.hyperlinks;
+    for (unsigned i = 0; i < HYPERLINK_SLOTS; ++i) {
+      const auto &entry = links.entries[i];
+      if (!entry.id) continue;
+      int n = 0;
+      while (uri + n < end && entry.uri[n] == uri[n]) ++n;
+      if (uri + n == end && !entry.uri[n]) { s.hyperlink_id = entry.id; return; }
+    }
+    // Never wrap IDs: an ancient retained cell must not alias a fresh link.
+    if (links.next_id == HYPERLINK_MAX_ID) { s.hyperlink_id = 0; return; }
+    uint32_t id = ++links.next_id;
+    auto &entry = links.entries[(id - 1) % HYPERLINK_SLOTS];
+    entry.id = id;
+    int n = 0;
+    while (uri < end) entry.uri[n++] = *uri++;
+    entry.uri[n] = 0;
+    s.hyperlink_id = id;
+  } else if (command == 0 || command == 2) {
     if (!title_utf8(p, end)) return;
     int n = 0;
     while (p < end) s.replies->title[n++] = *p++;

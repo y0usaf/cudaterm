@@ -1,14 +1,20 @@
 #include "engine.cuh"
+#include "runtime.hpp"
 #include "input.hpp"
+#include "keyboard_protocol.hpp"
 #include "config.hpp"
 #include "face.hpp"
 #include "font.hpp"
 #include "motion.hpp"
 #include "uri.hpp"
 #include "clipboard.hpp"
+#include "reload_signal.hpp"
 
-#include <GL/glew.h>
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include "primary_selection.hpp"
+#include "ime.hpp"
 #include <cuda_gl_interop.h>
 #include <cuda_runtime.h>
 
@@ -32,6 +38,7 @@
 #include <sys/eventfd.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#include <future>
 #include <thread>
 #include <unistd.h>
 #include <vector>
@@ -322,6 +329,9 @@ struct App {
   Trace *trace = nullptr;
   bool searching = false;
   std::string search_query;
+  std::string ime_preedit, ime_pending_preedit, ime_pending_commit;
+  bool ime_focused = false;
+  std::array<int, 4> ime_rectangle{{-1, -1, -1, -1}};
   ct::SearchMatch search_match{};
   ct::SearchDirection search_direction = ct::SearchDirection::Backward;
   int search_saved_view = 0;
@@ -388,7 +398,7 @@ void search_prompt(App *a) {
   std::string prompt = "Search:";
   if (!a->search_query.empty() && !a->search_match.found)
     prompt += " [no match]";
-  prompt += " " + a->search_query;
+  prompt += " " + a->search_query + a->ime_preedit;
   a->engine->set_search_prompt(prompt);
   a->dirty = true;
 }
@@ -417,6 +427,7 @@ void close_search(App *a) {
   a->searching = false;
   a->search_query.clear();
   a->search_match = {};
+  a->engine->set_preedit(a->ime_preedit);
   a->dirty = true;
 }
 void open_search(App *a) {
@@ -434,6 +445,7 @@ void open_search(App *a) {
 void copy_text(GLFWwindow *w, App *a, const std::string &text) {
   if (text.empty()) return;
   glfwSetClipboardString(w, text.c_str());
+  ct::primary_selection::set(text.c_str());
   a->engine->set_copy_flash(true);
   a->copy_flash_deadline = glfwGetTime() + 0.2;
   a->dirty = true;
@@ -444,6 +456,102 @@ void copy_search_match(GLFWwindow *w, App *a) {
   uint64_t trace_start = a->trace ? a->trace->begin() : 0;
   if (a->trace) a->trace->record(trace_start, "search_copy", text.size());
   copy_text(w, a, text);
+}
+void paste_text(App *a, const std::string &text) {
+  if (a->searching) {
+    append_search_utf8(a->search_query, (const unsigned char *)text.data(), text.size());
+    a->search_direction = ct::SearchDirection::Backward;
+    refresh_search(a, true);
+    return;
+  }
+  follow_output(a);
+  const bool bracketed = a->engine->snapshot().bracketed_paste;
+  if (bracketed) queue(a, (const unsigned char *)"\033[200~", 6);
+  queue(a, (const unsigned char *)text.data(), text.size());
+  if (bracketed) queue(a, (const unsigned char *)"\033[201~", 6);
+}
+void ime_cursor(App *a, const ct::Snapshot &state, bool enable = false) {
+  if (!a->ime_focused) return;
+  int window_w, window_h, pixels_w, pixels_h;
+  glfwGetWindowSize(a->window, &window_w, &window_h);
+  glfwGetFramebufferSize(a->window, &pixels_w, &pixels_h);
+  if (pixels_w <= 0 || pixels_h <= 0) return;
+  const float sx = float(window_w) / pixels_w, sy = float(window_h) / pixels_h;
+  const int col = a->searching ? 0 : std::min(state.col, state.cols - 1);
+  const int row = a->searching ? state.rows - 1 : state.row;
+  std::array<int, 4> rectangle{{int((PaddingX + col * CellW) * sx),
+    int((PaddingY + row * CellH) * sy),
+    std::max(1, int((a->searching ? state.cols * CellW : CellW) * sx)),
+    std::max(1, int(CellH * sy))}};
+  if (enable) ct::ime::enable(a->window, rectangle[0], rectangle[1], rectangle[2], rectangle[3]);
+  else if (rectangle != a->ime_rectangle)
+    ct::ime::set_cursor_rectangle(a->window, rectangle[0], rectangle[1], rectangle[2], rectangle[3]);
+  a->ime_rectangle = rectangle;
+}
+void ime_event(void *user, int event, const char *text, int32_t, int32_t, uint32_t, uint32_t) {
+  auto *a = static_cast<App *>(user);
+  try {
+    switch (static_cast<ct::ime::Event>(event)) {
+    case ct::ime::Event::Enter:
+      a->ime_focused = true;
+      ime_cursor(a, a->engine->snapshot(), true);
+      return;
+    case ct::ime::Event::Leave:
+      a->ime_focused = false;
+      ct::ime::disable(a->window);
+      a->ime_pending_preedit.clear(); a->ime_pending_commit.clear();
+      a->ime_preedit.clear();
+      if (a->searching) search_prompt(a);
+      else a->engine->set_preedit({});
+      a->dirty = true;
+      return;
+    case ct::ime::Event::Preedit:
+      a->ime_pending_preedit = text ? text : "";
+      return;
+    case ct::ime::Event::Commit:
+      a->ime_pending_commit = text ? text : "";
+      return;
+    case ct::ime::Event::DeleteSurrounding:
+      // A terminal cannot edit the child's input buffer and advertises no
+      // surrounding text. The input method owns its uncommitted preedit.
+      return;
+    case ct::ime::Event::Done:
+      a->ime_preedit = std::move(a->ime_pending_preedit);
+      a->ime_pending_preedit.clear();
+      if (a->searching) {
+        append_search_utf8(a->search_query, (const unsigned char *)a->ime_pending_commit.data(),
+                           a->ime_pending_commit.size());
+        refresh_search(a, true);
+      } else {
+        if (!a->ime_pending_commit.empty()) {
+          follow_output(a);
+          queue(a, (const unsigned char *)a->ime_pending_commit.data(), a->ime_pending_commit.size());
+        }
+        a->engine->set_preedit(a->ime_preedit);
+      }
+      a->ime_pending_commit.clear();
+      a->dirty = true;
+      return;
+    }
+  } catch (...) { a->error = std::current_exception(); }
+}
+struct ImeSession {
+  GLFWwindow *window;
+  explicit ImeSession(App &app) : window(app.window) {
+    if (ct::ime::supported()) ct::ime::set_callback(window, ime_event, &app);
+  }
+  ~ImeSession() {
+    ct::ime::set_callback(window, nullptr, nullptr);
+    ct::ime::disable(window);
+  }
+};
+void drop_files(GLFWwindow *window, int count, const char **paths) {
+  auto *a = static_cast<App *>(glfwGetWindowUserPointer(window));
+  try { paste_text(a, ct::input::dropped_paths(count, paths)); }
+  catch (const std::invalid_argument &error) {
+    std::fprintf(stderr, "cudaterm: %s\n", error.what());
+  }
+  catch (...) { a->error = std::current_exception(); }
 }
 void resized(GLFWwindow *w, int width, int height);
 void launch_detached(const std::vector<std::string> &arguments) {
@@ -488,7 +596,7 @@ void new_window(App *a) {
   if (!error) { command.push_back("--working-directory"); command.push_back(directory.string()); }
   launch_detached(command);
 }
-void key_impl(GLFWwindow *w, int key, int, int action, int mods) {
+void key_impl(GLFWwindow *w, int key, int scancode, int action, int mods) {
   auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
   a->suppress_keypad_character = false;
   a->pending_keypad_decimal = false;
@@ -551,10 +659,7 @@ void key_impl(GLFWwindow *w, int key, int, int action, int mods) {
     }
     if (paste) {
       const char *s = glfwGetClipboardString(w);
-      if (s) { append_search_utf8(a->search_query, (const unsigned char *)s,
-                                   std::strlen(s));
-        a->search_direction = ct::SearchDirection::Backward;
-        refresh_search(a, true); }
+      if (s) paste_text(a, s);
       return;
     }
     return;
@@ -580,16 +685,66 @@ void key_impl(GLFWwindow *w, int key, int, int action, int mods) {
   }
   if (paste) {
     const char *s = glfwGetClipboardString(w);
-    if (s) {
-      follow_output(a);
-      const bool bracketed = a->engine->snapshot().bracketed_paste;
-      if (bracketed)
-        queue(a, (const unsigned char *)"\033[200~", 6);
-      queue(a, (const unsigned char *)s, std::strlen(s));
-      if (bracketed)
-        queue(a, (const unsigned char *)"\033[201~", 6);
-    }
+    if (s) paste_text(a, s);
     return;
+  }
+  const auto keyboard_state = a->engine->snapshot();
+  if (keyboard_state.keyboard_flags) {
+    using K = ct::keyboard::Key;
+    ct::keyboard::KeyEvent event;
+    event.modifiers = (mods & GLFW_MOD_SHIFT ? ct::keyboard::Shift : 0) |
+      (alt ? ct::keyboard::Alt : 0) | (ctrl ? ct::keyboard::Control : 0) |
+      (mods & GLFW_MOD_SUPER ? ct::keyboard::Super : 0) |
+      (mods & GLFW_MOD_CAPS_LOCK ? ct::keyboard::CapsLock : 0) |
+      (mods & GLFW_MOD_NUM_LOCK ? ct::keyboard::NumLock : 0);
+    event.action = action == GLFW_REPEAT ? ct::keyboard::Action::Repeat : ct::keyboard::Action::Press;
+    if (key >= GLFW_KEY_ESCAPE && key <= GLFW_KEY_END) {
+      static constexpr K functions[] = {K::Escape, K::Enter, K::Tab, K::Backspace,
+        K::Insert, K::Delete, K::Right, K::Left, K::Down, K::Up,
+        K::PageUp, K::PageDown, K::Home, K::End};
+      event.key = functions[key - GLFW_KEY_ESCAPE];
+    } else if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F12) {
+      event.key = K(int(K::F1) + key - GLFW_KEY_F1);
+    } else if (key >= GLFW_KEY_F13 && key <= GLFW_KEY_F25) {
+      event.key = K::Functional;
+      event.codepoint = 57376 + key - GLFW_KEY_F13;
+    } else if (key >= GLFW_KEY_CAPS_LOCK && key <= GLFW_KEY_PAUSE) {
+      static constexpr uint32_t codes[] = {57358, 57359, 57360, 57361, 57362};
+      event.key = K::Functional;
+      event.codepoint = codes[key - GLFW_KEY_CAPS_LOCK];
+    } else if (key == GLFW_KEY_MENU) {
+      event.key = K::Functional; event.codepoint = 57363;
+    } else if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_EQUAL) {
+      bool number = key <= GLFW_KEY_KP_9 || key == GLFW_KEY_KP_DECIMAL;
+      bool text_key = key != GLFW_KEY_KP_ENTER && (!number || (mods & GLFW_MOD_NUM_LOCK));
+      if (text_key && !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT | GLFW_MOD_SUPER)))
+        return; // GLFW supplies the layout-resolved text, including decimal separators.
+      event.key = K::Functional;
+      static constexpr uint32_t keypad_codes[] = {57399, 57400, 57401, 57402, 57403,
+        57404, 57405, 57406, 57407, 57408, 57409, 57410, 57411, 57412, 57413, 57414, 57415};
+      event.codepoint = keypad_codes[key - GLFW_KEY_KP_0];
+      if (number && !(mods & GLFW_MOD_NUM_LOCK)) {
+        static constexpr uint32_t navigation[] = {57425, 57424, 57420, 57422, 57417,
+          57427, 57418, 57423, 57419, 57421, 57426};
+        event.codepoint = navigation[key - GLFW_KEY_KP_0];
+        if (key == GLFW_KEY_KP_5) event.key = K::Begin;
+      }
+    } else if (mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT | GLFW_MOD_SUPER)) {
+      const char *name = glfwGetKeyName(key, scancode);
+      if (name) event.codepoint = ct::keyboard::first_codepoint(name);
+      if (!event.codepoint && key == GLFW_KEY_SPACE) event.codepoint = ' ';
+      if (event.codepoint) {
+        event.key = K::Character;
+        event.unshifted_codepoint = event.codepoint;
+      }
+    }
+    const auto bytes = ct::keyboard::encode(event, keyboard_state.keyboard_flags);
+    if (!bytes.empty()) {
+      a->suppress_keypad_character = true;
+      follow_output(a);
+      queue(a, (const unsigned char *)bytes.data(), bytes.size());
+      return;
+    }
   }
   if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_EQUAL) {
     using ct::input::Keypad;
@@ -811,7 +966,16 @@ void character(GLFWwindow *w, unsigned int cp) {
 }
 void character_modifiers(GLFWwindow *w, unsigned int cp, int mods) {
   auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
-  if (!a->pending_keypad_decimal) return;
+  if (!a->pending_keypad_decimal) {
+    // GLFW excludes Alt text from its plain character callback. Deliver the
+    // layout/compose-resolved character here unless the key path encoded it.
+    if ((mods & GLFW_MOD_ALT) && !(mods & GLFW_MOD_CONTROL) &&
+        !a->suppress_keypad_character) {
+      character(w, cp);
+      a->suppress_keypad_character = true;
+    }
+    return;
+  }
   a->pending_keypad_decimal = false;
   // GLFW delivers this callback before the plain character callback, including
   // Alt/Control input and repeats. Consume that later callback exactly once.
@@ -949,7 +1113,8 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
     if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT && a->link_click) {
       a->link_click = false; a->selecting = false;
       a->engine->select(row, col, row, col, ct::SelectionMode::Link);
-      auto uri = ct::detected_uri(a->engine->selected_text());
+      auto target = a->engine->hyperlink_at(row, col);
+      auto uri = target.empty() ? ct::detected_uri(a->engine->selected_text()) : ct::explicit_uri(target);
       a->dirty = true;
       if (!uri.empty()) launch_detached({CUDATERM_XDG_OPEN, uri});
       return;
@@ -957,7 +1122,8 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
     if (link_modifier && action == GLFW_PRESS) {
       if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         a->engine->select(row, col, row, col, ct::SelectionMode::Link);
-        auto uri = ct::detected_uri(a->engine->selected_text());
+        auto target = a->engine->hyperlink_at(row, col);
+        auto uri = target.empty() ? ct::detected_uri(a->engine->selected_text()) : ct::explicit_uri(target);
         copy_text(w, a, uri);
         a->dirty = true; return;
       }
@@ -967,6 +1133,12 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
     }
     bool local = a->selecting ||
                  ((mods & GLFW_MOD_SHIFT) && !(a->held_buttons & (1u << button)));
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE && (!state.mouse_tracking || local || a->searching)) {
+      if (action == GLFW_PRESS) {
+        if (const char *text = ct::primary_selection::get()) paste_text(a, text);
+      }
+      return;
+    }
     if (local && button == GLFW_MOUSE_BUTTON_LEFT) {
       if (action == GLFW_PRESS) {
         begin_selection(a, row, col, mods);
@@ -1197,7 +1369,15 @@ void pump_decode(void *context, bool busy) {
 
 int main(int argc, char **argv) {
   try {
+    Trace trace;
+    trace.open(std::getenv("CUDATERM_TRACE"));
+    auto startup_stage = trace.begin();
+    auto startup_checkpoint = [&](const char *stage) {
+      trace.record(startup_stage, stage, 0);
+      startup_stage = trace.begin();
+    };
     Options o = options(argc, argv);
+    startup_checkpoint("startup_options");
     ct::FontAtlas initial_font;
     if (o.settings.font_family != "bitmap") {
       initial_font = ct::rasterize_font(o.settings.font_family, o.settings.font_size, o.settings.line_height, o.settings.font_fallback);
@@ -1208,8 +1388,7 @@ int main(int argc, char **argv) {
     }
     BaseCellW = CellW; BaseCellH = CellH;
     ct::Theme theme = ct::settings_theme(o.settings);
-    Trace trace;
-    trace.open(std::getenv("CUDATERM_TRACE"));
+    startup_checkpoint("startup_fonts");
     struct winsize ws{(unsigned short)o.rows, (unsigned short)o.cols,
                       (unsigned short)(o.cols * CellW),
                       (unsigned short)(o.rows * CellH)};
@@ -1230,19 +1409,34 @@ int main(int argc, char **argv) {
     int flags = fcntl(p.fd, F_GETFL, 0);
     if (flags < 0 || fcntl(p.fd, F_SETFL, flags | O_NONBLOCK) < 0)
       fail("fcntl");
-    Engine engine(o.cols, o.rows);
-    engine.set_cell_size(CellW, CellH);
-    if (!initial_font.faces[0].empty()) engine.load_faces(initial_font.faces);
-    else if (!o.settings.font_face.empty()) engine.load_face(o.settings.font_face);
-    initial_font = {};
-    engine.set_theme(theme);
-    engine.set_background_opacity(o.settings.opacity);
-    Graphics graphics;
+    startup_checkpoint("startup_pty");
+    // Keep GLFW and the GL context on the main thread while CUDA initializes.
+    // Environment defaults are installed before either initialization can read them.
+    ct::configure_runtime();
+    std::unique_ptr<Engine> engine_owner;
+    Graphics graphics; // The worker joins before graphics cleanup on startup failure.
+    auto engine_task = std::async(std::launch::async | std::launch::deferred,
+        [&, font = std::move(initial_font)]() mutable {
+          auto start = trace.begin();
+          auto engine = std::make_unique<Engine>(o.cols, o.rows);
+          trace.record(start, "startup_engine_worker", 0);
+          start = trace.begin();
+          engine->set_cell_size(CellW, CellH);
+          if (!font.faces[0].empty()) engine->load_faces(font.faces);
+          else if (!o.settings.font_face.empty()) engine->load_face(o.settings.font_face);
+          font = {};
+          engine->set_theme(theme);
+          engine->set_background_opacity(o.settings.opacity);
+          trace.record(start, "startup_upload_worker", 0);
+          return engine;
+        });
+    startup_checkpoint("startup_engine_dispatch");
     // The compositor owns window decorations. Loading libdecor's GTK plugin
     // adds a second UI toolkit (and fails on seatless headless compositors).
     glfwInitHint(GLFW_WAYLAND_LIBDECOR, GLFW_WAYLAND_DISABLE_LIBDECOR);
     if (!glfwInit())
       throw std::runtime_error("glfwInit failed");
+    startup_checkpoint("startup_glfw");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
@@ -1256,9 +1450,10 @@ int main(int argc, char **argv) {
     if (!win)
       throw std::runtime_error("glfwCreateWindow failed");
     glfwMakeContextCurrent(win);
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
-      throw std::runtime_error("glewInit failed");
+    startup_checkpoint("startup_gl_context");
+    engine_owner = engine_task.get();
+    Engine &engine = *engine_owner;
+    startup_checkpoint("startup_engine_join");
     App app{&engine, p.fd};
     app.window = win;
     app.options = &o; app.settings = o.settings;
@@ -1277,6 +1472,7 @@ int main(int argc, char **argv) {
     glfwSetCharModsCallback(win, character_modifiers);
     glfwSetInputMode(win, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
     glfwSetMouseButtonCallback(win, mouse_button);
+    glfwSetDropCallback(win, drop_files);
     glfwSetScrollCallback(win, wheel);
     glfwSetCursorPosCallback(win, pointer_moved);
     glfwSetWindowFocusCallback(win, focus_changed);
@@ -1288,6 +1484,8 @@ int main(int argc, char **argv) {
     resized(win, initial_w, initial_h);
     if (app.error)
       std::rethrow_exception(app.error);
+    ImeSession ime_session(app);
+    startup_checkpoint("startup_resize");
     GLuint &pbo = graphics.pbo;
     size_t pbo_capacity = (size_t)o.cols * CellW * o.rows * CellH * 4;
     glGenBuffers(1, &pbo);
@@ -1303,11 +1501,13 @@ int main(int argc, char **argv) {
     check_cuda(cudaGraphicsGLRegisterBuffer(
                    &resource, pbo, cudaGraphicsRegisterFlagsWriteDiscard),
                "cudaGraphicsGLRegisterBuffer");
+    startup_checkpoint("startup_interop");
     bool eof = false;
     int status = 0;
     int texture_w = 0, texture_h = 0;
     PtyWaiter waiter;
     waiter.init(p.child);
+    ct::ReloadSignal reload_signal(waiter.wake_fd);
     waiter.worker = std::thread([&] {
       pollfd f[3]{{p.fd, POLLIN, 0}, {waiter.wake_fd, POLLIN, 0},
                   {waiter.pid_fd, POLLIN, 0}};
@@ -1328,6 +1528,7 @@ int main(int argc, char **argv) {
         if (f[1].revents) {
           uint64_t value;
           while (read(waiter.wake_fd, &value, sizeof(value)) == sizeof(value)) {}
+          if (ct::ReloadSignal::pending()) glfwPostEmptyEvent();
           if (waiter.stop.load(std::memory_order_acquire))
             return;
           continue;
@@ -1365,6 +1566,7 @@ int main(int argc, char **argv) {
       int waiter_error = waiter.failure.load(std::memory_order_acquire);
       if (waiter_error)
         throw std::runtime_error(std::string("PTY waiter: ") + std::strerror(waiter_error));
+      if (ct::ReloadSignal::take()) app.reload_pending = true;
       if (app.reload_pending) reload_settings(&app);
       reap_child();
       pollfd f{p.fd, POLLIN, 0};
@@ -1431,6 +1633,7 @@ int main(int argc, char **argv) {
         app.dirty = true;
       }
       auto cursor_state = engine.snapshot();
+      ime_cursor(&app, cursor_state);
       bool autoscroll = false;
       if (app.selecting && !cursor_state.alternate_screen) {
         int window_w, window_h, pixels_w, pixels_h;

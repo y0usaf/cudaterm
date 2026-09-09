@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import select
+import signal
 import struct
 import subprocess
 import sys
@@ -31,7 +32,9 @@ def child(folder):
         '\x1b[34mPalette\x1b[0m   '
         + ''.join(f'\x1b[{40+i}m   ' for i in range(8)) + '\x1b[0m\r\n\r\n'
         'https://example.org/cudaterm\r\n'
-        '\x1b[2mCtrl +/- zoom   Ctrl Shift , reload   Ctrl Shift F search\x1b[0m\r\n'
+        '\x1b]8;id=help;https://example.org/help).\x1b\\'
+        '\x1b[2mCtrl +/- zoom   Ctrl Shift , reload   Ctrl Shift F search\x1b[0m'
+        '\x1b]8;;\x1b\\\r\n'
         '\x1b[32m❯\x1b[0m '
     )
     os.write(1, content.encode())
@@ -146,6 +149,8 @@ def main():
                         wait(matches, 'clipboard '+repr(expected))
                     move(10,13); event(29,1); button(273,1); button(273,0); event(29,0)
                     clipboard(b'https://example.org/cudaterm')
+                    move(10,14); event(29,1); button(273,1); button(273,0); event(29,0)
+                    clipboard(b'https://example.org/help).')
                     move(4,3); event(29,1); button(272,1); move(6,4); button(272,0); event(29,0)
                     chord(46,True)
                     clipboard(b'src\nsrc')
@@ -155,12 +160,12 @@ def main():
                     chord(11)
                     wait(lambda: geometry() == [90,26], 'zoom reset')
                     configure('theme=light\npadding-x=30\n')
-                    chord(51, True)
+                    terminal.send_signal(signal.SIGUSR1)
                     wait(lambda: geometry() and geometry()[0] < 90 and geometry()[1] == 26, 'reload padding')
                     reloaded = geometry(); light = capture('light')
                     assert light.tobytes() != initial.tobytes(), 'theme did not change'
                     config.write_text('font-size=broken\n')
-                    chord(51, True); time.sleep(.4)
+                    terminal.send_signal(signal.SIGUSR1); time.sleep(.4)
                     assert terminal.poll() is None and geometry() == reloaded, 'invalid reload changed session'
                     rejected = capture('rejected')
                     assert rejected.tobytes() == light.tobytes(), 'invalid reload changed presentation'

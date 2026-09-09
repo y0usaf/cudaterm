@@ -25,7 +25,9 @@ class Properties(unittest.TestCase):
 
     def test_source_membership(self):
         for file, prop, count in (('emoji-data-17.0.0.txt', 'Extended_Pictographic', 2848),
-                                  ('GraphemeBreakProperty-17.0.0.txt', 'Extend', 2237)):
+                                  ('GraphemeBreakProperty-17.0.0.txt', 'Extend', 2237),
+                                  ('DefaultIgnorable-17.0.0.txt', 'Default_Ignorable_Code_Point', 4174),
+                                  ('GraphemeExtendWidthful-17.0.0.txt', 'Grapheme_Extend_Widthful', 63)):
             p = ROOT / 'data' / file
             # Independent raw set, without the generator's parse/merge/search.
             raw = set()

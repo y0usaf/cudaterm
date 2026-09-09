@@ -66,10 +66,10 @@ __global__ void plan_reflow(const DeviceState *s, int cols, int rows,
   for (int y = s->history_count; y < s->history_count + s->rows; ++y)
     if (info[y].used) last = dmax(last, y);
   for (int i = 0; i < s->graphics->visible_count; ++i) {
-    const auto &im = s->graphics->images[s->graphics->visible[i]];
-    if (im.visible && !im.screen && im.py >= 0)
+    const auto &placement = s->graphics->placements[s->graphics->visible[i]];
+    if (placement.occupied && placement.visible && !placement.screen && placement.py >= 0)
       last = dmax(last, dmin(s->history_count + s->rows - 1,
-                            s->history_count + im.py / s->cell_height));
+                            s->history_count + placement.py / s->cell_height));
   }
   p->source_rows = last + 1;
   p->cursor_pos = p->saved_pos = p->view_pos = 0;
@@ -83,10 +83,11 @@ __global__ void plan_reflow(const DeviceState *s, int cols, int rows,
       if (!s->alt_active && y == sr) n = dmax(n, sc);
     }
     for (int i = 0; i < s->graphics->visible_count; ++i) {
-      const auto &im = s->graphics->images[s->graphics->visible[i]];
-      int iy = im.py / s->cell_height - (im.py % s->cell_height < 0);
-      if (im.visible && !im.screen && s->history_count + iy == y && im.px >= 0)
-        n = dmax(n, dmin(s->cols, im.px / s->cell_width + 1));
+      const auto &placement = s->graphics->placements[s->graphics->visible[i]];
+      int iy = placement.py / s->cell_height - (placement.py % s->cell_height < 0);
+      if (placement.occupied && placement.visible && !placement.screen &&
+          s->history_count + iy == y && placement.px >= 0)
+        n = dmax(n, dmin(s->cols, placement.px / s->cell_width + 1));
     }
     if (y == s->history_count) old_screen_pos = row * cols + col;
     if (y == s->history_count - s->view_offset) p->view_pos = row * cols + col;
@@ -194,21 +195,21 @@ __global__ void commit_reflow(DeviceState *s, Cell *a, Cell *b, Cell *h,
   // become hidden, just as they do when scrolling out of retained history.
   auto &g = *s->graphics;
   g.visible_count = 0;
-  for (int i = 0; i < IMAGE_SLOTS; ++i) {
-    auto &im = g.images[i];
-    if (im.visible && im.screen == 0) {
-      int y = im.py / s->cell_height - (im.py % s->cell_height < 0);
-      int x = im.px / s->cell_width - (im.px % s->cell_width < 0);
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i) {
+    auto &placement = g.placements[i];
+    if (placement.occupied && placement.visible && placement.screen == 0) {
+      int y = placement.py / s->cell_height - (placement.py % s->cell_height < 0);
+      int x = placement.px / s->cell_width - (placement.px % s->cell_width < 0);
       int source = s->history_count + y;
       int pos = source >= 0 && source < p->source_rows && x >= 0 && x < s->cols
                   ? reflow_position(info, map, source, x, s->cols) : -1;
-      if (pos < 0 || pos / cols < first) im.visible = 0;
+      if (pos < 0 || pos / cols < first) placement.visible = 0;
       else {
-        im.px = (pos % cols) * s->cell_width + im.px - x * s->cell_width;
-        im.py = (pos / cols - start) * s->cell_height + im.py - y * s->cell_height;
+        placement.px = (pos % cols) * s->cell_width + placement.px - x * s->cell_width;
+        placement.py = (pos / cols - start) * s->cell_height + placement.py - y * s->cell_height;
       }
     }
-    if (im.visible) g.visible[g.visible_count++] = i;
+    if (placement.occupied && placement.visible) g.visible[g.visible_count++] = i;
   }
   if (s->alt_active) {
     reflow_cursor_position(p->cursor_pos, p->cursor_edge, cols, rows, start,

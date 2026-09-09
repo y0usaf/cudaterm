@@ -23,7 +23,7 @@ italic and bold-italic faces. FreeType prepares grayscale glyph coverage at the
 requested size. CUDA renders the terminal, including glyph composition, styles,
 selection, graphics and the cursor. Missing glyphs use the existing Unifont
 fallback. This is scalar font rendering: ligature shaping, full grapheme shaping,
-color emoji and IME composition are not implemented.
+and color emoji are not implemented.
 
 `line-height` is a multiplier from 0.5 to 3. Padding is in logical pixels.
 `background-opacity` changes the default background; explicit cell backgrounds
@@ -50,11 +50,22 @@ accepts a second installed family or `file:/path/to/symbols.ttf`; its missing
 characters are fitted to the primary terminal cell width. The Finix launcher uses
 the configured font file and Nerd Font symbols through this runtime path.
 
+Rendered fonts are cached in `$XDG_CACHE_HOME/cudaterm/fonts` (default
+`~/.cache/cudaterm/fonts`), including all four styles and fallback symbols.
+Repeated launches reuse these atlases. Font file changes, resolved style changes,
+font size, line height, width data, and FreeType properties invalidate the cache.
+Nix fingerprints the font renderer and its dependencies so unrelated terminal
+rebuilds can reuse the cache; native builds conservatively use executable identity.
+Missing, corrupt, or unwritable caches fall back to rendering; deleting the
+cache directory is safe. Cold generation prepares the four styles concurrently,
+with separate FreeType libraries and a serial fallback when threads are unavailable.
+
 `--font-face` still loads a prepared CTFACE01 atlas. Prepared atlases and the
 `bitmap` family use scaled coverage; runtime font families rerasterize on zoom
 and display-scale changes. Runtime glyph coverage is bounded to 16 MiB per style.
 
-Ctrl-Shift-Comma reloads settings without restarting the shell. Command-line
+Ctrl-Shift-Comma or `SIGUSR1` reloads settings without restarting the shell, even
+when the window is idle. Command-line
 settings keep precedence after reload. Invalid values report the file and line;
 a failed config/font preparation leaves the running presentation intact. Theme
 reload also resets application palette changes to the configured colors.
@@ -66,6 +77,7 @@ reload also resets application palette changes to the configured colors.
 | Ctrl-Shift-Comma | Reload config |
 | Ctrl-Shift-N | Open a shell window in the foreground process's directory |
 | Ctrl-Shift-C / Ctrl-Shift-V | Copy / paste clipboard |
+| Middle-click | Paste primary selection (Shift overrides application mouse capture) |
 | Shift-Insert | Paste clipboard, including into search |
 | Ctrl-Shift-F | Open history search |
 | Enter / Shift-Enter, Ctrl-N / Ctrl-P | Next / previous search match |
@@ -86,7 +98,28 @@ wide characters and their combining marks.
 URI gestures recognize explicit `https://`, `http://`, `file://`, and `mailto:`
 text, including across soft wraps. Enclosing punctuation is trimmed; the URI is
 passed directly to `xdg-open` as an argument. There is no shell interpolation.
-OSC 8 hidden hyperlink targets are not yet supported. Middle-click primary
-selection, native Wayland IME and inertial touchpad scrolling remain gaps
-relative to Monstar. Cudaterm also has no tabs or splits. Cursor easing does not establish
+OSC 8 hidden hyperlink targets use the same gestures, preserving the exact URI
+instead of trimming punctuation from it. Link metadata follows cells through
+scrollback and resize. The GPU allocates a 512-entry target table on first use;
+older entries can be evicted without redirecting their text to a newer target.
+OSC strings are limited to 511 bytes including the command and parameters.
+Targets use the same supported URI schemes as detected links.
+
+Copied selections also become the native primary selection on X11 and on
+Wayland compositors supporting `primary-selection-unstable-v1`. Middle-click
+pastes primary selection; regular clipboard paste remains independent. File
+drops insert single-quoted shell paths through the paste path, including
+bracketed-paste delimiters when enabled. Drops containing control characters
+are rejected before inserting any paths.
+
+Native Wayland text-input-v3 supports IME preedit, committed text, and local
+search composition when the compositor and input method provide the protocol.
+Preedit uses the existing cell renderer, clips at the right edge, and does not
+render a separate composition caret or selection. Inertial touchpad scrolling
+remains a gap relative to Monstar. Cudaterm also has no tabs or splits. Cursor easing does not establish
 Neovide's smooth scrolling or shaped-text rendering.
+
+Applications can negotiate Kitty keyboard disambiguation (flag 1), including
+independent primary/alternate mode stacks and CSI-u modified keys. Unmodified
+Enter, Tab, and Backspace retain their normal bytes. The remaining Kitty
+keyboard flags are masked until their callback behavior is implemented.

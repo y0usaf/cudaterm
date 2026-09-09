@@ -90,16 +90,19 @@ __global__ void commit_search(DeviceState *s, SearchWork *q) {
 __device__ bool prompt_zwj_lookahead(const uint32_t *text, int i, int length) {
   if (!grapheme_extended_pictographic(text[i])) return false;
   int j = i + 1;
-  while (j < length && grapheme_extend(text[j])) ++j;
+  while (j < length && (grapheme_extend(text[j]) ||
+                        grapheme_zwj_ignorable(text[j]))) ++j;
   return j + 1 < length && text[j] == 0x200d &&
          grapheme_extended_pictographic(text[j + 1]);
 }
 __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
-                                    int length, Cell *cells, bool count_only) {
-  if (!count_only) for (int x = 0; x < MAX_COLS; ++x) cells[x] = {32, DEFAULT_BG, DEFAULT_FG, 0};
+                                    int length, Cell *cells, bool count_only,
+                                    bool preedit = false) {
+  if (!count_only) for (int x = 0; x < MAX_COLS; ++x) cells[x] = {preedit ? 0u : 32u, DEFAULT_BG, DEFAULT_FG, 0};
   int x = 0, marks = 0;
   uint32_t needed = 0;
   bool modifier_ready = false;
+  bool have_base = false, base_wide = false;
   bool ep_extend_suffix = false, zwj_joinable = false;
   for (int i = 0; i < length; ++i) {
     uint32_t cp = text[i];
@@ -110,6 +113,10 @@ __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
     bool zwj_join = grapheme_extended_pictographic(cp) && zwj_joinable;
     if (zwj_join) width = 0;
     if (!zwj_join && prompt_zwj_lookahead(text, i, length)) width = 2;
+    bool extend_mark = grapheme_extend(cp) && have_base &&
+                       !(cp >= 0x1f3fb && cp <= 0x1f3ff);
+    if (grapheme_default_ignorable_zero(cp)) width = 0;
+    if (extend_mark) width = 0;
     bool modifier_tone = cp >= 0x1f3fb && cp <= 0x1f3ff && modifier_ready;
     if (modifier_tone) {
       width = 0;
@@ -125,11 +132,20 @@ __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
     if (!width) {
       if (x > 0) {
         if (marks++ >= 3) ++needed;
+        bool widen = extend_mark && grapheme_extend_widthful(cp) &&
+                     !base_wide && x < s->cols;
         if (!count_only) {
           int base = x - 1;
           if (cells[base].flags & TAIL) --base;
+          if (widen) {
+            // base_wide is tracked separately so count-only and materialized
+            // passes make the same geometry decision.
+            cells[base].flags |= WIDE;
+            cells[base + 1] = {32, DEFAULT_BG, DEFAULT_FG, TAIL};
+          }
           if (!mark_pool::append_mark(cells[base], cp, s->marks)) return;
         }
+        if (widen) { ++x; base_wide = true; }
       }
     } else {
       if (x + width > s->cols) {
@@ -140,13 +156,14 @@ __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
         cells[x] = {cp, DEFAULT_BG, DEFAULT_FG, width == 2 ? WIDE : 0};
         if (width == 2) cells[x + 1] = {32, DEFAULT_BG, DEFAULT_FG, TAIL};
       }
-      x += width; marks = 0;
+      x += width; marks = 0; have_base = true; base_wide = width == 2;
     }
     if (cp == 0x200d) {
       zwj_joinable = ep_extend_suffix;
       ep_extend_suffix = false;
-    }
-    else {
+    } else if (grapheme_zwj_ignorable(cp)) {
+      // Preserve both sides of the GB11 suffix across hidden format chars.
+    } else {
       if (!grapheme_extend(cp)) ep_extend_suffix = grapheme_extended_pictographic(cp);
       zwj_joinable = false; // Extend after ZWJ cannot satisfy GB11.
     }

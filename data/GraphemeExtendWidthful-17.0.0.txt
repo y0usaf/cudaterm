@@ -1,0 +1,55 @@
+# GCB Extend code points that contribute width inside a grapheme cluster.
+#
+# This is the Unicode 17.0.0 intersection of GraphemeBreakProperty=Extend
+# with General_Category=Mc or Lm. Mn/Me and emoji modifiers are handled by
+# their own properties. Full source provenance:
+#   https://www.unicode.org/Public/17.0.0/ucd/auxiliary/GraphemeBreakProperty.txt
+#   https://www.unicode.org/Public/17.0.0/ucd/UnicodeData.txt
+# Unicode data license: data/UNICODE-LICENSE.txt
+09BE          ; Grapheme_Extend_Widthful
+09D7          ; Grapheme_Extend_Widthful
+0B3E          ; Grapheme_Extend_Widthful
+0B57          ; Grapheme_Extend_Widthful
+0BBE          ; Grapheme_Extend_Widthful
+0BD7          ; Grapheme_Extend_Widthful
+0CC0          ; Grapheme_Extend_Widthful
+0CC2          ; Grapheme_Extend_Widthful
+0CC7..0CC8    ; Grapheme_Extend_Widthful
+0CCA..0CCB    ; Grapheme_Extend_Widthful
+0CD5..0CD6    ; Grapheme_Extend_Widthful
+0D3E          ; Grapheme_Extend_Widthful
+0D57          ; Grapheme_Extend_Widthful
+0DCF          ; Grapheme_Extend_Widthful
+0DDF          ; Grapheme_Extend_Widthful
+1715          ; Grapheme_Extend_Widthful
+1734          ; Grapheme_Extend_Widthful
+1B35          ; Grapheme_Extend_Widthful
+1B3B          ; Grapheme_Extend_Widthful
+1B3D          ; Grapheme_Extend_Widthful
+1B43..1B44    ; Grapheme_Extend_Widthful
+1BAA          ; Grapheme_Extend_Widthful
+1BF2..1BF3    ; Grapheme_Extend_Widthful
+302E..302F    ; Grapheme_Extend_Widthful
+A953          ; Grapheme_Extend_Widthful
+A9C0          ; Grapheme_Extend_Widthful
+FF9E..FF9F    ; Grapheme_Extend_Widthful
+111C0         ; Grapheme_Extend_Widthful
+11235         ; Grapheme_Extend_Widthful
+1133E         ; Grapheme_Extend_Widthful
+1134D         ; Grapheme_Extend_Widthful
+11357         ; Grapheme_Extend_Widthful
+113B8         ; Grapheme_Extend_Widthful
+113C2         ; Grapheme_Extend_Widthful
+113C5         ; Grapheme_Extend_Widthful
+113C7..113C9  ; Grapheme_Extend_Widthful
+113CF         ; Grapheme_Extend_Widthful
+114B0         ; Grapheme_Extend_Widthful
+114BD         ; Grapheme_Extend_Widthful
+115AF         ; Grapheme_Extend_Widthful
+116B6         ; Grapheme_Extend_Widthful
+11930         ; Grapheme_Extend_Widthful
+1193D         ; Grapheme_Extend_Widthful
+11F41         ; Grapheme_Extend_Widthful
+16FF0..16FF1  ; Grapheme_Extend_Widthful
+1D165..1D166  ; Grapheme_Extend_Widthful
+1D16D..1D172  ; Grapheme_Extend_Widthful

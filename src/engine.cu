@@ -7,6 +7,8 @@
 #include "grapheme_properties.cuh"
 #include "mark_pool.cuh"
 #include "mark_compaction.cuh"
+#include "hyperlinks.cuh"
+#include "keyboard_protocol.cuh"
 
 #include <algorithm>
 #include <cstring>
@@ -75,6 +77,9 @@ struct DeviceState {
   int face_width, face_height;
   int osc_kind, osc_len;
   char osc_text[512];
+  Hyperlinks *hyperlinks;
+  bool hyperlinks_disabled;
+  uint32_t hyperlink_id;
   GraphicsState *graphics;
   mark_pool::Arena marks;
   const uint16_t *font_rows;
@@ -94,7 +99,9 @@ struct DeviceState {
   int history_count, history_head, history_cols, history_capacity, view_offset;
   ReplyBuffer *replies;
   int reply_len, cols, rows, row, col, saved_row, saved_col;
-  int top, bottom, esc, csi, osc, csi_n, csi_private, csi_ignore, csi_intermediate, params[16];
+  int top, bottom, esc, csi, osc, csi_n, csi_private, csi_ignore, csi_intermediate,
+      csi_prefix, csi_has_param, params[16];
+  keyboard::Negotiation keyboard;
   int main_saved, main_row, main_col, main_wrap, main_top, main_bottom,
       main_origin, main_autowrap;
   uint32_t main_fg, main_bg, main_flags;
@@ -147,28 +154,40 @@ __device__ void graphics_clear(DeviceState &s, int screen) {
   auto &g = *s.graphics;
   g.request = {};
   g.request.ready = g.request.reset = 1;
-  for (int i = 0; i < IMAGE_SLOTS; ++i)
-    if (g.images[i].pixels && (screen < 0 || g.images[i].screen == screen))
-      g.request.release[i / 32] |= 1u << (i % 32);
+  for (int i = 0; i < IMAGE_SLOTS; ++i) {
+    if (!g.images[i].pixels || (screen >= 0 && g.images[i].screen != screen)) continue;
+    g.request.release[i / 32] |= 1u << (i % 32);
+    // A released image owns the bytes referenced by every placement, even
+    // one pinned to the other screen. Remove those records before the host
+    // frees the allocation.
+    for (int j = 0; j < GRAPHIC_PLACEMENT_SLOTS; ++j)
+      if (g.placements[j].occupied && g.placements[j].image_slot == i)
+        g.placements[j] = {};
+  }
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
+    if (g.placements[i].occupied &&
+        (screen < 0 || g.placements[i].screen == screen))
+      g.placements[i] = {};
+  g.visible_count = 0;
 }
 __device__ void graphics_scroll(DeviceState &s, int top, int bottom, int count) {
   auto &g = *s.graphics;
   for (int i = 0; i < g.visible_count; ++i) {
-    auto &image = g.images[g.visible[i]];
-    if (image.screen != s.alt_active || !image.visible) continue;
+    auto &placement = g.placements[g.visible[i]];
+    if (placement.screen != s.alt_active || !placement.occupied || !placement.visible) continue;
     bool full = top == 0 && bottom == s.rows - 1;
-    if ((full && image.py < (bottom + 1) * s.cell_height && image.py + image.height_crop > 0) ||
-        (!full && image.py >= top * s.cell_height && image.py + image.height_crop <= (bottom + 1) * s.cell_height)) {
-      image.py -= count * s.cell_height;
+    if ((full && placement.py < (bottom + 1) * s.cell_height && placement.py + placement.height_crop > 0) ||
+        (!full && placement.py >= top * s.cell_height && placement.py + placement.height_crop <= (bottom + 1) * s.cell_height)) {
+      placement.py -= count * s.cell_height;
       if (top || bottom != s.rows - 1 || s.alt_active) {
-        int cut = dmax(0, top * s.cell_height - image.py);
-        image.sy += cut; image.py += cut; image.height_crop -= cut;
-        image.height_crop = dmin(image.height_crop, (bottom + 1) * s.cell_height - image.py);
-        if (image.height_crop <= 0) image.visible = 0;
+        int cut = dmax(0, top * s.cell_height - placement.py);
+        placement.sy += cut; placement.py += cut; placement.height_crop -= cut;
+        placement.height_crop = dmin(placement.height_crop, (bottom + 1) * s.cell_height - placement.py);
+        if (placement.height_crop <= 0) placement.visible = 0;
       }
-    } else if (!s.alt_active && top == 0 && bottom == s.rows - 1 && image.py < 0) {
-      image.py -= count * s.cell_height;
-      if (image.py + image.height_crop < -HISTORY_CAP * s.cell_height) image.visible = 0;
+    } else if (!s.alt_active && top == 0 && bottom == s.rows - 1 && placement.py < 0) {
+      placement.py -= count * s.cell_height;
+      if (placement.py + placement.height_crop < -HISTORY_CAP * s.cell_height) placement.visible = 0;
     }
   }
 }
@@ -452,13 +471,55 @@ __device__ bool zwj_joinable(const DeviceState &s, const Cell &cell) {
       cp = cell.combining[inline_pos--];
     }
     if (!saw_zwj) {
+      // A default ignorable may sit between the component and its ZWJ. It is
+      // retained in the mark arena but does not change the GB11 suffix.
+      if (grapheme_zwj_ignorable(cp)) continue;
       if (cp != 0x200d) return false;
       saw_zwj = true;
+    } else if (grapheme_zwj_ignorable(cp)) {
+      // Monstar keeps default ignorables transparent on either side of ZWJ.
+      continue;
     } else if (!grapheme_extend(cp)) {
       return grapheme_extended_pictographic(cp);
     }
   }
   return saw_zwj && grapheme_extended_pictographic(cell.cp);
+}
+// Emoji modifiers are immediate to the last meaningful component, even when
+// that component was appended after a ZWJ and the mark sequence spans feeds.
+__device__ bool emoji_modifier_attachment(const DeviceState &s,
+                                          const Cell &cell) {
+  uint32_t used = *s.marks.used;
+  if (used > s.marks.capacity) {
+    *s.marks.status = mark_pool::MALFORMED;
+    return false;
+  }
+  uint32_t ref = mark_pool::head(cell), cp = 0;
+  int inline_pos = (int)mark_pool::inline_count(cell) - 1;
+  for (uint32_t steps = 0; ref || inline_pos >= 0; ++steps) {
+    if (steps > used + 3) {
+      *s.marks.status = mark_pool::MALFORMED;
+      return false;
+    }
+    if (ref) {
+      if (ref > used || s.marks.nodes[ref - 1].parent >= ref) {
+        *s.marks.status = mark_pool::MALFORMED;
+        return false;
+      }
+      cp = s.marks.nodes[ref - 1].cp;
+      ref = s.marks.nodes[ref - 1].parent;
+    } else {
+      cp = cell.combining[inline_pos--];
+    }
+    // VS16 is transparent to the modifier relation. Other default
+    // ignorables and every ordinary Extend break the required adjacency.
+    if (cp == 0xfe0f) continue;
+    if (cp == 0x200d || grapheme_default_ignorable_zero(cp) ||
+        grapheme_extend(cp))
+      return false;
+    return emoji_modifier_base(cp);
+  }
+  return emoji_modifier_base(cell.cp);
 }
 __device__ bool zwj_attachment(const DeviceState &s, uint32_t cp) {
   if (s.cols < 2 || s.join_blocked || !(s.col > 0 || s.wrap_pending) ||
@@ -473,33 +534,47 @@ __device__ bool zwj_attachment(const DeviceState &s, uint32_t cp) {
 __device__ void put(DeviceState &s, uint32_t cp, bool force_single = false) {
   int width = force_single ? 1 : s.text_widths[cp];
   bool modifier = !force_single && cp >= 0x1f3fb && cp <= 0x1f3ff;
+  bool default_ignorable = !force_single &&
+                           grapheme_default_ignorable_zero(cp);
+  // Emoji modifiers are GCB Extend in Unicode, but Monstar tailors them to
+  // remain visible as standalone scalars unless an emoji base accepts them.
+  bool extend = !force_single && !modifier && grapheme_extend(cp);
   bool attach_modifier = false;
+  bool attach_extend = false;
   bool attach_zwj = false;
   // A clipped no-wrap cursor cannot identify the last printed base reliably.
-  if (modifier && (s.col > 0 || s.wrap_pending) &&
+  if ((modifier || extend) && (s.col > 0 || s.wrap_pending) &&
       (s.autowrap || s.col < s.cols - 1)) {
     int previous = s.wrap_pending ? s.col : s.col - 1;
     if ((s.grid[at(s, s.row, previous)].flags & TAIL) && previous > 0)
       --previous;
     Cell cell = s.grid[at(s, s.row, previous)];
-    bool marks = !cell.combining[0] ||
-      (cell.combining[0] == 0xfe0f && !cell.combining[1] && !cell.combining[2]);
+    // Marks retained on an untouched blank are leading marks, not a base for
+    // a later Extend or emoji modifier. Explicit spaces remain valid bases.
+    bool base = cell.cp != 32 || (cell.reserved & 1u);
     int next = previous + ((cell.flags & WIDE) ? 2 : 1);
     bool adjacent = s.wrap_pending ? next == s.cols : s.col == next;
-    attach_modifier = adjacent && emoji_modifier_base(cell.cp) && marks;
+    if (adjacent && base) {
+      attach_modifier = modifier && emoji_modifier_attachment(s, cell);
+      attach_extend = extend;
+    }
   }
   attach_zwj = !force_single && zwj_attachment(s, cp);
-  if (attach_modifier || attach_zwj) width = 0;
+  if (default_ignorable || attach_modifier || attach_extend || attach_zwj)
+    width = 0;
   if (width == 0) {
     int col = s.wrap_pending ? s.col : dmax(0, s.col - 1);
     if ((s.grid[at(s, s.row, col)].flags & TAIL) && col > 0)
       --col;
     Cell cell = s.grid[at(s, s.row, col)];
-    bool promote = (cp == 0xfe0f || attach_modifier || attach_zwj) && !(cell.flags & WIDE) &&
+    bool promote = (cp == 0xfe0f || attach_modifier || attach_zwj ||
+                    (attach_extend && grapheme_extend_widthful(cp))) &&
+                   !(cell.flags & WIDE) &&
       // With autowrap disabled the clipped cursor does not identify the last
       // printed cell; retain scalar behavior until that tracking is explicit.
       (s.autowrap || s.col < s.cols - 1) &&
       (attach_modifier || attach_zwj ||
+       (attach_extend && grapheme_extend_widthful(cp)) ||
        (!cell.combining[0] && emoji_vs16_base(cell.cp)));
     if (!mark_pool::append_mark(cell, cp, s.marks)) {
       s.pending_cp = cp;
@@ -545,10 +620,10 @@ __device__ void put(DeviceState &s, uint32_t cp, bool force_single = false) {
   if (s.col + width == s.cols)
     s.row_wrap[s.rowmap[s.row]] = 0;
   fill(s, s.grid + at(s, s.row, s.col), 1,
-       {cp, s.fg, s.bg, s.flags | (width == 2 ? WIDE : 0), {}, cp == 32});
+       {cp, s.fg, s.bg, s.flags | (s.hyperlink_id << HYPERLINK_SHIFT) | (width == 2 ? WIDE : 0), {}, cp == 32});
   if (width == 2) {
     fill(s, s.grid + at(s, s.row, s.col + 1), 1,
-         {0, s.fg, s.bg, s.flags | TAIL});
+         {0, s.fg, s.bg, s.flags | (s.hyperlink_id << HYPERLINK_SHIFT) | TAIL});
     s.complex_cells = 1;
   }
   int next = s.col + width;
@@ -664,6 +739,10 @@ __device__ void switch_screen(DeviceState &s, bool on) {
   for (int r = 0; r < s.rows; ++r)
     dswap(s.rowmap[r], s.alt_rowmap[r]);
   s.alt_active = on;
+  // Hyperlink state belongs to the active screen. Monstar/Ghostty end it
+  // whenever the active screen changes, so it must never leak into the new
+  // screen or be restored from an ID that may have been evicted.
+  s.hyperlink_id = 0;
   s.view_offset = 0;
   // Yield at screen transitions so the host can reserve history before any
   // subsequent primary-screen output, without reserving it for TUI frames.
@@ -720,7 +799,53 @@ __device__ void alternate_screen(DeviceState &s, bool on) {
     return;
   }
 }
+__device__ void kitty_keyboard_reply(DeviceState &s) {
+  char out[32] = {27, '[', '?'};
+  int n = osc_decimal(out, 3,
+                      static_cast<int>(keyboard::current(s.keyboard,
+                                                          s.alt_active != 0)));
+  out[n++] = 'u';
+  reply(s, out, n);
+}
+__device__ void kitty_keyboard_command(DeviceState &s) {
+  const bool alternate = s.alt_active != 0;
+  switch (s.csi_prefix) {
+  case '?':
+    // CSI ? u is the only Kitty query.  The parser tracks whether a parameter
+    // was present so explicit CSI ? 0 u remains malformed rather than being
+    // confused with the omitted form.
+    if (!s.csi_has_param)
+      kitty_keyboard_reply(s);
+    break;
+  case '>':
+    if (s.csi_n == 0)
+      keyboard::push(s.keyboard, alternate, static_cast<uint32_t>(s.params[0]));
+    break;
+  case '<':
+    if (s.csi_n == 0)
+      keyboard::pop(s.keyboard, alternate,
+                    s.csi_has_param ? static_cast<uint32_t>(s.params[0]) : 1u);
+    break;
+  case '=': {
+    if (s.csi_n > 1)
+      break;
+    const uint32_t mode = s.csi_n == 0 ? 1u : static_cast<uint32_t>(s.params[1]);
+    keyboard::set(s.keyboard, alternate, static_cast<uint32_t>(s.params[0]), mode);
+  } break;
+  default:
+    break;
+  }
+}
 __device__ void csi(DeviceState &s, unsigned char f) {
+  if (f == 'u' && s.csi_prefix && !s.csi_intermediate) {
+    kitty_keyboard_command(s);
+    return;
+  }
+  // Kitty's >, =, and < prefixes belong only to the keyboard protocol.  Do
+  // not let a malformed prefixed CSI reach a legacy handler (for example,
+  // CSI >5n must not be mistaken for a device-status report).
+  if (s.csi_prefix == '>' || s.csi_prefix == '=' || s.csi_prefix == '<')
+    return;
   if (s.csi_intermediate) {
     if (s.csi_intermediate == ' ' && f == 'q' && !s.csi_private && !s.csi_n && s.params[0] <= 6)
       s.cursor_style = s.params[0];
@@ -1084,6 +1209,8 @@ __device__ void byte(DeviceState &s, unsigned char c) {
     if (c == '[') {
       s.csi = 1;
       s.csi_n = s.csi_private = s.csi_ignore = s.csi_intermediate = 0;
+      s.csi_prefix = 0;
+      s.csi_has_param = 0;
       s.params[0] = 0;
       return;
     }
@@ -1133,6 +1260,7 @@ __device__ void byte(DeviceState &s, unsigned char c) {
       for (int r = 0; r < s.rows; ++r)
         s.row_wrap[r] = s.alt_row_wrap[r] = 0;
       s.row = s.col = s.top = s.flags = s.wrap_pending = 0;
+      s.hyperlink_id = 0;
       s.join_blocked = 0;
       s.bottom = s.rows - 1;
       s.fg = DEFAULT_FG;
@@ -1169,6 +1297,9 @@ __device__ void byte(DeviceState &s, unsigned char c) {
       s.saved_g0 = s.saved_g1 = s.saved_charset = 0;
       s.g0 = s.g1 = s.charset = 0;
       s.esc = s.csi = s.osc = s.csi_n = s.csi_private = s.csi_ignore = s.csi_intermediate = 0;
+      s.csi_prefix = 0;
+      s.csi_has_param = 0;
+      keyboard::reset(s.keyboard);
       s.utf = s.utf_min = 0;
       s.utf_need = 0;
       for (int c = 0; c < MAX_COLS; ++c)
@@ -1212,18 +1343,23 @@ __device__ size_t csi_run(DeviceState &s, const unsigned char *input, size_t n,
       break;
     ++offset;
     if (c >= '0' && c <= '9') {
+      s.csi_has_param = 1;
       if (s.csi_intermediate) ignore = 1;
       if (!ignore)
         value = dmin(1000000, value * 10 + c - '0');
     } else if (c == ';') {
+      s.csi_has_param = 1;
       if (s.csi_intermediate) ignore = 1;
       if (index < 15) {
         s.params[index++] = value;
         value = 0;
       } else
         ignore = 1;
-    } else if (c == '?' && index == 0 && value == 0) {
-      priv = 1;
+    } else if ((c == '?' || c == '>' || c == '<' || c == '=') &&
+               index == 0 && value == 0 && !s.csi_intermediate) {
+      if (c == '?')
+        priv = 1;
+      s.csi_prefix = c;
     } else if (c == ' ' && !s.csi_intermediate) {
       s.csi_intermediate = c;
     } else if (c >= 0x40 && c <= 0x7e) {
@@ -1352,7 +1488,7 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
         __syncwarp();
         if (lane < count)
           s.grid[at(s, s.row, s.col + lane)] = {mapped_ascii(s, c), s.fg, s.bg,
-                                                s.flags, {}, c == 32};
+                                                s.flags | (s.hyperlink_id << HYPERLINK_SHIFT), {}, c == 32};
         __syncwarp();
         if (lane == 0) {
           if (s.insert_mode || s.col + count == s.cols)
@@ -1437,14 +1573,14 @@ __global__ void plain_classify(const DeviceState *s, const unsigned char *b,
     return;
   if (i == 0) {
     *styled = 0;
-    *styled_limit = (!s->esc && !s->csi && !s->osc && !s->utf_need &&
+    *styled_limit = (!s->hyperlink_id && !s->esc && !s->csi && !s->osc && !s->utf_need &&
                      s->autowrap && !s->insert_mode && s->top == 0 &&
                      s->bottom == s->rows - 1)
                         ? n
                         : 0;
   }
   if (i == 0) {
-    if (s->esc || s->csi || s->osc || s->utf_need ||
+    if (s->hyperlink_id || s->esc || s->csi || s->osc || s->utf_need ||
         (n > 1 && b[0] == 27 && (b[1] == '(' || b[1] == ')')) ||
         (b[0] < 32 && b[0] != 27 &&
          !(b[0] == '\n' && s->col == 0 && !s->wrap_pending) &&
@@ -1680,7 +1816,7 @@ __device__ void selection_columns(const DeviceState &s, int row, int &first, int
   }
 }
 __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
-                              int h, const Cell *prompt) {
+                              int h, const Cell *prompt, bool preedit) {
   int x = blockIdx.x * blockDim.x + threadIdx.x,
       y = blockIdx.y * blockDim.y + threadIdx.y;
   if (x >= w || y >= h)
@@ -1688,7 +1824,10 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
   int output_x = x, output_y = y;
   x -= s->padding_x; y -= s->padding_y;
   int c = x / s->cell_width, r = y / s->cell_height;
-  bool overlay = prompt && r == s->rows - 1 && c < s->cols;
+  int prompt_col = preedit ? c - dmin(s->col, s->cols - 1) : c;
+  bool overlay = prompt && x >= 0 && y >= 0 && c < s->cols &&
+    (preedit ? (!s->view_offset && r == s->row && prompt_col >= 0 &&
+                prompt[prompt_col].cp != 0) : r == s->rows - 1);
   int glyph_y = (y % s->cell_height) * 16 / s->cell_height;
   uint32_t color = resolved(*s, DEFAULT_BG);
   unsigned opacity = s->background_alpha;
@@ -1699,15 +1838,16 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     color = premultiplied;
   }
   if (x >= 0 && y >= 0 && c < s->cols && r < s->rows) {
-    Cell z = overlay ? prompt[c] : viewed_cell(*s, r, c);
+    Cell z = overlay ? prompt[prompt_col] : viewed_cell(*s, r, c);
     int gx = (x % s->cell_width) * 8 / s->cell_width;
     int face_x = (x % s->cell_width) * s->face_width / s->cell_width;
     if ((z.flags & TAIL) && c > 0) {
-      z = overlay ? prompt[c - 1] : viewed_cell(*s, r, c - 1);
+      z = overlay ? prompt[prompt_col - 1] : viewed_cell(*s, r, c - 1);
       gx += 8;
       face_x += s->face_width;
     }
     int span = (z.flags & WIDE) ? 16 : 8;
+    if (overlay && preedit) z.flags |= UNDERLINE;
     uint32_t fg = resolved(*s, z.fg), bg = resolved(*s, z.bg);
     if (z.flags & INVERSE)
       dswap(fg, bg);
@@ -1760,6 +1900,7 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     for (int m = 0;;) {
       uint32_t mark;
       if (!mark_pool::overlay_mark(z, s->marks, m, mark_ref, mark)) break;
+      if (grapheme_default_ignorable(mark)) continue;
       uint32_t mark_slot = glyph_slot(s, mark);
       if (mark_slot == 0xffffffffu || !s->font_widths[mark_slot])
         continue;
@@ -1783,6 +1924,7 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
       for (int m = 0;;) {
         uint32_t mark;
         if (!mark_pool::overlay_mark(z, s->marks, m, face_mark_ref, mark)) break;
+        if (grapheme_default_ignorable(mark)) continue;
         uint32_t slot = glyph_slot(s, mark);
         int mx = gx - (span + s->mark_offsets[mark]);
         if (slot != 0xffffffffu && mx >= 0 && mx < s->font_widths[slot] &&
@@ -2109,6 +2251,7 @@ struct Engine::Impl {
   size_t font_bytes = 0, grid_bytes = 0;
   void service_graphics(GraphicsRequest &request);
   DeviceState *d = nullptr;
+  Hyperlinks *hyperlinks = nullptr;
   uint32_t *repair_flags = nullptr;
   uint16_t *font_rows = nullptr;
   uint32_t *font_pages = nullptr, *font_map = nullptr;
@@ -2149,10 +2292,12 @@ struct Engine::Impl {
   Cell *prompt_cells = nullptr;
   uint32_t *prompt_text = nullptr;
   std::string search_query, prompt;
+  bool prompt_preedit = false;
   uint64_t content_generation = 0, search_generation = 0;
   unsigned long long search_token = ~0ull;
   bool synchronized = false;
   ~Impl() {
+    cudaFree(hyperlinks);
     cudaFree(search_work); cudaFree(prompt_cells); cudaFree(prompt_text);
     if (decode_stream) {
       cudaStreamSynchronize(decode_stream);
@@ -2193,7 +2338,29 @@ static void ck(cudaError_t e) {
   if (e != cudaSuccess)
     throw std::runtime_error(cudaGetErrorString(e));
 }
+__global__ void initialize_hyperlinks(DeviceState *s, Hyperlinks *links) {
+  s->hyperlinks = links;
+  s->hyperlinks_disabled = !links;
+  s->graphics->request.ready = 0;
+  s->graphics->request.barrier = 0;
+  finish_osc(*s, false);
+}
 void Engine::Impl::service_graphics(GraphicsRequest &request) {
+  if (request.barrier == 3) {
+    if (!hyperlinks) {
+      auto error = cudaMalloc(&hyperlinks, sizeof(Hyperlinks));
+      if (error == cudaErrorMemoryAllocation) {
+        hyperlinks = nullptr;
+        cudaGetLastError();
+      } else {
+        ck(error);
+        ck(cudaMemset(hyperlinks, 0, sizeof(Hyperlinks)));
+      }
+    }
+    initialize_hyperlinks<<<1, 1>>>(d, hyperlinks);
+    ck(cudaGetLastError());
+    return;
+  }
   // The GPU supplies validated allocation sizes and slot ownership. The host
   // only allocates/frees device storage; it never decodes terminal/image bytes.
   unsigned char *output = nullptr;
@@ -2781,12 +2948,34 @@ MemoryUsage Engine::memory_usage() const {
     size_t(p->history_capacity) * p->history_cols * sizeof(Cell) +
     p->input_capacity + size_t(p->scan_capacity) * (sizeof(int) * 2 + sizeof(LineScan)) +
     p->scan_bytes + p->selection_output_capacity + p->graphics_capacity + images +
+    (p->hyperlinks ? sizeof(Hyperlinks) : 0) +
     size_t(p->mark_capacity) * sizeof(mark_pool::Node) + 2 * sizeof(uint32_t) +
     (p->search_work ? sizeof(SearchWork) : 0) +
     (p->prompt_cells ? MAX_COLS * sizeof(Cell) : 0) +
     (p->prompt_text ? 1024 * sizeof(uint32_t) : 0);
   return {bytes, images, p->graphics_capacity, p->history_capacity,
           size_t(p->mark_capacity) * sizeof(mark_pool::Node), mark_nodes};
+}
+__global__ void hyperlink_at_kernel(const DeviceState *s, int row, int col, char *out) {
+  out[0] = 0;
+  if (!s->hyperlinks || row < 0 || row >= s->rows || col < 0 || col >= s->cols) return;
+  uint32_t id = viewed_cell(*s, row, col).flags >> HYPERLINK_SHIFT;
+  if (!id) return;
+  const auto &entry = s->hyperlinks->entries[(id - 1) % HYPERLINK_SLOTS];
+  if (entry.id != id) return;
+  for (int i = 0; i < 512; ++i) {
+    out[i] = entry.uri[i];
+    if (!out[i]) return;
+  }
+}
+std::string Engine::hyperlink_at(int row, int col) {
+  if (!p->hyperlinks) return {};
+  char *device = p->hyperlinks->query;
+  char uri[512]{};
+  hyperlink_at_kernel<<<1, 1>>>(p->d, row, col, device);
+  ck(cudaGetLastError());
+  ck(cudaMemcpy(uri, device, sizeof(uri), cudaMemcpyDeviceToHost));
+  return uri;
 }
 Snapshot Engine::snapshot() {
   DeviceState s;
@@ -2803,7 +2992,8 @@ Snapshot Engine::snapshot() {
           s.mouse_mode != 0,
           s.synchronized_updates != 0, s.cell_width, s.cell_height, s.alt_active != 0,
           s.app_keypad != 0, s.numlock_override != 0,
-          s.cursor_style ? s.cursor_style : s.default_cursor_style};
+          s.cursor_style ? s.cursor_style : s.default_cursor_style,
+          keyboard::current(s.keyboard, s.alt_active != 0)};
 }
 __global__ void focus_kernel(DeviceState *s, bool focused) {
   if (s->focus_reporting) reply(*s, focused ? "\033[I" : "\033[O", 3);
@@ -2956,6 +3146,13 @@ void Engine::clear_search() {
   clear_selection();
 }
 void Engine::set_search_prompt(const std::string &text) {
+  set_overlay(text, false);
+}
+void Engine::set_preedit(const std::string &text) {
+  set_overlay(text, true);
+}
+void Engine::set_overlay(const std::string &text, bool preedit) {
+  p->prompt_preedit = preedit;
   auto decoded = search_decode(text, 1024);
   if (decoded.empty()) {
     cudaFree(p->prompt_cells); p->prompt_cells = nullptr;
@@ -2968,7 +3165,7 @@ void Engine::set_search_prompt(const std::string &text) {
   ck(cudaMemset(p->prompt_cells, 0, MAX_COLS * sizeof(Cell)));
   if (!p->prompt_text) ck(cudaMalloc(&p->prompt_text, 1024 * sizeof(uint32_t)));
   ck(cudaMemcpy(p->prompt_text, decoded.data(), decoded.size() * sizeof(uint32_t), cudaMemcpyHostToDevice));
-  search_prompt_cells<<<1, 1>>>(p->d, p->prompt_text, decoded.size(), p->prompt_cells, true);
+  search_prompt_cells<<<1, 1>>>(p->d, p->prompt_text, decoded.size(), p->prompt_cells, true, preedit);
   ck(cudaGetLastError());
   uint32_t needed = 0, used = 0;
   ck(cudaMemcpy(&needed, p->mark_status, sizeof(needed), cudaMemcpyDeviceToHost));
@@ -2979,7 +3176,7 @@ void Engine::set_search_prompt(const std::string &text) {
     while (needed > p->mark_capacity - used) p->grow_mark_pool();
   }
   ck(cudaMemset(p->mark_status, 0, sizeof(uint32_t)));
-  search_prompt_cells<<<1, 1>>>(p->d, p->prompt_text, decoded.size(), p->prompt_cells, false);
+  search_prompt_cells<<<1, 1>>>(p->d, p->prompt_text, decoded.size(), p->prompt_cells, false, preedit);
   ck(cudaGetLastError());
   uint32_t status = 0;
   ck(cudaMemcpy(&status, p->mark_status, sizeof(status), cudaMemcpyDeviceToHost));
@@ -3031,7 +3228,7 @@ void Engine::render(uint32_t *out, int w, int h) {
   if (!out || w < 1 || h < 1)
     return;
   dim3 b(16, 16), g((w + 15) / 16, (h + 15) / 16);
-  render_kernel<<<g, b>>>(p->d, out, w, h, p->prompt_cells);
+  render_kernel<<<g, b>>>(p->d, out, w, h, p->prompt_cells, p->prompt_preedit);
   ck(cudaGetLastError());
 }
 } // namespace ct
@@ -3118,7 +3315,7 @@ void Engine::load_faces(const std::array<std::vector<unsigned char>, 4> &faces) 
   }
   std::array<FaceHeader, 4> headers;
   size_t offsets[4], page_offsets[4];
-  std::vector<unsigned char> packed;
+  size_t total = 0;
   for (int style = 0; style < 4; ++style) {
     const auto &data = faces[style].empty() ? faces[0] : faces[style];
     auto h = face_header(data.data(), data.size());
@@ -3136,23 +3333,27 @@ void Engine::load_faces(const std::array<std::vector<unsigned char>, 4> &faces) 
     headers[style] = h; page_offsets[style] = pages_offset;
     if (style && faces[style].empty()) offsets[style] = 0;
     else {
-      offsets[style] = packed.size();
-      if (packed.size() + data.size() > 72 * 1024 * 1024)
+      offsets[style] = total;
+      if (total + data.size() > 72 * 1024 * 1024)
         throw std::runtime_error("combined font atlas exceeds 72 MiB");
-      packed.insert(packed.end(), data.begin(), data.end());
+      total += data.size();
     }
   }
   unsigned char *next = nullptr;
-  ck(cudaMalloc(&next, packed.size()));
+  ck(cudaMalloc(&next, total));
   try {
-    ck(cudaMemcpy(next, packed.data(), packed.size(), cudaMemcpyHostToDevice));
+    // Validate every face before allocation; copy directly into the final device
+    // allocation instead of assembling another full atlas on the host.
+    for (int style = 0; style < 4; ++style)
+      if (!faces[style].empty())
+        ck(cudaMemcpy(next + offsets[style], faces[style].data(), faces[style].size(), cudaMemcpyHostToDevice));
     for (int style = 0; style < 4; ++style)
       face_kernel<<<1,1>>>(p->d, next + offsets[style], headers[style], page_offsets[style], style);
     ck(cudaGetLastError());
     ck(cudaStreamSynchronize(nullptr));
   } catch (...) { cudaFree(next); throw; }
   cudaFree(p->face);
-  p->face = next; p->face_bytes = packed.size();
+  p->face = next; p->face_bytes = total;
 }
 __global__ void presentation_kernel(DeviceState *s, int x, int y, int style) {
   s->padding_x = x; s->padding_y = y; s->default_cursor_style = style;

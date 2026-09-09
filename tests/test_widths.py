@@ -24,6 +24,7 @@ class WidthTest(unittest.TestCase):
         self.assertEqual(widths[0x0301], 0)
         self.assertEqual(widths[0x1F600], 2)
         self.assertEqual(widths[0x200D], 0)
+        self.assertEqual(widths[0x00AD], 1)
         self.assertEqual(offsets[0x0301], 0xF8)  # int8(-8)
         self.assertEqual(version, unicodedata.unidata_version)
 

@@ -17,6 +17,107 @@ static std::string feed(ct::Engine &e, const std::string &text, size_t split) {
 }
 int main() {
   {
+    ct::Engine e(12, 3);
+    feed(e, "first row\r\nabc", 4096);
+    e.set_cursor_phase(false, true);
+    e.set_presentation(0, 0, 1);
+    constexpr int width = 12 * 8, height = 3 * 16;
+    uint32_t *device = nullptr;
+    check(cudaMalloc(&device, width * height * sizeof(uint32_t)) == cudaSuccess, "preedit pixels allocation");
+    auto pixels = [&] {
+      e.render(device, width, height);
+      std::vector<uint32_t> out(width * height);
+      check(cudaMemcpy(out.data(), device, out.size() * sizeof(uint32_t), cudaMemcpyDeviceToHost) == cudaSuccess,
+            "preedit render copy");
+      return out;
+    };
+    auto before = pixels();
+    auto cells = e.cells();
+    e.set_preedit("界é");
+    auto composed = pixels();
+    check(composed != before, "preedit was not rendered");
+    for (int y = 0; y < height; ++y) for (int x = 0; x < width; ++x)
+      if (y < 16 || y >= 32 || x < 24 || x >= 48)
+        check(composed[y * width + x] == before[y * width + x], "preedit painted outside cursor cells");
+    auto after = e.cells();
+    check(cells.size() == after.size() && std::memcmp(cells.data(), after.data(), cells.size() * sizeof(ct::Cell)) == 0,
+          "preedit modified terminal cells");
+    e.set_preedit({});
+    check(pixels() == before, "cleared preedit did not restore terminal rendering");
+    e.set_preedit("many combining marks é́́́́́́́");
+    e.resize(4, 4);
+    e.set_preedit("界界");
+    pixels(); // Includes a wide preedit clipped by the right edge after resize.
+    e.set_preedit({});
+    cudaFree(device);
+  }
+  for (size_t split : {size_t(1), size_t(7), size_t(4096)}) {
+    ct::Engine e(12, 3);
+    auto before = e.memory_usage().device_bytes;
+    check(e.hyperlink_at(0, 0).empty(), "fresh cell had hyperlink");
+    feed(e, "\033]8;id=docs;https://example.org/a).\033\\A\033[0m界\033]8;;\007B", split);
+    check(e.hyperlink_at(0, 0) == "https://example.org/a)." &&
+          e.hyperlink_at(0, 1) == "https://example.org/a)." &&
+          e.hyperlink_at(0, 2) == "https://example.org/a)." && e.hyperlink_at(0, 3).empty(),
+          "OSC8 target lost across SGR/wide cells/close");
+    auto allocated = e.memory_usage().device_bytes;
+    check(allocated > before, "hyperlink allocation was not accounted");
+    e.select(0, 0, 0, 3);
+    check(e.selected_text() == "A界B", "hyperlink changed copied text");
+    e.resize(2, 4);
+    check(e.hyperlink_at(0, 0) == "https://example.org/a)." &&
+          e.hyperlink_at(1, 0) == "https://example.org/a)." && e.hyperlink_at(2, 0).empty(),
+          "hyperlink lost or leaked during reflow");
+    feed(e, "\033c\033]8;;https://example.org/long\007" + std::string(1024, 'X') +
+            "\033[0mY\033]8;;\033\\\r\nZ", split);
+    auto state = e.snapshot();
+    check(e.hyperlink_at(state.row, state.col - 1).empty(), "closed link leaked to text");
+    e.scroll_view(10000);
+    check(e.hyperlink_at(0, 0) == "https://example.org/long", "history lost hyperlink");
+    e.follow_output();
+    feed(e, "\033cP", split);
+    check(e.hyperlink_at(0, 0).empty(), "RIS kept active link");
+    check(e.hyperlink_at(-1, 0).empty() && e.hyperlink_at(0, 999).empty(), "invalid link hit accepted");
+    // Reusing bounded table slots must never redirect old text to a new URI.
+    e.resize(12, 3);
+    feed(e, "\033c\033]8;;https://example.org/old\007A\033]8;;\007", split);
+    for (int i = 0; i < 513; ++i)
+      feed(e, "\033]8;;https://example.org/" + std::to_string(i) + "\007\033]8;;\007", split);
+    check(e.hyperlink_at(0, 0).empty(), "evicted link redirected an old cell");
+    check(e.memory_usage().device_bytes < allocated + 1024 * 1024, "link storage grew without bound");
+
+    feed(e, "\033c\033]8;;https://example.org/preserve\007A", split);
+    feed(e, "\033]8;id=missing\033\\B", split);
+    check(e.hyperlink_at(0, 0) == "https://example.org/preserve" &&
+          e.hyperlink_at(0, 1) == "https://example.org/preserve",
+          "malformed OSC8 cleared the active hyperlink");
+    feed(e, "\033]8;id=invalid;\007C", split);
+    check(e.hyperlink_at(0, 2) == "https://example.org/preserve",
+          "OSC8 close with an id cleared the active hyperlink");
+    std::string malformed_uri = "\033]8;;";
+    malformed_uri.push_back(static_cast<char>(0xff));
+    malformed_uri += "\007D";
+    feed(e, malformed_uri, split);
+    check(e.hyperlink_at(0, 3) == "https://example.org/preserve",
+          "invalid OSC8 UTF-8 cleared the active hyperlink");
+    feed(e, "\033]8;id=;\007E", split);
+    check(e.hyperlink_at(0, 4).empty(), "empty OSC8 id did not close hyperlink");
+
+    feed(e, "\033c\033]8;;https://example.org/screen\007P\r\033[?47hA", split);
+    check(e.hyperlink_at(0, 0).empty(), "47 alternate screen inherited hyperlink");
+    feed(e, "\033[?47lB", split);
+    check(e.hyperlink_at(0, 0) == "https://example.org/screen" &&
+          e.hyperlink_at(0, 1).empty(), "47 primary screen restored hyperlink");
+    feed(e, "\033c\033]8;;https://example.org/1049\007P\033[?1049hA", split);
+    check(e.hyperlink_at(0, 1).empty(), "1049 alternate screen inherited hyperlink");
+    feed(e, "\033[?1049lB", split);
+    check(e.hyperlink_at(0, 0) == "https://example.org/1049" &&
+          e.hyperlink_at(0, 1).empty(), "1049 primary screen restored hyperlink");
+
+    feed(e, "\033c\033]8;;https://example.org/cursor\007\0337A\033]8;;\007B\0338C", split);
+    check(e.hyperlink_at(0, 0).empty(), "DECRC restored hyperlink state");
+  }
+  {
     // A deterministic half-covered glyph verifies alpha, physical cell scaling,
     // configured/default backgrounds, and release of a replaced face atlas.
     std::vector<unsigned char> face(24 + 384 + 4352 * 4 + 256 * 4, 255);
