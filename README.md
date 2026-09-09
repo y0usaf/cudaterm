@@ -77,8 +77,9 @@ line layout and scrolling. A cooperative warp interprets controls and UTF-8,
 with parser state in shared memory and parallel cell writes. A third path parses
 bounded UTF-8/SGR/tab lines in parallel and scans their color and layout effects.
 The GPU finishes bounded fragments at feed boundaries before retrying parallel
-processing. The CPU reads classifier results and consumed counts to select launches; it does not parse
-terminal bytes. All paths keep terminal state on the GPU.
+processing. The CPU reads classifier results and consumed counts to select launches.
+Screen parsing and terminal state stay on the GPU; a host observer handles OSC 52
+desktop clipboard writes.
 
 **Overall performance parity is not established**. The latest matched-grid
 comparison trails Foot on text, ANSI and graphics, and beats Monstar on
@@ -107,8 +108,12 @@ See [completion requirements](docs/acceptance.md) and the
 verify 318×89 cells, settle before timing, and reject geometry changes. Font
 rendering still differs between implementations.
 
-Drag with the left mouse button to select visible cells, then press Ctrl-Shift-C
-to copy. Ctrl-Shift-V pastes. Selection includes complete wide glyphs and combining
+Drag with the left mouse button to select visible cells; release to copy automatically.
+Ctrl-Shift-C copies again. Copied selections flash pale yellow for 200 ms, including
+keyboard, search-result and link copies, then regain their original highlight.
+Ctrl-Shift-V pastes. OSC 52 clipboard writes from applications such as Ekko are
+supported for UTF-8 text up to 1 MiB; clipboard reads are unsupported. Ekko draws
+its own selection flash when it owns the mouse. Selection includes complete wide glyphs and combining
 marks. New terminal output or a resize clears the selection. Copies join true soft wraps, preserve spaces within joined lines, omit padding
 inserted before wide glyphs, and keep explicit line breaks. Trailing spaces at
 hard breaks or the end of a selection are trimmed. Double-click selects a word and

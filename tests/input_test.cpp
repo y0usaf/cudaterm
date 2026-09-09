@@ -2,6 +2,7 @@
 #include "config.hpp"
 #include "motion.hpp"
 #include "uri.hpp"
+#include "clipboard.hpp"
 
 #include <cstdio>
 #include <stdexcept>
@@ -16,6 +17,37 @@ using ct::input::Key;
 using ct::input::Shift;
 
 int main() {
+  {
+    auto check = [](bool ok) { if (!ok) throw std::runtime_error("OSC 52 clipboard writes"); };
+    const std::string sequence = "\033]52;c;Y29waWVkIOeVjA==\033\\";
+    for (size_t split = 1; split <= sequence.size(); ++split) {
+      ct::ClipboardWrites parser;
+      std::string copied;
+      int writes = 0;
+      auto write = [&](const std::string &s) { copied = s; ++writes; };
+      for (size_t i = 0; i < sequence.size(); i += split)
+        parser.feed(reinterpret_cast<const unsigned char *>(sequence.data() + i),
+                    std::min(split, sequence.size() - i), write);
+      check(copied == "copied 界" && writes == 1);
+      auto feed = [&](const std::string &s) {
+        parser.feed(reinterpret_cast<const unsigned char *>(s.data()), s.size(), write);
+      };
+      feed("\033]52;c;?\007\033]52;c;!!!!\007\033]52;c;YQ=A\007");
+      feed("\033]52;c;YQ==\030");
+      feed("\033]52;c;/w==\007\033]52;c;AA==\007");
+      feed("\033P" + sequence + "\033\\");
+      check(writes == 1);
+      feed("\033]52;;YQ==\007");
+      check(copied == "a" && writes == 2);
+      feed("\033]52;c;" + std::string(1400000, 'A') + "\007");
+      check(writes == 2);
+      feed(sequence);
+      check(copied == "copied 界" && writes == 3);
+      feed("\033]52;c;\007");
+      check(copied.empty() && writes == 4);
+    }
+  }
+
   {
     if (ct::detected_uri("(https://example.org/a(b)).") != "https://example.org/a(b)" ||
         ct::detected_uri("file:///tmp/test") != "file:///tmp/test")

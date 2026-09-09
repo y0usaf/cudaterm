@@ -5,6 +5,7 @@
 #include "font.hpp"
 #include "motion.hpp"
 #include "uri.hpp"
+#include "clipboard.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -332,7 +333,8 @@ struct App {
   bool reload_pending = false, focused = true, cursor_phase = true;
   bool link_click = false;
   int link_row = 0, link_col = 0;
-  double cursor_deadline = 0, selection_deadline = 0;
+  ct::ClipboardWrites clipboard_writes;
+  double cursor_deadline = 0, selection_deadline = 0, copy_flash_deadline = 0;
   ct::CursorMotion cursor_motion;
   bool cursor_last_alternate = false;
 
@@ -429,12 +431,19 @@ void open_search(App *a) {
   if (a->trace) a->trace->record(trace_start, "search_open", 0);
   search_prompt(a);
 }
+void copy_text(GLFWwindow *w, App *a, const std::string &text) {
+  if (text.empty()) return;
+  glfwSetClipboardString(w, text.c_str());
+  a->engine->set_copy_flash(true);
+  a->copy_flash_deadline = glfwGetTime() + 0.2;
+  a->dirty = true;
+}
 void copy_search_match(GLFWwindow *w, App *a) {
   if (!a->searching || !a->search_match.found) return;
   std::string text = a->engine->selected_text();
   uint64_t trace_start = a->trace ? a->trace->begin() : 0;
   if (a->trace) a->trace->record(trace_start, "search_copy", text.size());
-  if (!text.empty()) glfwSetClipboardString(w, text.c_str());
+  copy_text(w, a, text);
 }
 void resized(GLFWwindow *w, int width, int height);
 void launch_detached(const std::vector<std::string> &arguments) {
@@ -566,8 +575,7 @@ void key_impl(GLFWwindow *w, int key, int, int action, int mods) {
   }
   if (ctrl && key == GLFW_KEY_C && (mods & GLFW_MOD_SHIFT)) {
     std::string text = a->engine->selected_text();
-    if (!text.empty())
-      glfwSetClipboardString(w, text.c_str());
+    copy_text(w, a, text);
     return;
   }
   if (paste) {
@@ -950,7 +958,7 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
       if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         a->engine->select(row, col, row, col, ct::SelectionMode::Link);
         auto uri = ct::detected_uri(a->engine->selected_text());
-        if (!uri.empty()) glfwSetClipboardString(w, uri.c_str());
+        copy_text(w, a, uri);
         a->dirty = true; return;
       }
       if (button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -964,8 +972,10 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
         begin_selection(a, row, col, mods);
       }
       pointer_moved(w, x, y);
-      if (action == GLFW_RELEASE)
+      if (action == GLFW_RELEASE) {
         a->selecting = false;
+        copy_text(w, a, a->engine->selected_text());
+      }
       return;
     }
     if (local)
@@ -983,8 +993,10 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
         begin_selection(a, row, col, mods);
       }
       pointer_moved(w, x, y);
-      if (action == GLFW_RELEASE)
+      if (action == GLFW_RELEASE) {
         a->selecting = false;
+        copy_text(w, a, a->engine->selected_text());
+      }
       return;
     }
     if (action == GLFW_PRESS)
@@ -1391,6 +1403,9 @@ int main(int argc, char **argv) {
         auto result = engine.feed_frame(buf, pending);
         drained = result.consumed;
         frame_complete = result.frame_complete;
+        app.clipboard_writes.feed(buf, drained, [&](const std::string &text) {
+          glfwSetClipboardString(win, text.c_str());
+        });
         pending -= drained;
         std::memmove(buf, buf + drained, pending);
         std::string replies = engine.take_replies();
@@ -1410,6 +1425,11 @@ int main(int argc, char **argv) {
       }
       flush_input(&app);
       eof = eof || app.input_closed;
+      if (app.copy_flash_deadline && glfwGetTime() >= app.copy_flash_deadline) {
+        engine.set_copy_flash(false);
+        app.copy_flash_deadline = 0;
+        app.dirty = true;
+      }
       auto cursor_state = engine.snapshot();
       bool autoscroll = false;
       if (app.selecting && !cursor_state.alternate_screen) {
@@ -1540,8 +1560,9 @@ int main(int argc, char **argv) {
             deadline = std::max(deadline, sync_started + std::chrono::seconds(1));
           double timeout = std::chrono::duration<double>(deadline - now).count();
           glfwWaitEventsTimeout(std::max(0.0001, timeout));
-        } else if (blinking || autoscroll || cursor_animating) {
+        } else if (blinking || autoscroll || cursor_animating || app.copy_flash_deadline) {
           double deadline = blinking ? app.cursor_deadline : glfwGetTime() + 1;
+          if (app.copy_flash_deadline) deadline = std::min(deadline, app.copy_flash_deadline);
           if (autoscroll) deadline = std::min(deadline, app.selection_deadline);
           if (cursor_animating) deadline = std::min(deadline, glfwGetTime() + 1.0 / 120);
           glfwWaitEventsTimeout(std::max(0.0001, deadline - glfwGetTime()));
