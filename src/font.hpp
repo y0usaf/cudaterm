@@ -118,11 +118,15 @@ inline FontAtlas rasterize_font(const std::string &family, float pixels, float l
         data.resize(offset + stride, 0);
         int span = atlas.width * widths[cp];
         int left = face->glyph->bitmap_left;
+        // Italic bearings can extend beyond either cell edge. Keep the whole
+        // bitmap inside the cell, shrinking only when it is wider than the span.
+        bool fit = (font_index || (style & 2)) && bitmap.width > unsigned(span);
+        if ((style & 2) && !fit)
+          left = std::clamp(left, 0, span - int(bitmap.width));
         for (unsigned y = 0; y < bitmap.rows; ++y) {
           int dy = baseline - face->glyph->bitmap_top + int(y);
           if (dy < 0 || dy >= atlas.height) continue;
           auto row = bitmap.buffer + (bitmap.pitch >= 0 ? y : bitmap.rows - 1 - y) * std::abs(bitmap.pitch);
-          bool fit = font_index && bitmap.width > unsigned(span);
           unsigned draw_width = fit ? unsigned(span) : bitmap.width;
           for (unsigned x = 0; x < draw_width; ++x) {
             int dx = fit ? int(x) : left + int(x);
