@@ -16,7 +16,10 @@ let
     if [ -r "$theme" ]; then
       set -- --theme "$theme" "$@"
     fi
-    exec ${terminal}/bin/cudaterm --font-face ${face}/face.bin --background-opacity 0.82 "$@"
+    exec ${terminal}/bin/cudaterm --font-file ${pkgs.lib.escapeShellArg (toString fontFile)} \
+      --font-fallback file:${pkgs.nerd-fonts.symbols-only}/share/fonts/truetype/NerdFonts/Symbols/SymbolsNerdFontMono-Regular.ttf \
+      --font-size ${toString pixels} --line-height ${toString (lineHeight * 1.0 / pixels)} \
+      --background-opacity 0.82 "$@"
   '';
   desktop = pkgs.makeDesktopItem {
     name = "cudaterm-finix";

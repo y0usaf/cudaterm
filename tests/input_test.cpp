@@ -1,5 +1,7 @@
 #include "input.hpp"
 #include "config.hpp"
+#include "motion.hpp"
+#include "uri.hpp"
 
 #include <cstdio>
 #include <stdexcept>
@@ -14,6 +16,27 @@ using ct::input::Key;
 using ct::input::Shift;
 
 int main() {
+  {
+    if (ct::detected_uri("(https://example.org/a(b)).") != "https://example.org/a(b)" ||
+        ct::detected_uri("file:///tmp/test") != "file:///tmp/test")
+      throw std::runtime_error("URI punctuation handling");
+    for (const char *bad : {"--help", "javascript:alert(1)", "https://", "https://a\ncommand", "hello"})
+      if (!ct::detected_uri(bad).empty()) throw std::runtime_error("unsafe URI accepted");
+  }
+  {
+    ct::CursorMotion motion;
+    if (motion.update(0,0,0,.08,false)) throw std::runtime_error("initial cursor animated");
+    motion.update(10,0,1,.08,false);
+    if (!motion.update(10,0,1.04,.08,false) || motion.x <= 0 || motion.x >= 10)
+      throw std::runtime_error("cursor did not interpolate");
+    float before = motion.x;
+    motion.update(20,0,1.04,.08,false);
+    if (motion.x != before) throw std::runtime_error("retargeted cursor jumped");
+    if (motion.update(20,0,2,.08,false) || motion.x != 20)
+      throw std::runtime_error("cursor did not settle");
+    if (motion.update(1,1,3,0,false) || motion.x != 1 || motion.y != 1)
+      throw std::runtime_error("reduced motion did not snap");
+  }
   {
     char name[] = "/tmp/cudaterm-theme-XXXXXX";
     int fd = mkstemp(name);
@@ -33,6 +56,31 @@ int main() {
       if (!rejected) throw std::runtime_error("malformed theme accepted");
     }
     unlink(name);
+  }
+  {
+    char name[] = "/tmp/cudaterm-config-XXXXXX";
+    int fd = mkstemp(name); if (fd < 0) throw std::runtime_error("config fixture failed"); close(fd);
+    { std::ofstream out(name); out << "font-family = DejaVu Sans Mono\nfont-size = 15.5\n"
+      "line-height=1.4\npadding-x=18\ncursor-style=bar\ncursor-blink=true\ntheme=light\n"; }
+    auto config = ct::read_settings(name, true);
+    if (config.font_family != "DejaVu Sans Mono" || config.font_size != 15.5f ||
+        config.padding_x != 18 || config.cursor_style != 6 || !config.cursor_blink ||
+        ct::settings_theme(config).colors[257] != 0xf5f6fa)
+      throw std::runtime_error("config fields or theme mismatch");
+    for (const char *bad : {"font-size=nan", "font-size=inf", "font-size=12px", "font-size=0",
+      "padding-x=2.5", "cursor-style=triangle", "cursor-blink=yes", "unknown=1", "missing equal"}) {
+      { std::ofstream out(name); out << "# header\n" << bad; }
+      bool rejected = false;
+      try { ct::read_settings(name, true); } catch (const std::runtime_error &e) {
+        rejected = std::string(e.what()).find(":2:") != std::string::npos;
+      }
+      if (!rejected) throw std::runtime_error("invalid config lacked line diagnostic");
+    }
+    unlink(name);
+    bool rejected = false;
+    try { ct::read_settings(name, true); } catch (...) { rejected = true; }
+    if (!rejected) throw std::runtime_error("missing explicit config accepted");
+    ct::read_settings(name, false);
   }
   // A slow PTY consumer can force thousands of partial writes during a paste.
   // Exercise the same queue with real nonblocking pipe backpressure, including
@@ -125,4 +173,86 @@ int main() {
   for (unsigned m = 1; m <= 7; ++m)
     for (bool app : {false, true})
       check({Key::Up, m, app, modified[m - 1]});
+
+  using ct::input::Keypad;
+  auto keypad = [](Keypad key, unsigned mods, bool num, bool app,
+                   const std::string &expected, bool cursor = false,
+                   bool separator = false) {
+    if (ct::input::keypad_sequence(key, mods, num, app, cursor, separator) != expected)
+      throw std::runtime_error("keypad sequence mismatch");
+  };
+  const Keypad digits[] = {Keypad::Zero, Keypad::One, Keypad::Two,
+                           Keypad::Three, Keypad::Four, Keypad::Five,
+                           Keypad::Six, Keypad::Seven, Keypad::Eight,
+                           Keypad::Nine};
+  const char *numeric[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+  const char *nav[] = {"\033[2~", "\033[F", "\033[B", "\033[6~", "\033[D",
+                       "\033[E", "\033[C", "\033[H", "\033[A", "\033[5~"};
+  const char *cursor_nav[] = {"\033[2~", "\033OF", "\033OB", "\033[6~", "\033OD",
+    "\033OE", "\033OC", "\033OH", "\033OA", "\033[5~"};
+  const char *app[] = {"\033Op", "\033Oq", "\033Or", "\033Os", "\033Ot",
+                       "\033Ou", "\033Ov", "\033Ow", "\033Ox", "\033Oy"};
+  for (int i = 0; i < 10; ++i) {
+    keypad(digits[i], 0, true, false, numeric[i]);
+    keypad(digits[i], 0, false, false, nav[i]);
+    keypad(digits[i], 0, false, true, nav[i]);
+    keypad(digits[i], 0, true, true, app[i]);
+    keypad(digits[i], 0, false, false, cursor_nav[i], true);
+  }
+  const char *nav_mods[] = {"\033[1;2B", "\033[1;3B", "\033[1;4B",
+                            "\033[1;5B", "\033[1;6B", "\033[1;7B",
+                            "\033[1;8B"};
+  const char *app_mods[] = {"\033O2r", "\033O3r", "\033O4r", "\033O5r",
+                            "\033O6r", "\033O7r", "\033O8r"};
+  for (unsigned mods = 1; mods <= 7; ++mods) {
+    keypad(Keypad::Two, mods, false, false, nav_mods[mods - 1]);
+    keypad(Keypad::Two, mods, false, true, nav_mods[mods - 1]);
+    keypad(Keypad::Two, mods, true, true, app_mods[mods - 1]);
+  }
+  keypad(Keypad::Decimal, 0, false, false, "\033[3~");
+  keypad(Keypad::Decimal, 0, true, false, ".");
+  keypad(Keypad::Decimal, 0, true, true, "\033On");
+  keypad(Keypad::Decimal, 0, true, false, ",", false, true);
+  keypad(Keypad::Decimal, Alt, true, false, "\033,", false, true);
+  keypad(Keypad::Decimal, Control, true, false, "\033[27;5;65452~", false, true);
+  keypad(Keypad::Decimal, Control | Alt, true, false,
+         "\033[27;7;65452~", false, true);
+  const char *separator_app[] = {"\033O2l", "\033O3l", "\033O4l",
+    "\033O5l", "\033O6l", "\033O7l", "\033O8l"};
+  for (unsigned mods = 1; mods <= 7; ++mods)
+    keypad(Keypad::Decimal, mods, true, true, separator_app[mods - 1], false, true);
+  keypad(Keypad::Decimal, 0, true, true, "\033Ol", false, true);
+  keypad(Keypad::Decimal, 0, false, false, "\033[3~", false, true);
+  keypad(Keypad::Decimal, 0, false, true, "\033[3~", false, true);
+  keypad(Keypad::Add, 0, true, false, "+", false, true);
+  keypad(Keypad::Add, 0, true, true, "\033Ok", false, true);
+  keypad(Keypad::Enter, 0, true, false, "\r");
+  keypad(Keypad::Enter, 0, true, true, "\033OM");
+  keypad(Keypad::Add, 0, true, true, "\033Ok");
+  keypad(Keypad::Subtract, 0, true, true, "\033Om");
+  keypad(Keypad::Multiply, 0, true, true, "\033Oj");
+  keypad(Keypad::Divide, 0, true, true, "\033Oo");
+  keypad(Keypad::Equal, 0, true, true, "=");
+  keypad(Keypad::Two, Control, true, false, std::string(1, '\0'));
+  keypad(Keypad::Two, Control | Alt, true, false, std::string("\033\0", 2));
+  keypad(Keypad::Three, Control, true, false, "\033");
+  keypad(Keypad::Four, Control, true, false, "\034");
+  keypad(Keypad::Five, Control, true, false, "\035");
+  keypad(Keypad::Six, Control, true, false, "\036");
+  keypad(Keypad::Seven, Control, true, false, "\037");
+  keypad(Keypad::Eight, Control, true, false, "\177");
+  keypad(Keypad::Decimal, Control, true, false, "\033[27;5;65454~");
+  keypad(Keypad::Divide, Control, true, false, "\037");
+  keypad(Keypad::Enter, Control, true, false, "\r");
+  keypad(Keypad::Nine, Control, true, false, "\033[27;5;65465~");
+  keypad(Keypad::Equal, Control, true, false, "\033[27;5;65469~");
+  keypad(Keypad::Two, Alt, true, true, "\033O3r");
+  keypad(Keypad::Enter, Control | Alt, true, false, "\033\r");
+  keypad(Keypad::Add, Shift | Alt | Control, false, true, "\033O8k");
+  keypad(Keypad::Subtract, Alt | Control, false, true, "\033O7m");
+  keypad(Keypad::Decimal, Control, false, true, "\033[3;5~");
+  keypad(Keypad::Add, 0, false, false, "+");
+  keypad(Keypad::Subtract, 0, false, false, "-");
+  keypad(Keypad::Multiply, Alt, true, false, "\033*");
+  keypad(Keypad::Divide, 0, false, false, "/");
 }

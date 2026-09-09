@@ -53,6 +53,59 @@ int main() {
     e.mouse(0,1,1,0,0,10000,10000);
     check(e.take_replies() == "\033[<0;48;72M", "pixel mouse bounds ignored cell size");
   }
+  {
+    ct::Engine e(4, 2);
+    auto theme = ct::default_theme();
+    theme.colors[256] = 0xffffff; theme.colors[257] = 0;
+    e.set_theme(theme);
+    e.set_presentation(3, 5, 2);
+    uint32_t *device; check(cudaMalloc(&device, 38 * 42 * 4) == cudaSuccess, "allocate cursor pixels");
+    auto pixels = [&] {
+      e.render(device, 38, 42);
+      std::vector<uint32_t> out(38 * 42);
+      check(cudaMemcpy(out.data(), device, out.size() * 4, cudaMemcpyDeviceToHost) == cudaSuccess, "cursor pixels");
+      return out;
+    };
+    for (int style = 1; style <= 6; ++style) {
+      auto sequence = std::string("\033[") + std::to_string(style) + " q";
+      for (size_t split = 1; split <= sequence.size(); ++split) {
+        feed(e, sequence, split);
+        check(e.snapshot().cursor_style == style, "split DECSCUSR ignored");
+      }
+      e.set_cursor_phase(true, true);
+      auto out = pixels();
+      int ink = 0;
+      for (auto pixel : out) ink += pixel != 0xff000000;
+      check(ink == (style <= 2 ? 128 : style <= 4 ? 16 : 32), "cursor shape area");
+      check(out[0] == 0xff000000 && out[4 * 38 + 3] == 0xff000000, "padding painted as cursor");
+      e.set_cursor_phase(false, true);
+      out = pixels(); ink = 0; for (auto pixel : out) ink += pixel != 0xff000000;
+      check(ink == (style & 1 ? 0 : style <= 2 ? 128 : style <= 4 ? 16 : 32), "blink vs steady cursor");
+    }
+    e.set_cursor_position(0.5f, 0);
+    e.set_cursor_phase(true, true);
+    auto moving = pixels();
+    check(moving[5 * 38 + 7] == 0xffffffff && moving[5 * 38 + 3] == 0xff000000, "fractional cursor position");
+    e.set_cursor_position(0, 0);
+    e.set_cursor_phase(true, false);
+    auto out = pixels(); int ink = 0; for (auto pixel : out) ink += pixel != 0xff000000;
+    check(ink == 44, "unfocused cursor outline");
+    feed(e, "\033[99 q", 1); check(e.snapshot().cursor_style == 6, "invalid cursor style accepted");
+    feed(e, "\033[?25l\033[3;9;8mX\033[23;29;28mY", 1);
+    auto cells = e.cells();
+    check((cells[0].flags & (64 | 128 | 256)) == (64 | 128 | 256) &&
+          !(cells[1].flags & (64 | 128 | 256)), "text style set/reset");
+    out = pixels();
+    for (int y = 5; y < 21; ++y) for (int x = 3; x < 11; ++x)
+      check(out[y * 38 + x] == 0xff000000, "hidden text rendered");
+    feed(e, "\033c", 1); check(e.snapshot().cursor_style == 2, "RIS cursor default");
+    theme.customized = 12; theme.colors[260] = 0xffffff; theme.colors[261] = 0x344865;
+    e.set_theme(theme);
+    feed(e, "\033[?25l\033[2;4mA", 1); e.select(0,0,0,0);
+    out = pixels();
+    check(out[19 * 38 + 3] == 0xffffffff, "dim text reduced configured selection contrast");
+    cudaFree(device);
+  }
   for (size_t split : {size_t(1), size_t(7), size_t(65536)}) {
     ct::Engine e(40, 12);
     auto theme = ct::default_theme();

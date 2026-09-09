@@ -69,6 +69,31 @@ void sgr_defaults() {
   expect_cell(e, 0, 3, 'D');
   check(e.take_replies() == "\x1b[1;5R", "CSI DSR reply");
 }
+void device_status_reports() {
+  invariant("CSI 5n split", "\x1b[5n");
+  Engine status(12, 4);
+  feed(status, "\x1b[5n");
+  check(status.take_replies() == "\x1b[0n", "CSI 5n status reply");
+
+  for (const std::string &input : {std::string("\x1b[?5n"),
+                                    std::string("\x1b[>5n"),
+                                    std::string("\x1b[5:n")}) {
+    invariant("CSI 5n malformed/private silence", input);
+    Engine e(12, 4);
+    feed(e, input);
+    check(e.take_replies().empty(), "malformed/private CSI 5n replied");
+  }
+
+  const std::string overflow = "\x1b[5;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;5n";
+  invariant("CSI 5n parameter overflow silence", overflow);
+  Engine malformed(12, 4);
+  feed(malformed, overflow);
+  check(malformed.take_replies().empty(), "overflow CSI 5n replied");
+
+  Engine cursor(12, 4);
+  feed(cursor, "\x1b[2;3H\x1b[6n");
+  check(cursor.take_replies() == "\x1b[2;3R", "CSI 6n cursor reply changed");
+}
 void cup_defaults() {
   const std::string s = "A\x1b[;HBC\x1b[2;3HDE";
   invariant("CUP empty/default split", s);
@@ -291,6 +316,7 @@ int main() {
   } tests[] = {{"reply_capacity", reply_capacity_and_reset},
                {"combined_feed_replies", combined_feed_replies},
                {"sgr_defaults", sgr_defaults},
+               {"device_status_reports", device_status_reports},
                {"cup_defaults", cup_defaults},
                {"control_string_recovery", control_string_recovery},
                {"private_modes", private_modes},

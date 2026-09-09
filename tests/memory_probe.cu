@@ -17,7 +17,9 @@
 static void check(cudaError_t e) {
   if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
 }
-static void sample(const char *stage) {
+static void sample(const char *stage, const ct::Engine *engine = nullptr, size_t external_device_bytes = 0) {
+  ct::MemoryUsage owned{};
+  if (engine) owned = engine->memory_usage();
   std::ifstream maps("/proc/self/smaps");
   std::string line, name = "anonymous";
   std::map<std::string, size_t> rss;
@@ -51,7 +53,15 @@ static void sample(const char *stage) {
     }
     if (pclose(pipe)) gpu_mib = -1;
   }
-  std::cout << "{\"stage\":\"" << stage << "\",\"rss_kib\":" << total
+  std::cout << "{\"engine_accounted\":";
+  if (engine)
+    std::cout << "{\"device_bytes\":" << owned.device_bytes
+              << ",\"image_bytes\":" << owned.image_bytes
+              << ",\"transfer_bytes\":" << owned.transfer_bytes
+              << ",\"history_capacity\":" << owned.history_capacity << "}";
+  else std::cout << "null";
+  std::cout << ",\"external_device_bytes\":" << external_device_bytes;
+  std::cout << ",\"stage\":\"" << stage << "\",\"rss_kib\":" << total
             << ",\"pss_kib\":" << pss << ",\"private_kib\":" << private_kb
             << ",\"nvidia_compute_mib\":" << gpu_mib
             << ",\"mappings_kib\":{";
@@ -111,20 +121,46 @@ int main(int argc, char **argv) {
       sample("egl_interop");
       check(cudaGraphicsUnregisterResource(resource));
       glDeleteBuffers(1, &buffer);
+      glFinish();
+      sample("egl_interop_released");
     }
     {
       ct::Engine engine(318, 89);
       check(cudaDeviceSynchronize());
-      sample("engine");
+      sample("engine", &engine);
+      bool history = false;
+      for (int i = 1; i < argc; ++i) history |= std::string(argv[i]) == "--history";
+      if (history) {
+        std::string payload;
+        for (int i = 0; i < 10000; ++i)
+          payload += "history é 日本語 \x1b[31mcolor\x1b[0m\r\n";
+        // The host workload buffer remains constant across all cycle snapshots.
+        sample("before_history", &engine);
+        for (int cycle = 0; cycle < 3; ++cycle) {
+          engine.feed(reinterpret_cast<const unsigned char *>(payload.data()), payload.size());
+          check(cudaDeviceSynchronize());
+          auto filled = engine.memory_usage();
+          if (filled.history_capacity != 4096) throw std::runtime_error("history did not reach capacity");
+          sample(("history_" + std::to_string(cycle)).c_str(), &engine);
+          const unsigned char reset[] = "\x1b[3J\x1b" "c";
+          engine.feed(reset, sizeof(reset) - 1);
+          check(cudaDeviceSynchronize());
+          auto cleared = engine.memory_usage();
+          if (cleared.history_capacity != 128 || cleared.image_bytes || cleared.transfer_bytes)
+            throw std::runtime_error("reset retained engine allocations");
+          sample(("reset_" + std::to_string(cycle)).c_str(), &engine);
+        }
+      }
       std::string text(65536, 'x');
       engine.feed((const unsigned char *)text.data(), text.size());
-      sample("text_64k");
+      sample("text_64k", &engine);
       uint32_t *pixels = nullptr;
       check(cudaMalloc(&pixels, 318 * 8 * 89 * 16 * 4));
       engine.render(pixels, 318 * 8, 89 * 16);
       check(cudaDeviceSynchronize());
-      sample("raster");
+      sample("raster", &engine, 318 * 8 * 89 * 16 * 4);
       check(cudaFree(pixels));
+      sample("raster_released", &engine);
     }
     sample("engine_destroyed");
     if (display != EGL_NO_DISPLAY) {

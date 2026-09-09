@@ -52,7 +52,8 @@ enum class Key {
   F9,
   F10,
   F11,
-  F12
+  F12,
+  Begin
 };
 enum Modifier { Shift = 1, Alt = 2, Control = 4 };
 
@@ -84,6 +85,10 @@ inline std::string sequence(Key key, unsigned modifiers,
     break;
   case Key::End:
     final = 'F';
+    cursor_key = true;
+    break;
+  case Key::Begin:
+    final = 'E';
     cursor_key = true;
     break;
   case Key::Insert:
@@ -148,4 +153,49 @@ inline std::string sequence(Key key, unsigned modifiers,
   return "\033[" + (number ? std::string(number) : "1") + ";" +
          std::to_string(parameter) + (number ? "~" : std::string(1, final));
 }
+
+enum class Keypad {
+  Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
+  Decimal, Enter, Add, Subtract, Multiply, Divide, Equal
+};
+
+inline std::string keypad_sequence(Keypad key, unsigned modifiers,
+                                   bool num_lock, bool application_keypad,
+                                   bool application_cursor,
+                                   bool decimal_separator = false) {
+  const unsigned index = static_cast<unsigned>(key);
+  modifiers &= Shift | Alt | Control;
+  if (!num_lock && key <= Keypad::Decimal) {
+    const Key navigation[] = {Key::Insert, Key::End, Key::Down, Key::PageDown,
+      Key::Left, Key::Begin, Key::Right, Key::Home, Key::Up, Key::PageUp,
+      Key::Delete};
+    return sequence(navigation[index], modifiers, application_cursor);
+  }
+  if (application_keypad && key != Keypad::Equal)
+    return "\033O" + (modifiers ? std::to_string(1 + modifiers) : "") +
+           (key == Keypad::Decimal && decimal_separator
+              ? 'l' : "pqrstuvwxynMkmjo"[index]);
+
+  char byte = "0123456789.\r+-*/="[index];
+  if (key == Keypad::Decimal && decimal_separator)
+    byte = ',';
+  if (modifiers & Control) {
+    if (key >= Keypad::Two && key <= Keypad::Eight)
+      byte = "\000\033\034\035\036\037\177"[index - 2];
+    else if (key == Keypad::Divide)
+      byte = '\037';
+    else if (key != Keypad::Enter) {
+      // Legacy modified-key form uses the keypad keysym when no C0 byte exists.
+      const unsigned keysym[] = {65456,65457,65458,65459,65460,65461,65462,65463,
+        65464,65465, decimal_separator ? 65452u : 65454u, 65421, 65451,65453,
+        65450,65455,65469};
+      return "\033[27;" + std::to_string(1 + modifiers) + ";" +
+             std::to_string(keysym[index]) + "~";
+    }
+  }
+  std::string result(1, byte);
+  if (modifiers & Alt) result.insert(result.begin(), '\033');
+  return result;
+}
+
 } // namespace ct::input

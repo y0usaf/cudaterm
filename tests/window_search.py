@@ -1,5 +1,6 @@
 """Private compositor search UI regression fixture."""
 import argparse
+import json
 import os
 import select
 import shutil
@@ -27,6 +28,10 @@ def child(directory):
                  ("history tail\r\n" * 39) + "\x1b[?2004h").encode())
     (root / "ready").touch()
     while not (root / "closed").exists():
+        size = os.get_terminal_size(1)
+        temporary = root / "geometry.tmp"
+        temporary.write_text(json.dumps([size.columns, size.lines]))
+        temporary.replace(root / "geometry")
         time.sleep(.01)
     received = bytearray()
     deadline = time.monotonic() + 5
@@ -95,9 +100,24 @@ def main():
                                             (29, 0)):
                             if code:
                                 event(code, value)
-                    # Ctrl-Shift-F opens the local search prompt.
-                    event(42, 1); event(104, 1); event(104, 0); event(42, 0)
-                    time.sleep(.2)
+                    def geometry(expected):
+                        deadline = time.monotonic() + 5
+                        while time.monotonic() < deadline:
+                            if (root / "geometry").exists():
+                                actual = json.loads((root / "geometry").read_text())
+                                if actual == expected:
+                                    return
+                            time.sleep(.01)
+                        raise AssertionError(("PTY geometry", expected, actual))
+                    geometry([80, 32])
+                    chord(13)  # Ctrl-Shift-+: 8x16 -> 9x18 cells
+                    geometry([71, 28])
+                    chord(11)  # Ctrl-Shift-0 restores startup cell dimensions
+                    geometry([80, 32])
+                    chord(12)  # Ctrl-Shift-minus: 8x16 -> 7x14 cells
+                    geometry([91, 36])
+                    chord(11)
+                    geometry([80, 32])
                     def capture(name, marker):
                         for png in root.glob("*.png"): png.unlink()
                         subprocess.run([str(Path(args.weston).with_name("weston-screenshooter"))],
@@ -109,16 +129,25 @@ def main():
                                   if (image.getpixel((x, y))[0] >= 120 and
                                       image.getpixel((x, y))[1] < 10 and
                                       image.getpixel((x, y))[2] < 10)]
+                        image.save(f"bench/window-search-{name}.png")
                         if marker:
                             assert len(pixels) == 128, (name, len(pixels))
                         else:
                             assert not pixels, (name, len(pixels))
-                        image.save(f"bench/window-search-{name}.png")
                         return pixels
+                    # The red marker lies between the oldest and live viewports.
+                    event(42, 1); event(102, 1); event(102, 0); event(42, 0)
+                    time.sleep(.2)
+                    capture("oldest", False)
+                    event(42, 1); event(107, 1); event(107, 0); event(42, 0)
+                    time.sleep(.2)
+                    capture("live", False)
+                    event(42, 1); event(104, 1); event(104, 0); event(42, 0)
+                    time.sleep(.2)
                     before_marker = capture("before", True)
                     chord(33)
                     subprocess.run([args.wl_copy], input=NEEDLE.encode(), env=env, check=True, timeout=5)
-                    chord(47)  # Ctrl-Shift-V: query remains local
+                    event(42, 1); event(110, 1); event(110, 0); event(42, 0)  # Shift-Insert
                     time.sleep(.2)
                     capture("active", False)
                     event(28, 1); event(28, 0)  # Enter: next
@@ -141,12 +170,20 @@ def main():
                         [str(Path(args.wl_copy).with_name("wl-paste")), "--no-newline"],
                         env=env, check=True, capture_output=True, timeout=5).stdout
                     assert paste == NEEDLE.encode(), paste
+                    swaps = (root / "search.csv").read_text().count(",gl_texture_swap,")
                     event(1, 1); event(1, 0)  # Escape closes and restores viewport.
+                    # Input injection is asynchronous. Observe its redraw before
+                    # checking the restored viewport, as for the initial frame.
+                    redraw_deadline = time.monotonic() + 5
+                    while (root / "search.csv").read_text().count(",gl_texture_swap,") <= swaps:
+                        if terminal.poll() is not None or time.monotonic() > redraw_deadline:
+                            raise RuntimeError("timed out: restored frame")
+                        time.sleep(.01)
                     restored_marker = capture("restored", True)
                     assert restored_marker == before_marker, (before_marker, restored_marker)
                     (root / "closed").touch()
                     event(45, 1); event(45, 0)  # x proves normal input is restored.
-                    chord(47)  # bracketed paste reaches the child after close
+                    event(42, 1); event(110, 1); event(110, 0); event(42, 0)  # bracketed Shift-Insert paste
                     (root / "stop").touch()
                 done_deadline = time.monotonic() + 10
                 while not (root / "done").exists():

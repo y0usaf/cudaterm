@@ -5,6 +5,11 @@ pixel rasterization. The CPU transports PTY bytes and input events, manages the
 child process, and presents CUDA output through an OpenGL buffer shared with
 GLFW. OpenGL presents pixels; it does not draw glyphs.
 
+The default window uses an installed monospace font with native-size grayscale
+coverage, dark or light themes, padding, styled text and an animated cursor.
+Fonts, colors and interaction settings reload without restarting the shell.
+See [configuration and shortcuts](docs/configuration.md).
+
 ```sh
 nix build .
 nix run . -- -e bash
@@ -81,10 +86,13 @@ all five measured PTY workloads. Compositor-capture latency has been measured,
 but physical display latency remains unverified. See the
 [latest measurements](docs/progress.md) for raw samples and limits.
 
-Glyphs come from GNU Unifont 17.0.05, converted to a static atlas during the
-Nix build and rasterized in CUDA, using 8×16 cells by default. A build-time
+The built-in fallback uses GNU Unifont 17.0.05, converted to a static atlas during
+the Nix build and rasterized in CUDA. The explicit `bitmap` font uses 8×16 cells;
+the default installed font uses runtime FreeType coverage. A build-time
 custom font atlas and configurable/scaled cell dimensions are also supported. The engine supports BMP glyphs and 59,295 supplementary glyph records from
-Unifont, wide cell pairs, and up to three combining marks per cell. Width data uses
+Unifont, wide cell pairs, and variable-length combining marks. Three marks stay
+inline in each 32-byte cell; further marks share a GPU suffix arena capped at
+8 MiB. Exhaustion with no reclaimable nodes raises an explicit error. Width data uses
 Unicode 16.0.0 plus Unifont combining overrides. Missing glyphs use a replacement glyph. Supplementary symbols render as
 monochrome bitmaps; shaping and emoji sequences remain unfinished.
 Font copyright and license files are installed in `result/share/cudaterm`.
@@ -123,11 +131,16 @@ the query, Enter/Shift-Enter to find the next/previous match, Ctrl-Shift-C to
 copy it, Ctrl-U to clear, and Escape to close and restore the prior viewport.
 Search input stays local. Search covers primary history and live text, or only
 the active alternate grid, joining soft wraps but stopping at hard breaks.
-Queries match exact, case-sensitive Unicode codepoints (up to 256), without
+Queries match exact, case-sensitive Unicode codepoints (up to 512), without
 normalization or regular expressions. Highlights and copies include complete
 cells and their combining marks. A bottom-row prompt overlays the terminal;
 long queries are clipped to its width. Output and resize restart the active
 search against current text.
+
+Copying counts exact UTF-8 bytes before allocating each viewport-sized batch.
+A batch above 64 MiB raises an explicit error; copy buffers above 64 KiB are
+released after use. Combining-mark storage preserves text but does not provide
+ZWJ layout or shaped emoji rendering.
 
 Alternate-screen modes 47, 1047, and 1049 are supported. Mode 47 retains the
 alternate contents; 1047 clears them when leaving; 1049 saves/restores the main
@@ -151,3 +164,9 @@ Window configuration accepts `--app-id`, `--title`, `--working-directory`,
 `--cell-width`, `--cell-height` and `--background-opacity`. OSC 0/2 updates titles;
 OSC 4/10/11/12 updates/queries palette and default colors, with reset variants.
 Theme files are read at startup. See `cudaterm --help` for invocation syntax.
+
+Ctrl-Plus/Minus/0 zooms and resets; runtime font families are rerasterized at the
+new size. Ctrl-Shift-Comma reloads configuration. Ctrl-drag makes a rectangular
+selection; dragging at the text edge extends through history. Ctrl-click opens
+a detected URI, and Ctrl-Shift-N opens a shell in the current directory. See the
+[complete configuration and feature limits](docs/configuration.md).

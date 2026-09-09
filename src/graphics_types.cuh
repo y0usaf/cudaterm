@@ -10,6 +10,7 @@ struct GraphicsRequest {
   int barrier, alternate, history_rows, history_growth;
   size_t input_bytes, output_bytes;
   uint32_t release[IMAGE_SLOTS / 32];
+  int pool_wait, pool_gc;
 };
 struct Image {
   unsigned char *pixels;

@@ -2,6 +2,7 @@
 import argparse
 import os
 import signal
+import shutil
 import csv
 import json
 import random
@@ -131,16 +132,16 @@ def delayed_wake_child(directory):
     tty.setraw(0)
     (root/'wake.ready').touch()
     time.sleep(1)
-    os.write(1, b'WAKE-OUTPUT\r\n\x1b[5n')
+    os.write(1, b'\x1b[HWAKE-OUTPUT\r\n\x1b[5n\x1b[6n')
     response = bytearray()
     deadline = time.monotonic() + 5
-    while len(response) < 4:
+    while len(response) < 10:
         remaining = deadline - time.monotonic()
         if remaining <= 0 or not select.select([0], [], [], remaining)[0]:
             raise RuntimeError('timed out waiting for DSR response')
-        response.extend(os.read(0, 4-len(response)))
+        response.extend(os.read(0, 10-len(response)))
     (root/'wake.response').write_bytes(response)
-    assert bytes(response) == b'\x1b[0n', repr(response)
+    assert bytes(response) == b'\x1b[0n\x1b[2;1R', repr(response)
     deadline = time.monotonic() + 15
     while not (root/'wake.stop').exists() and time.monotonic() < deadline: time.sleep(.01)
 
@@ -159,13 +160,14 @@ def decode_child(directory):
 def clipboard_child(directory, mode):
     root = Path(directory)
     tty.setraw(0)
-    if mode == 4:
+    if mode in (4, 6, 7):
         # Keep the pixel coordinates below tied to the terminal geometry used
         # by this fixture, rather than silently testing a resized child.
         assert os.get_terminal_size(1).columns == 80
     if mode == 5:
         assert os.get_terminal_size(1).columns == 80
-    text = ('A' * 79 + 'é' + '中\r\nAFTER') if mode in (4, 5) else 'COPY é中 é'
+    text = ('A' * 79 + 'é' + '中\r\nAFTER') if mode in (4, 5) else \
+           ('W' * 96 + ' END') if mode in (6, 7) else 'COPY é中 é'
     os.write(1, b'\x1b[2J\x1b[H\x1b[?25l\x1b[41m \x1b[0m\r\n' + text.encode() +
              b'\x1b[?1002;1006h\x1b[?2004h')
     (root/'clipboard.ready').touch()
@@ -179,6 +181,8 @@ def clipboard_child(directory, mode):
     expected = (('paste é中\n' * 32768) if mode == 1 else
                 'é中' if mode == 2 else
                 ('A' * 79 + 'é中\nAFTER') if mode in (4, 5) else
+                ('W' * 96) if mode == 6 else
+                ('W' * 96 + ' END') if mode == 7 else
                 'COPY é中 é').encode()
     framed = b'\x1b[200~' + expected + b'\x1b[201~'
     received = bytearray()
@@ -196,7 +200,11 @@ def main():
     p.add_argument('--weston',required=True)
     p.add_argument('--seat',required=True)
     p.add_argument('--wl-copy',required=True)
+    p.add_argument('--output-dir',default=f'bench/window-sync-{time.time_ns()}')
     args=p.parse_args()
+    evidence=Path(args.output_dir).resolve()
+    evidence.mkdir(parents=True,exist_ok=False)
+    captures=[]
     with tempfile.TemporaryDirectory(prefix='cudaterm-sync-') as directory:
         root=Path(directory)
         env=dict(os.environ,XDG_RUNTIME_DIR=directory,WAYLAND_DISPLAY='sync-test')
@@ -221,13 +229,30 @@ def main():
                 from PIL import Image
                 for stage,color in [('red',(255,0,0)),('green',(0,255,0)),('blue',(0,0,255))]:
                     wait(stage+'.ready'); time.sleep(.05)
-                    for image in root.glob('*.png'): image.unlink()
-                    subprocess.run([str(Path(args.weston).with_name('weston-screenshooter'))],
-                        env=env,cwd=directory,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-                    with Image.open(next(root.glob('*.png'))) as image:
-                        colors=image.convert('RGB').getcolors(image.width*image.height)
-                    count=sum(n for n,c in colors if c==color)
-                    assert count>=256*128,(stage,'partial frame presented',count)
+                    # Red/green must already retain the complete prior frame.
+                    # Blue is final completion: child write readiness does not
+                    # establish parser or compositor completion.
+                    deadline=time.monotonic()+5
+                    attempt=0
+                    while True:
+                        for image in root.glob('*.png'): image.unlink()
+                        subprocess.run([str(Path(args.weston).with_name('weston-screenshooter'))],
+                            env=env,cwd=directory,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+                        screenshot=next(root.glob('*.png'))
+                        artifact=f'{stage}-{attempt}.png'
+                        shutil.copyfile(screenshot,evidence/artifact)
+                        with Image.open(screenshot) as image:
+                            colors=image.convert('RGB').getcolors(image.width*image.height)
+                        count=sum(n for n,c in colors if c==color)
+                        green=sum(n for n,c in colors if c==(0,255,0))
+                        captures.append({'stage':stage,'attempt':attempt,'color':color,
+                                         'pixels':count,'green_pixels':green,'screenshot':artifact})
+                        (evidence/'captures.json').write_text(json.dumps(captures,indent=2)+'\n')
+                        if count>=256*128: break
+                        assert stage=='blue' and count==0 and green>=256*128, (stage,'partial frame presented',count,green)
+                        assert time.monotonic()<deadline, 'final blue frame did not complete'
+                        attempt+=1
+                        time.sleep(.01)
                     (root/(stage+'.captured')).touch()
                 (root/'stop').touch()
                 assert terminal.wait(timeout=5)==0
@@ -290,24 +315,28 @@ def main():
                 assert terminal.poll() is None, 'idle child exited before close input'
                 deadline=time.monotonic()+3
                 with (root/'keys').open('wb', buffering=0) as keys:
-                    keys.write(struct.pack('=II',56,1)); keys.write(struct.pack('=II',62,1))
-                    keys.write(struct.pack('=II',62,0)); keys.write(struct.pack('=II',56,0))
+                    # Ask the private seat to close the focused xdg toplevel.
+                    # This exercises GLFW's close callback without depending
+                    # on a compositor-specific Alt-F4 key binding.
+                    keys.write(struct.pack('=II',771,1))
                 while terminal.poll() is None and time.monotonic() < deadline:
                     time.sleep(.01)
                 if terminal.poll() is None:
                     (root/'idle-close.stop').touch()
                     terminal.terminate()
                     terminal.wait(timeout=5)
-                    raise RuntimeError('Alt-F4 idle close timed out')
+                    raise RuntimeError('compositor close idle window timed out')
                 assert terminal.returncode == 0, ('idle close failed', terminal.returncode)
-                print('PASS: idle Alt-F4 closes the window within bounded timeout')
+                print('PASS: compositor close closes idle window within bounded timeout')
                 for name in ('wake.ready','wake.response','wake.stop'):
                     (root/name).unlink(missing_ok=True)
+                wake_trace = root/'wake.csv'
                 terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
-                    str(Path(__file__).resolve()),'--delayed-wake-child',directory],env=env)
+                    str(Path(__file__).resolve()),'--delayed-wake-child',directory],
+                    env=dict(env,CUDATERM_TRACE=str(wake_trace)))
                 wait('wake.ready')
                 wait('wake.response')
-                assert (root/'wake.response').read_bytes()==b'\x1b[0n'
+                assert (root/'wake.response').read_bytes()==b'\x1b[0n\x1b[2;1R'
                 (root/'wake.stop').touch()
                 assert terminal.wait(timeout=5)==0
                 print('PASS: delayed PTY output wakes event-driven waiter and DSR reply returns')
@@ -334,7 +363,7 @@ def main():
                 assert received['ns'] < int(pumps[-1]['end_ns']), 'keyboard waited until decoding finished'
                 assert latency < 50, ('keyboard blocked during decode',latency)
                 print(f'PASS: Wayland Ctrl-Space reached the PTY during CUDA decode in {latency:.1f} ms')
-                for mode in (0, 1, 2, 3, 4, 5):
+                for mode in (0, 1, 2, 3, 4, 5, 6, 7):
                     for name in ('clipboard.ready','clipboard.received','clipboard.resized','clipboard.stop'):
                         (root/name).unlink(missing_ok=True)
                     terminal=subprocess.Popen([args.terminal,'--cols','80','--rows','32','-e',sys.executable,
@@ -369,9 +398,12 @@ def main():
                                 y=rgb.height-1-max(v[1] for v in marker)+24
                             event(768,((x+4)<<16)|y); time.sleep(.05)
                             event(42,1)
-                            if mode in (2, 3):
-                                event(768,((x+52)<<16)|y); time.sleep(.05)
-                                for _ in range(mode):
+                            if mode in (2, 3, 6, 7):
+                                # Modes 6/7 click the wrapped continuation of
+                                # the word; triple-click also includes END.
+                                cx, cy = (x+20, y+16) if mode in (6, 7) else (x+52, y)
+                                event(768,(cx<<16)|cy); time.sleep(.05)
+                                for _ in range(2 if mode == 6 else 3 if mode == 7 else mode):
                                     event(769,(272<<1)|1); time.sleep(.04)
                                     event(769,272<<1); time.sleep(.04)
                             elif mode in (4, 5):
@@ -394,6 +426,8 @@ def main():
                     expected=(('paste é中\n'*32768) if mode == 1 else
                               'é中' if mode == 2 else
                               ('A'*79+'é中\nAFTER') if mode in (4, 5) else
+                              ('W'*96) if mode == 6 else
+                              ('W'*96+' END') if mode == 7 else
                               'COPY é中 é').encode()
                     assert (root/'clipboard.received').read_bytes()==b'\x1b[200~'+expected+b'\x1b[201~', repr((root/'clipboard.received').read_bytes()[:128])
                     (root/'clipboard.stop').touch()

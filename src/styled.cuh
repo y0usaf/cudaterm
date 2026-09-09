@@ -85,6 +85,19 @@ __device__ int line_tabcol(const DeviceState *s, int col) {
       return next;
   return s->cols - 1;
 }
+// Complete inline sequences can be laid out before painting. A suffix whose
+// base was emitted by another feed still belongs to the streaming interpreter.
+__device__ bool inline_vs16(uint32_t cp, const unsigned char *b, int pos, int n) {
+  return pos + 3 <= n && b[pos] == 0xef && b[pos + 1] == 0xb8 &&
+         b[pos + 2] == 0x8f && emoji_vs16_base(cp);
+}
+__device__ bool inline_modifier(uint32_t cp, const unsigned char *b, int pos, int n) {
+  if (pos + 3 <= n && b[pos] == 0xef && b[pos + 1] == 0xb8 && b[pos + 2] == 0x8f)
+    pos += 3;
+  return pos + 4 <= n && b[pos] == 0xf0 && b[pos + 1] == 0x9f &&
+         b[pos + 2] == 0x8f && b[pos + 3] >= 0xbb && b[pos + 3] <= 0xbf &&
+         emoji_modifier_base(cp);
+}
 __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
                              int n, LineScan *scan, int *limit) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -98,7 +111,9 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
   int pos = i, rows = 0;
   int col = i == 0 ? (s->wrap_pending ? s->cols : s->col) : 0;
   uint32_t wide = 0;
-  bool newline = false;
+  bool newline = false, inline_selector = false, modifier_ready = false;
+  int marks = 0;
+  bool have_base = false;
   while (pos < n) {
     if (pos - i >= 4096) {
       atomicMin(limit, i);
@@ -106,6 +121,7 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
     }
     unsigned char c = b[pos];
     if (c == '\t') {
+      have_base = false;
       col = line_tabcol(s, col);
       ++pos;
     } else if (c == 27) {
@@ -139,9 +155,44 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
         return;
       }
       pos = end;
+      // ZWJ joins need the scalar interpreter: styled_lines has no suffix
+      // arena transaction and cannot safely promote the preceding cell.
+      // A leading pictograph may also join a stored ZWJ at a feed boundary.
+      bool leading_join = i == 0 && !have_base && zwj_attachment(*s, cp);
+      if (cp == 0x200d || leading_join) {
+        atomicMin(limit, i);
+        return;
+      }
+      bool modifier_tone = false;
+      if (cp >= 0x1f3fb && cp <= 0x1f3ff) {
+        if (!modifier_ready || s->cols == 1) { atomicMin(limit, i); return; }
+        modifier_tone = true;
+        modifier_ready = false;
+      } else if (cp == 0xfe0f && modifier_ready) {
+      } else {
+        modifier_ready = inline_modifier(cp, b, pos, dmin(n, i + 4096));
+      }
+      if (cp == 0xfe0f && !inline_selector && !modifier_ready) {
+        atomicMin(limit, i);
+        return;
+      }
+      inline_selector = inline_vs16(cp, b, pos, dmin(n, i + 4096));
       int width = cp < 127 ? 1 : s->text_widths[cp];
+      if (modifier_tone) width = 0;
+      if (width == 1 && s->cols > 1 && (inline_selector || modifier_ready)) width = 2;
       if (width == 2 && s->cols == 1)
         width = 1;
+      if (!width) {
+        ++marks;
+        // A line beginning with a mark may attach to a base from an earlier
+        // feed; conservatively send that line through the scalar interpreter.
+        if (marks > 3 || !have_base) {
+          atomicMin(limit, i);
+          return;
+        }
+      } else {
+        marks = 0; have_base = true;
+      }
       if (width) {
         if (col == s->cols || (width == 2 && col == s->cols - 1)) {
           ++rows;
@@ -152,6 +203,9 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       }
     }
   }
+  // A control-only fragment must preserve a preceding cursor-control barrier.
+  // Let the interpreter handle it rather than committing fictitious new text.
+  if (!have_base && !newline) { atomicMin(limit, i); return; }
   if (newline) {
     ++rows;
     col = 0;
@@ -187,6 +241,7 @@ __global__ void styled_commit(DeviceState *s, const unsigned char *b,
   if (total.bg != 0xffffffffu)
     s->bg = total.bg;
   s->flags = (s->flags & total.one) | (~s->flags & total.zero);
+  s->join_blocked = 0;
   *done = n;
   *plain_rejected = 0;
 }
@@ -228,6 +283,7 @@ __global__ void styled_paint(DeviceState *s, const unsigned char *b, int n,
   if (i)
     styled_clear(s, logical, m, p);
   int pos = i;
+  bool modifier_ready = false;
   for (; pos < n;) {
     unsigned char c = b[pos];
     if (c == '\r' || c == '\n')
@@ -244,8 +300,16 @@ __global__ void styled_paint(DeviceState *s, const unsigned char *b, int n,
     }
     uint32_t cp;
     pos = read_scalar(b, n, pos, cp);
+    bool modifier_tone = cp >= 0x1f3fb && cp <= 0x1f3ff && modifier_ready;
+    if (modifier_tone)
+      modifier_ready = false;
+    else if (cp != 0xfe0f || !modifier_ready)
+      modifier_ready = inline_modifier(cp, b, pos, n);
     bool graphic = active_graphics(*s) && cp >= 0x5f && cp <= 0x7e;
     int width = cp < 127 ? 1 : s->text_widths[cp];
+    if (width == 1 && s->cols > 1 &&
+        (inline_vs16(cp, b, pos, n) || modifier_ready)) width = 2;
+    if (modifier_tone) width = 0;
     if (graphic)
       cp = dec_graphic(cp);
     if (width == 2 && s->cols == 1) {
@@ -259,11 +323,8 @@ __global__ void styled_paint(DeviceState *s, const unsigned char *b, int n,
         if ((target[previous].flags & TAIL) && previous > 0)
           --previous;
         Cell &cell = target[previous];
-        for (int k = 0; k < 3; ++k)
-          if (!cell.combining[k] || k == 2) {
-            cell.combining[k] = cp;
-            break;
-          }
+        if (!mark_pool::append_mark(cell, cp, s->marks))
+          s->pool_wait = 1;
       }
       continue;
     }

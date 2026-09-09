@@ -80,7 +80,9 @@ int main() {
         std::string text = "{\"device_bytes\":" + std::to_string(m.device_bytes) +
           ",\"image_bytes\":" + std::to_string(m.image_bytes) +
           ",\"transfer_bytes\":" + std::to_string(m.transfer_bytes) +
-          ",\"history_capacity\":" + std::to_string(m.history_capacity) + "}";
+          ",\"history_capacity\":" + std::to_string(m.history_capacity) +
+          ",\"mark_bytes\":" + std::to_string(m.mark_bytes) +
+          ",\"mark_nodes\":" + std::to_string(m.mark_nodes) + "}";
         respond(text.data(), text.size());
       } else if (action == 'W' && n == 8) {
         int dims[2]; std::memcpy(dims, bytes.data(), 8); engine.resize(dims[0], dims[1]);

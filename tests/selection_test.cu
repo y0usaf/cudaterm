@@ -20,7 +20,11 @@ void check(bool condition, const char *message) {
 }
 
 void expect_text(Engine &e, const std::string &expected) {
-  check(e.selected_text() == expected, "unexpected selected text");
+  const auto actual = e.selected_text();
+  if (actual != expected)
+    throw std::runtime_error("unexpected selected text: expected " +
+      std::to_string(expected.size()) + " bytes [" + expected.substr(0, 100) +
+      "], got " + std::to_string(actual.size()) + " [" + actual.substr(0, 100) + "]");
 }
 
 std::vector<uint32_t> render(Engine &e, int width, int height) {
@@ -78,8 +82,71 @@ void word_and_line_selection() {
   expect_text(e, "end\nsecond");
   e.select(1, 3, 0, 18, SelectionMode::Line);
   expect_text(e, "alpha_beta:: e\xCC\x81\xE4\xB8\xAD end\nsecond line");
+
+  // Line selection follows soft wraps in either click direction, but stops
+  // at a hard break.
+  Engine logical_line(8, 4);
+  feed(logical_line, "abcdefghijklmno");
+  logical_line.select(1, 2, 1, 2, SelectionMode::Line);
+  expect_text(logical_line, "abcdefghijklmno");
+  logical_line.select(0, 2, 0, 2, SelectionMode::Line);
+  expect_text(logical_line, "abcdefghijklmno");
+  logical_line.select(1, 2, 0, 2, SelectionMode::Line);
+  expect_text(logical_line, "abcdefghijklmno");
+  Engine hard_line(8, 3);
+  feed(hard_line, "abcdefgh\r\nijklmnop");
+  hard_line.select(1, 2, 1, 2, SelectionMode::Line);
+  expect_text(hard_line, "ijklmnop");
   e.select(0, 12, 0, 12, SelectionMode::Word);
   expect_text(e, ""); // Existing copy policy trims unmarked spaces.
+
+  // A word split by soft wrap remains one word in either click direction.
+  Engine wrapped_word(4, 3);
+  feed(wrapped_word, "abcde");
+  wrapped_word.select(1, 0, 1, 0, SelectionMode::Word);
+  expect_text(wrapped_word, "abcde");
+  wrapped_word.select(0, 2, 0, 2, SelectionMode::Word);
+  expect_text(wrapped_word, "abcde");
+
+  Engine separated_left(4, 2);
+  feed(separated_left, "abc def");
+  separated_left.select(1, 1, 1, 1, SelectionMode::Word);
+  expect_text(separated_left, "def");
+  Engine separated_right(4, 2);
+  feed(separated_right, "abc  def");
+  separated_right.select(0, 2, 0, 2, SelectionMode::Word);
+  expect_text(separated_right, "abc");
+
+  Engine multiple_wraps(3, 3);
+  feed(multiple_wraps, "abcdefghi");
+  multiple_wraps.select(2, 0, 2, 0, SelectionMode::Word);
+  expect_text(multiple_wraps, "abcdefghi");
+
+  // Hard breaks stop word expansion even when the surrounding words match.
+  Engine hard_break(4, 3);
+  feed(hard_break, "abc\r\nabc");
+  hard_break.select(1, 1, 1, 1, SelectionMode::Word);
+  expect_text(hard_break, "abc");
+
+  // History rows use the same viewed wrap metadata as live rows.
+  Engine wrapped_history(4, 4);
+  feed(wrapped_history, "abcdef\r\none\r\ntwo\r\nthree");
+  wrapped_history.scroll_view(999);
+  wrapped_history.select(1, 0, 1, 0, SelectionMode::Word);
+  expect_text(wrapped_history, "abcdef");
+
+  Engine wide_combining(4, 3);
+  feed(wide_combining, "abc\xE4\xB8\xAD\xCC\x81" "de");
+  wide_combining.select(1, 1, 1, 1, SelectionMode::Word);
+  expect_text(wide_combining, "abc\xE4\xB8\xAD\xCC\x81" "de");
+
+  // Reflow preserves the logical word when the split point changes.
+  Engine reflowed_word(4, 2);
+  feed(reflowed_word, "abcde");
+  reflowed_word.resize(3, 2);
+  reflowed_word.select(1, 1, 1, 1, SelectionMode::Word);
+  expect_text(reflowed_word, "abcde");
+
   Engine history(16, 2);
   feed(history, "old word\r\nnext line\r\nlast");
   history.scroll_view(1);
@@ -87,10 +154,101 @@ void word_and_line_selection() {
   expect_text(history, "word");
   history.select(0, 5, 0, 5, SelectionMode::Line);
   expect_text(history, "old word");
+
+  Engine wrapped_history_line(4, 3);
+  feed(wrapped_history_line, "abcdef\r\nnext\r\nlast");
+  wrapped_history_line.scroll_view(999);
+  if (wrapped_history_line.snapshot().view_offset <= 0) throw std::runtime_error("line fixture must view history");
+  wrapped_history_line.select(1, 1, 1, 1, SelectionMode::Line);
+  expect_text(wrapped_history_line, "abcdef");
+
+  Engine reflowed_line(4, 3);
+  feed(reflowed_line, "abcdefgh");
+  reflowed_line.resize(3, 3);
+  reflowed_line.select(2, 1, 2, 1, SelectionMode::Line);
+  expect_text(reflowed_line, "abcdefgh");
+
+  // A full row with wrap_pending has no committed soft-wrap join yet.
+  Engine pending_line(4, 2);
+  feed(pending_line, "abcd");
+  pending_line.select(0, 1, 0, 1, SelectionMode::Line);
+  expect_text(pending_line, "abcd");
   Engine tiny(1, 1);
   feed(tiny, "X");
   tiny.select(-1, -1, 9, 9, SelectionMode::Word);
   expect_text(tiny, "X");
+}
+
+void offviewport_logical_lines() {
+  using ct::SelectionMode;
+  const std::string twenty = "abcdefghijklmnopqrst";
+  Engine e(4, 3);
+  feed(e, twenty);
+  check(e.snapshot().history_rows == 2, "fixture must retain two wrapped rows");
+  for (int offset = 0; offset <= 2; ++offset) {
+    if (offset) e.scroll_view(offset == 1 ? 1 : 999);
+    const auto before = e.snapshot();
+    check(before.view_offset == offset, "unexpected selection viewport");
+    for (auto mode : {SelectionMode::Word, SelectionMode::Line}) {
+      e.select(1, 0, 1, 0, mode);
+      expect_text(e, twenty);
+      const auto after = e.snapshot();
+      check(after.view_offset == before.view_offset && after.row == before.row &&
+            after.col == before.col, "copy changed viewport or cursor");
+    }
+  }
+
+  Engine hard(4, 3);
+  feed(hard, "ABCD\r\n" + twenty);
+  for (auto mode : {SelectionMode::Word, SelectionMode::Line}) {
+    hard.select(0, 0, 0, 0, mode);
+    expect_text(hard, twenty);
+  }
+  hard.scroll_view(999);
+  hard.select(0, 0, 0, 0, SelectionMode::Line);
+  expect_text(hard, "ABCD");
+
+  Engine hard_batches(4, 3);
+  feed(hard_batches, "abcdefghij\r\nklmnopqrst");
+  hard_batches.scroll_view(1);
+  hard_batches.select(0, 0, 2, 0, SelectionMode::Line);
+  expect_text(hard_batches, "abcdefghij\nklmnopqrst");
+
+  Engine alternate(4, 3);
+  feed(alternate, twenty);
+  check(alternate.snapshot().history_rows == 2, "alternate fixture needs primary history");
+  feed(alternate, "\x1b[?1049h\x1b[HALT");
+  check(alternate.snapshot().alternate_screen, "alternate screen did not activate");
+  for (auto mode : {SelectionMode::Word, SelectionMode::Line}) {
+    alternate.select(0, 0, 0, 0, mode);
+    expect_text(alternate, "ALT");
+  }
+
+  Engine utf(3, 2);
+  const std::string unit = "ab\xE4\xB8\xAD\xCC\x81";
+  const std::string word = unit + unit + unit + unit;
+  feed(utf, word);
+  check(utf.snapshot().history_rows > 0, "Unicode fixture needs wrapped history");
+  for (auto mode : {SelectionMode::Word, SelectionMode::Line}) {
+    utf.select(0, 0, 0, 0, mode);
+    expect_text(utf, word);
+  }
+}
+
+void bounded_offviewport_copy_workspace() {
+  Engine e(128, 24);
+  feed(e, std::string(128 * (4096 + 26), 'x') + "END");
+  check(e.snapshot().history_rows == 4096, "retained history bound was not reached");
+  const std::string expected = std::string(128 * (4096 + 23), 'x') + "END";
+  e.select(23, 0, 23, 0, ct::SelectionMode::Word);
+  const auto before = e.memory_usage().device_bytes;
+  expect_text(e, expected);
+  const auto after = e.memory_usage().device_bytes;
+  check(after >= before && after - before <= size_t(24 * 128 * 16 + 24 + 1),
+        "offviewport selection workspace exceeded one viewport");
+  expect_text(e, expected);
+  check(e.memory_usage().device_bytes == after,
+        "repeated offviewport copy grew selection workspace");
 }
 
 void rowmap_is_used_for_text() {
@@ -131,6 +289,8 @@ void wrapped_copy_preserves_logical_lines() {
   // must use the logical row length and omit that padding.
   Engine wide(4, 2);
   feed(wide, "abc\xE4\xB8\xad");
+  wide.select(0, 3, 0, 3, ct::SelectionMode::Line);
+  expect_text(wide, "abc\xE4\xB8\xad");
   wide.select(0, 0, 1, 3);
   expect_text(wide, "abc\xE4\xB8\xad");
   wide.select(1, 0, 1, 0);
@@ -373,12 +533,42 @@ void selected_pixels_are_inverted() {
 } // namespace
 
 int main() {
+  {
+    ct::Engine e(16, 3);
+    feed(e, "https://example.org/long/path next");
+    e.select(0, 8, 0, 8, ct::SelectionMode::Link);
+    expect_text(e, "https://example.org/long/path");
+    ct::Engine international(16, 3);
+    feed(international, " https://例子.org/路径　next");
+    international.select(0, 10, 0, 10, ct::SelectionMode::Link);
+    expect_text(international, "https://例子.org/路径");
+    ct::Engine wide(8, 3);
+    feed(wide, "a中bc\r\nx中yz");
+    wide.select(0, 2, 1, 3, ct::SelectionMode::Rectangle);
+    expect_text(wide, "中b\n中y");
+    ct::Engine history(8, 3);
+    feed(history, "one\r\ntwo\r\nthree\r\nfour\r\nfive");
+    history.select(-2,0,2,3,ct::SelectionMode::Cell,true);
+    expect_text(history,"one\ntwo\nthree\nfour\nfive");
+  }
+  {
+    ct::Engine e(8, 4);
+    std::string text = "abcdEFGH\r\nijklMNOP\r\nqrstUVWX";
+    e.feed((const unsigned char *)text.data(), text.size());
+    e.select(2, 5, 0, 2, ct::SelectionMode::Rectangle);
+    if (e.selected_text() != "cdEF\nklMN\nstUV") throw std::runtime_error("rectangular reversed copy");
+    e.select(0, 0, 2, 7, ct::SelectionMode::Rectangle);
+    if (e.selected_text() != "abcdEFGH\nijklMNOP\nqrstUVWX") throw std::runtime_error("rectangular rows");
+  }
+
   struct Test {
     const char *name;
     void (*run)();
   } tests[] = {
       {"forward_reverse_and_clamp", forward_reverse_and_clamp},
       {"word_and_line_selection", word_and_line_selection},
+      {"offviewport_logical_lines", offviewport_logical_lines},
+      {"bounded_offviewport_copy_workspace", bounded_offviewport_copy_workspace},
       {"rowmap_is_used_for_text", rowmap_is_used_for_text},
       {"wrapped_copy_preserves_logical_lines",
        wrapped_copy_preserves_logical_lines},
