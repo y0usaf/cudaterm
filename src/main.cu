@@ -345,6 +345,7 @@ struct App {
   int link_row = 0, link_col = 0;
   ct::ClipboardWrites clipboard_writes;
   double cursor_deadline = 0, selection_deadline = 0, copy_flash_deadline = 0;
+  double last_input = 0;
   ct::CursorMotion cursor_motion;
   bool cursor_last_alternate = false;
 
@@ -364,6 +365,7 @@ void flush_input(App *a) {
 void follow_output(App *a) {
   a->engine->follow_output();
   a->selecting = false; a->link_click = false;
+  a->last_input = glfwGetTime();
   a->dirty = true;
 }
 constexpr size_t SearchMaxCodepoints = 512, SearchMaxBytes = 2048;
@@ -1101,6 +1103,7 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
       button != GLFW_MOUSE_BUTTON_RIGHT)
     return;
   auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  a->last_input = glfwGetTime();
   try {
     // Use event-ordered coordinates: querying the pointer here can see a
     // later move already queued behind this button event.
@@ -1181,6 +1184,7 @@ void mouse_button(GLFWwindow *w, int button, int action, int mods) {
 }
 void wheel(GLFWwindow *w, double x, double y) {
   auto *a = static_cast<App *>(glfwGetWindowUserPointer(w));
+  a->last_input = glfwGetTime();
   try {
     int mods = mouse_modifiers(w);
     int row, col;
@@ -1653,7 +1657,8 @@ int main(int argc, char **argv) {
       float previous_x = app.cursor_motion.x, previous_y = app.cursor_motion.y;
       bool cursor_animating = app.cursor_motion.update(cursor_state.col, cursor_state.row, glfwGetTime(),
         app.settings.cursor_animation, !app.focused || !cursor_state.cursor_visible || app.searching ||
-        cursor_state.view_offset || app.cursor_last_alternate != cursor_state.alternate_screen);
+        cursor_state.view_offset || app.cursor_last_alternate != cursor_state.alternate_screen ||
+        glfwGetTime() - app.last_input > ct::kUserInputWindow);
       app.cursor_last_alternate = cursor_state.alternate_screen;
       if (app.cursor_motion.x != previous_x || app.cursor_motion.y != previous_y || app.dirty) {
         engine.set_cursor_position(app.cursor_motion.x, app.cursor_motion.y);

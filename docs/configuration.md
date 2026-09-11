@@ -33,8 +33,12 @@ color-file path. File paths in the config resolve relative to its directory.
 Use `cursor-style = block`, `underline`, or `bar`. Applications can override it
 with DECSCUSR. `cursor-blink` controls the default; blinking stops when the cursor
 is hidden or the window is unfocused. An unfocused cursor is an outline.
-`cursor-animation` is the easing duration in seconds (0–0.5); set it to `0` for
-no motion. Motion stops scheduling frames as soon as the cursor settles.
+`cursor-animation` is the time in seconds the cursor takes to settle after a
+move (0–0.5); set it to `0` for no motion. Motion stops scheduling frames as
+soon as the cursor settles. Moves within a quarter second of your last
+keystroke or pointer event animate; positions an application picks on its own
+— output, repaints — and single jumps longer than eight cells land immediately,
+so the block tracks the text instead of drifting over it.
 
 Each setting also accepts a CLI flag, for example:
 
