@@ -1,21 +1,21 @@
 {
   "status": "pass",
   "command": "nix run .#window-search-test",
-  "log": "bench/search-review-final-window.log",
+  "log": "bench/word-wrap-window-search.log",
   "manifest_provenance": "manually assembled from the passing wrapper run; the fixture does not emit this JSON",
   "wrapper": {
-    "path": "/nix/store/f29cpbiac13f9mnq0akik67ycsl2k9df-cudaterm-window-search-test",
-    "sha256": "c5fd1be4aaa5f78979568e7415fbe6bdfb4f997691bd6d783e603e79f1afc1cc",
-    "application_path": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm",
-    "application_sha256": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00"
+    "path": "/nix/store/wmgr2pbxc4294mg4k68j1ywrabm7bfjs-cudaterm-window-search-test",
+    "sha256": "e0fb3957900520bc4413450fc94ce5c35c7c22433896c656a6767c07d7fb543a",
+    "application_path": "/nix/store/bhsgnbrzzz67pxqvm39s2bznj5hv3zsm-cudaterm-0.1.0/bin/cudaterm",
+    "application_sha256": "fcd4d7551dab8736dd513820d21dfd1b1406f29dc2765ca430031234dc2a1cba"
   },
   "application": {
-    "path": "/nix/store/v513niaacn1bz0zn35pv9wsmy5mfiqx0-cudaterm-0.1.0/bin/cudaterm",
-    "sha256": "370893e3516a6397e9955919b26960b777a281f1e5a6e7c6c79b57acf6c47b00"
+    "path": "/nix/store/bhsgnbrzzz67pxqvm39s2bznj5hv3zsm-cudaterm-0.1.0/bin/cudaterm",
+    "sha256": "fcd4d7551dab8736dd513820d21dfd1b1406f29dc2765ca430031234dc2a1cba"
   },
   "seat_module": {
-    "path": "/nix/store/nfvpbapbwqwqv8n45ca4gc3c83py80k1-cudaterm-headless-seat/lib/seat.so",
-    "sha256": "8c64db4d3b2eacc15acfae6fb58d63adf85f0728de0c7a9ef72579a20eb18818"
+    "path": "/nix/store/336s07r9p7l8agk86f4gj9x0hnw3f0zz-cudaterm-headless-seat/lib/seat.so",
+    "sha256": "4bcf9c4225a79aa5198825e8aba905a934e7296df38364ed1faa9ee4e94e5a6f"
   },
   "checks": [
     "wrapped UTF-8 history sentinel search",
@@ -34,11 +34,24 @@
     "before_visible": true,
     "active_absent": true,
     "restored_visible_same_coordinates": true,
-    "child_geometry": {"columns": 80, "rows": 32}
+    "child_geometry": {
+      "columns": 80,
+      "rows": 32
+    }
   },
-  "trace_markers_compiled": ["search_open", "search_found", "search_missing", "search_copy"],
+  "trace_markers_compiled": [
+    "search_open",
+    "search_found",
+    "search_missing",
+    "search_copy"
+  ],
   "trace": "bench/window-search-search.csv",
-  "trace_sha256": "61a79517d32a3ce3242b18067e381d0b881badb88d4bfb31a0fd75ab03bec0ec",
-  "run_log_sha256": "d3fdb5a7c40aee1a107c2248db24c1f710289c11cb68005db3f46a05f7d181e3",
-  "prompt_viewport_direct_capture": true
+  "trace_sha256": "1a694ebcc57061cdea6928f4536a42f7e1392a9324849fccda31c200c719f311",
+  "run_log_sha256": "2c9ad2b3d2cde1372420c7dd1b124746e1620c6df330c3ac024006dbd6c0f111",
+  "prompt_viewport_direct_capture": true,
+  "capture_sha256": {
+    "before": "20f9d59dd29f75c154e30151f6262b1cf99dc2ee4340a73d9a67e2f023abe4e9",
+    "active": "ef4c5a8ba9d986c059d17a81fd061f11191550be0ae0bca43a2378bb2d994421",
+    "restored": "1cfa1db5fe4a89e9807d59bcb8e996b02b715f60c5b7f56ff0afaacede3c2662"
+  }
 }
