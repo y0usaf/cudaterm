@@ -40,7 +40,7 @@ The reusable integration is maintained in this repository:
 For a persistent Finix configuration, add a flake input:
 
 ```nix
-inputs.cudaterm.url = "path:/home/y0usaf/dev/developing/cudaterm";
+inputs.cudaterm.url = "path:/home/y0usaf/dev/maintaining/cudaterm";
 ```
 
 Then include this module on the NVIDIA desktop only:
