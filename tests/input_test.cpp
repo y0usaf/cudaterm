@@ -95,14 +95,20 @@ int main() {
   {
     ct::CursorMotion motion;
     if (motion.update(0,0,0,.08,false)) throw std::runtime_error("initial cursor animated");
-    motion.update(10,0,1,.08,false);
-    if (!motion.update(10,0,1.04,.08,false) || motion.x <= 0 || motion.x >= 10)
+    if (!motion.update(2,0,1,.08,false) || motion.x <= 0 || motion.x >= 2)
       throw std::runtime_error("cursor did not interpolate");
-    float before = motion.x;
-    motion.update(20,0,1.04,.08,false);
-    if (motion.x != before) throw std::runtime_error("retargeted cursor jumped");
-    if (motion.update(20,0,2,.08,false) || motion.x != 20)
+    if (motion.update(2,0,1.5,.08,false) || motion.x != 2)
       throw std::runtime_error("cursor did not settle");
+    // Retargeting without elapsed time must not move the block on its own.
+    motion.update(3,0,1.5,.08,false);
+    if (motion.x != 2) throw std::runtime_error("retargeted cursor jumped");
+    // A single repaint jump is not a gesture worth gliding across the window.
+    if (motion.update(40,0,2,.08,false) || motion.x != 40 || motion.y != 0)
+      throw std::runtime_error("long cursor jump did not snap");
+    // Application output moves the cursor far faster than a hand can; the block
+    // must track it instead of drifting over the text it is printing.
+    if (motion.update(41,0,2.01,.08,false) || motion.x != 41)
+      throw std::runtime_error("rapid cursor move did not glue");
     if (motion.update(1,1,3,0,false) || motion.x != 1 || motion.y != 1)
       throw std::runtime_error("reduced motion did not snap");
   }
