@@ -103,6 +103,7 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i >= n)
     return;
+  const int cap = dmin(n, i + 4096);
   scan[i] = line_identity();
   if (i && b[i - 1] != '\n')
     return;
@@ -125,7 +126,7 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       col = line_tabcol(s, col);
       ++pos;
     } else if (c == 27) {
-      int end = read_sgr(p, b, dmin(n, i + 4096), pos);
+      int end = read_sgr(p, b, cap, pos);
       if (end < 0) {
         atomicMin(limit, i);
         return;
@@ -136,9 +137,9 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       // Repeated CRs before LF have the same layout as one CRLF. PTY output
       // processing can produce these when an application writes CRLF itself.
       int end = pos;
-      while (end < dmin(n, i + 4096) && b[end] == '\r')
+      while (end < cap && b[end] == '\r')
         ++end;
-      if (end == dmin(n, i + 4096) || b[end] != '\n') {
+      if (end == cap || b[end] != '\n') {
         atomicMin(limit, i);
         return;
       }
@@ -149,7 +150,7 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       break;
     } else {
       uint32_t cp;
-      int end = read_scalar(b, dmin(n, i + 4096), pos, cp);
+      int end = read_scalar(b, cap, pos, cp);
       if (end < 0) {
         atomicMin(limit, i);
         return;
@@ -170,13 +171,13 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
         modifier_ready = false;
       } else if (cp == 0xfe0f && modifier_ready) {
       } else {
-        modifier_ready = inline_modifier(cp, b, pos, dmin(n, i + 4096));
+        modifier_ready = inline_modifier(cp, b, pos, cap);
       }
       if (cp == 0xfe0f && !inline_selector && !modifier_ready) {
         atomicMin(limit, i);
         return;
       }
-      inline_selector = inline_vs16(cp, b, pos, dmin(n, i + 4096));
+      inline_selector = inline_vs16(cp, b, pos, cap);
       int width = cp < 127 ? 1 : s->text_widths[cp];
       // The scalar path owns cluster attachment and promotion for nonzero
       // GCB Extend values and default ignorables whose width table predates

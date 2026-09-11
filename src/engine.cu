@@ -1911,13 +1911,12 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     if ((z.flags & UNDERLINE) && glyph_y == 14)
       ink = true;
     int font_style = (z.flags & BOLD ? 1 : 0) | (z.flags & ITALIC ? 2 : 0);
-    unsigned alpha = face_alpha(s, z.cp, face_x,
-        (y % s->cell_height) * s->face_height / s->cell_height, font_style);
+    const int face_y = (y % s->cell_height) * s->face_height / s->cell_height;
+    unsigned alpha = face_alpha(s, z.cp, face_x, face_y, font_style);
     if (alpha == 256) alpha = ink ? 255 : 0;
     else {
       if ((z.flags & BOLD) && s->face_pixels[1] == s->face_pixels[0] && face_x > 0)
-        alpha = dmax(alpha, face_alpha(s, z.cp, face_x - 1,
-          (y % s->cell_height) * s->face_height / s->cell_height, font_style));
+        alpha = dmax(alpha, face_alpha(s, z.cp, face_x - 1, face_y, font_style));
       if ((z.flags & UNDERLINE) && glyph_y == 14) alpha = 255;
       // Combining marks retain the existing Unifont placement/coverage.
       uint32_t face_mark_ref = mark_pool::head(z);
