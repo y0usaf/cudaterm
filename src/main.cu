@@ -14,6 +14,7 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include "primary_selection.hpp"
+#include "activation.hpp"
 #include "ime.hpp"
 #include <cuda_gl_interop.h>
 #include <cuda_runtime.h>
@@ -1617,6 +1618,8 @@ int main(int argc, char **argv) {
         std::string replies = engine.take_replies();
         std::string title;
         if (engine.take_title(title)) glfwSetWindowTitle(win, title.c_str());
+        if (engine.take_bell() && !glfwGetWindowAttrib(win, GLFW_FOCUSED))
+          ct::activation::request(win);
         bool syncing = engine.synchronized_updates();
         // Only an idle/abandoned update expires. Long, actively arriving
         // browser uploads must keep the previously presented frame intact.

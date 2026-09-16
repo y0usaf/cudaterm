@@ -93,6 +93,8 @@ public:
   void set_cursor_position(float col, float row);
   void set_background_opacity(float opacity);
   bool take_title(std::string &title);
+  // True once per BEL received while bell activation (CSI ? 1042) is on.
+  bool take_bell();
   // Pump host input while image decompression runs independently. The callback
   // may use input/selection methods, but must not feed more PTY output. `busy`
   // is false once decoding is complete, allowing deferred resize/allocation.

@@ -57,6 +57,7 @@ struct ReplyBuffer {
   unsigned char bytes[REPLY_CAP];
   int title_changed;
   char title[512];
+  int bell;
 };
 struct FillJob {
   Cell *first;
@@ -120,7 +121,7 @@ struct DeviceState {
   int pending_valid, pool_wait, mark_gc;
   int join_blocked;
   int mouse_mode, mouse_sgr, mouse_row, mouse_col;
-  int mouse_pixels, focus_reporting, synchronized_updates;
+  int mouse_pixels, focus_reporting, synchronized_updates, bell_enabled;
   int copy_flash;
   int selection_active, selection_start_row, selection_start_col;
   int selection_end_row, selection_end_col, selection_rectangle;
@@ -1011,6 +1012,8 @@ __device__ void csi(DeviceState &s, unsigned char f) {
           s.app_keypad = on;
         else if (mode == 1035)
           s.numlock_override = on;
+        else if (mode == 1042)
+          s.bell_enabled = on;
         else if (mode == 6) {
           s.origin = on;
           s.row = on ? s.top : 0;
@@ -1179,6 +1182,8 @@ __device__ void byte(DeviceState &s, unsigned char c) {
       s.wrap_pending = 0;
     } else if (c == 9)
       tabs(s, 1, true);
+    else if (c == 7 && s.bell_enabled)
+      s.replies->bell = 1;
     return;
   }
   if (s.csi) {
@@ -2158,7 +2163,7 @@ __global__ void commit_history_growth(DeviceState *s, Cell *out, int capacity) {
 }
 __global__ void reset_replies(DeviceState *s) {
   s->reply_len = s->replies->length = 0;
-  s->replies->title_changed = 0;
+  s->replies->title_changed = s->replies->bell = 0;
 }
 __global__ void scroll_view_kernel(DeviceState *s, int delta) {
   if (s->alt_active) {
@@ -2242,6 +2247,7 @@ struct Engine::Impl {
   bool decoding = false;
   std::string title;
   bool title_changed = false;
+  bool bell_pending = false;
   GraphicsState *graphics = nullptr;
   unsigned char *graphics_input = nullptr;
   size_t graphics_capacity = 0;
@@ -2691,6 +2697,7 @@ Engine::Engine(int c, int r) : p(nullptr) {
     s.cursor_x = s.cursor_y = -1;
     s.default_cursor_style = 2;
     s.numlock_override = 1;
+    s.bell_enabled = 1;
     s.mouse_row = s.mouse_col = -1;
     s.autowrap = s.saved_autowrap = 1;
     s.saved_fg = DEFAULT_FG;
@@ -3054,10 +3061,11 @@ std::string Engine::take_replies() {
   ck(cudaMemcpy(&buffer, p->replies, sizeof(buffer), cudaMemcpyDeviceToHost));
   p->synchronized = buffer.synchronized_updates;
   if (buffer.title_changed) { p->title = buffer.title; p->title_changed = true; }
+  if (buffer.bell) p->bell_pending = true;
   if (buffer.length < 0 || buffer.length > REPLY_CAP)
     throw std::runtime_error("invalid reply buffer length");
   std::string z(reinterpret_cast<const char *>(buffer.bytes), buffer.length);
-  if (buffer.length || buffer.title_changed) {
+  if (buffer.length || buffer.title_changed || buffer.bell) {
     reset_replies<<<1, 1>>>(p->d);
     ck(cudaGetLastError());
   }
@@ -3245,6 +3253,9 @@ void Engine::set_theme(const Theme &theme) {
 bool Engine::take_title(std::string &title) {
   if (!p->title_changed) return false;
   title = p->title; p->title_changed = false; return true;
+}
+bool Engine::take_bell() {
+  bool bell = p->bell_pending; p->bell_pending = false; return bell;
 }
 }
 

@@ -103,12 +103,15 @@
           (pkgs.lib.fileset.fileFilter (file: ! file.hasExt "pyc") ./.)
           (pkgs.lib.fileset.unions [ ./src ./tests ./tools ./data ./bench/pty_throughput.py ./bench/visible_output.py ./bench/private_baseline.py ./bench/engine_bench.cu ]);
       };
-      nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.python3 ];
+      nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.python3 pkgs.wayland-scanner ];
       buildInputs = [ cuda.cuda_cudart glfw pkgs.libGL pkgs.libvterm-neovim pkgs.freetype pkgs.fontconfig pkgs.xxhash pkgs.wayland pkgs.libx11 pkgs.libxrandr ];
       buildPhase = ''
         runHook preBuild
+        wayland-scanner client-header ${pkgs.wayland-protocols}/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml xdg-activation-v1-client-protocol.h
+        wayland-scanner private-code ${pkgs.wayland-protocols}/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml xdg-activation-v1-protocol.c
+        $CC -O2 -c xdg-activation-v1-protocol.c -o xdg-activation-v1.o
         nvcc -O3 -lineinfo -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -c src/engine.cu -o engine.o
-        nvcc -O3 -std=c++17 -arch=sm_89 -I src -DCUDATERM_DATA_DIR='"${fontData}"' -DCUDATERM_FONT_CACHE_ID='"${fontRendererId}"' -DCUDATERM_XDG_OPEN='"${pkgs.xdg-utils}/bin/xdg-open"' src/main.cu engine.o \
+        nvcc -O3 -std=c++17 -arch=sm_89 -I src -I . -DCUDATERM_DATA_DIR='"${fontData}"' -DCUDATERM_FONT_CACHE_ID='"${fontRendererId}"' -DCUDATERM_XDG_OPEN='"${pkgs.xdg-utils}/bin/xdg-open"' src/main.cu engine.o xdg-activation-v1.o \
           $(pkg-config --cflags --libs glfw3 gl freetype2 fontconfig libxxhash wayland-client x11) -lutil -o cudaterm
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/engine_test.cu engine.o -o engine-test
         nvcc -O3 -std=c++17 -arch=sm_89 -I src tests/appearance_test.cu engine.o -o appearance-test
