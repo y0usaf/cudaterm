@@ -39,11 +39,21 @@ __device__ bool graphic_placement_matches(const GraphicsState &g,
   uint32_t id = graphic_value(p, 'p');
   return !id || placement.placement == id;
 }
+// Kitty stacks placements by z, then by image id.
+__device__ bool graphic_below(const GraphicsState &g, int a, int b) {
+  const auto &pa = g.placements[a], &pb = g.placements[b];
+  if (pa.z != pb.z) return pa.z < pb.z;
+  auto id = [&](int slot) { return slot >= 0 && slot < IMAGE_SLOTS ? g.images[slot].id : 0u; };
+  return id(pa.image_slot) < id(pb.image_slot);
+}
 __device__ void graphic_visible(GraphicsState &g) {
   g.visible_count = 0;
-  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i)
-    if (g.placements[i].occupied && g.placements[i].visible)
-      g.visible[g.visible_count++] = i;
+  for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i) {
+    if (!g.placements[i].occupied || !g.placements[i].visible) continue;
+    int j = g.visible_count++;
+    for (; j > 0 && graphic_below(g, i, g.visible[j - 1]); --j) g.visible[j] = g.visible[j - 1];
+    g.visible[j] = i;
+  }
 }
 // Resolve Kitty's destination size from a source crop.  c and r are cell
 // counts: both set requests an exact rectangle, while one set preserves the
@@ -84,16 +94,18 @@ __device__ bool graphic_destination_size(const DeviceState &s, int source_width,
 }
 __device__ void graphic_begin(GraphicsState &g) {
   g.command = {};
-  g.chunk_size = g.invalid = g.phase = g.key = g.digits = g.header_size = 0;
+  g.chunk_size = g.invalid = g.phase = g.key = g.digits = g.header_size = g.negative = 0;
   g.value = 0;
 }
 __device__ void graphic_parameter(GraphicsState &g) {
   if (g.phase != 2 || !g.digits || g.command.seen[g.key]) g.invalid = 1;
+  // z is the only signed key; it is stored as its 32-bit two's complement.
+  if (g.key == 'z' && g.value > (g.negative ? 0x80000000u : 0x7fffffffu)) g.invalid = 1;
   if (!g.invalid) {
     g.command.seen[g.key] = 1;
-    g.command.value[g.key] = g.value;
+    g.command.value[g.key] = g.negative ? 0u - g.value : g.value;
   }
-  g.phase = g.key = g.digits = 0;
+  g.phase = g.key = g.digits = g.negative = 0;
   g.value = 0;
 }
 __device__ void graphic_header(GraphicsState &g, unsigned char c) {
@@ -101,7 +113,7 @@ __device__ void graphic_header(GraphicsState &g, unsigned char c) {
   if (c == ',') { graphic_parameter(g); return; }
   if (g.phase == 0) {
     bool known = false;
-    const char *keys = "atfovsiphwxyXYmCqdcr";
+    const char *keys = "atfovsiphwxyXYmCqdcrz";
     for (int i = 0; keys[i]; ++i) known |= keys[i] == c;
     if (!known) { g.invalid = 1; return; }
     g.key = c; g.phase = 1;
@@ -111,6 +123,8 @@ __device__ void graphic_header(GraphicsState &g, unsigned char c) {
   } else if (g.key == 'a' || g.key == 't' || g.key == 'o' || g.key == 'd') {
     if (g.digits) g.invalid = 1;
     g.value = c; ++g.digits;
+  } else if (g.key == 'z' && c == '-' && !g.digits && !g.negative) {
+    g.negative = 1;
   } else {
     if (c < '0' || c > '9' || g.value > (0xffffffffu - (c - '0')) / 10) {
       g.invalid = 1; return;
@@ -317,6 +331,7 @@ __device__ bool graphic_place(DeviceState &s, GraphicPlacement &placement,
   placement.dest_width = dest_width; placement.dest_height = dest_height;
   placement.width_crop = dest_width; placement.height_crop = dest_height;
   placement.px = s.col * s.cell_width + x; placement.py = s.row * s.cell_height + y;
+  placement.z = int(graphic_value(p, 'z'));
   return true;
 }
 __device__ void graphic_cursor(DeviceState &s, const GraphicPlacement &placement,
@@ -477,10 +492,17 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
   graphic_visible(g);
   r.ready = 0;
 }
-__device__ uint32_t graphic_pixel(const DeviceState &s, int x, int y, uint32_t color, unsigned &opacity) {
+// Kitty's z bands: below non-default cell backgrounds, below text, above text.
+__device__ int graphic_band(int z) { return z < -1073741824 ? 0 : z < 0 ? 1 : 2; }
+__device__ bool graphic_below_text(const DeviceState &s) {
+  const auto &g = *s.graphics;
+  return g.visible_count && g.placements[g.visible[0]].z < 0;
+}
+__device__ uint32_t graphic_pixel(const DeviceState &s, int x, int y, uint32_t color, unsigned &opacity, int band) {
   const auto &g = *s.graphics;
   for (int i = 0; i < g.visible_count; ++i) {
     const auto &placement = g.placements[g.visible[i]];
+    if (graphic_band(placement.z) != band) continue;
     if (!placement.occupied || !placement.visible || placement.screen != s.alt_active ||
         placement.image_slot < 0 || placement.image_slot >= IMAGE_SLOTS) continue;
     const auto &im = g.images[placement.image_slot];

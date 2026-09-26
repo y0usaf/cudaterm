@@ -26,7 +26,7 @@ struct GraphicPlacement {
   int occupied, image_slot;
   uint32_t placement;
   int screen, visible;
-  int px, py;
+  int px, py, z;
   // sx/sy and width_crop/height_crop describe the currently visible part
   // of the destination rectangle.  The scroll path trims this rectangle in
   // destination pixels, so source sampling can remain correct for scaled
@@ -45,6 +45,6 @@ struct GraphicsState {
   unsigned char *input;
   size_t input_capacity;
   size_t used;
-  int chunk_size, active, invalid, phase, key, digits, header_size;
+  int chunk_size, active, invalid, phase, key, digits, header_size, negative;
   uint32_t value, next_id;
 };

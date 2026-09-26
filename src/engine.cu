@@ -1820,6 +1820,20 @@ __device__ void selection_columns(const DeviceState &s, int row, int &first, int
     if (last + 1 < s.cols && (viewed_cell(s, row, last).flags & WIDE)) ++last;
   }
 }
+__device__ uint32_t premultiply(uint32_t color, unsigned alpha) {
+  if (alpha == 255) return color;
+  uint32_t out = 0;
+  for (int shift = 0; shift <= 16; shift += 8)
+    out |= ((((color >> shift) & 255) * alpha + 127) / 255) << shift;
+  return out;
+}
+__device__ uint32_t unpremultiply(uint32_t color, unsigned alpha) {
+  if (alpha == 255 || !alpha) return alpha ? color : 0;
+  uint32_t out = 0;
+  for (int shift = 0; shift <= 16; shift += 8)
+    out |= dmin(255u, (((color >> shift) & 255) * 255 + alpha / 2) / alpha) << shift;
+  return out;
+}
 __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
                               int h, const Cell *prompt, bool preedit) {
   int x = blockIdx.x * blockDim.x + threadIdx.x,
@@ -1834,14 +1848,8 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     (preedit ? (!s->view_offset && r == s->row && prompt_col >= 0 &&
                 prompt[prompt_col].cp != 0) : r == s->rows - 1);
   int glyph_y = (y % s->cell_height) * 16 / s->cell_height;
-  uint32_t color = resolved(*s, DEFAULT_BG);
   unsigned opacity = s->background_alpha;
-  if (opacity != 255) {
-    uint32_t premultiplied = 0;
-    for (int shift = 0; shift <= 16; shift += 8)
-      premultiplied |= ((((color >> shift) & 255) * opacity + 127) / 255) << shift;
-    color = premultiplied;
-  }
+  uint32_t color = premultiply(resolved(*s, DEFAULT_BG), opacity);
   if (x >= 0 && y >= 0 && c < s->cols && r < s->rows) {
     Cell z = overlay ? prompt[prompt_col] : viewed_cell(*s, r, c);
     int gx = (x % s->cell_width) * 8 / s->cell_width;
@@ -1937,8 +1945,17 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     }
     if ((z.flags & STRIKE) && local_y == s->cell_height / 2) alpha = 255;
     if (z.flags & HIDDEN) alpha = 0;
-    unsigned base_alpha = z.bg == DEFAULT_BG && !(z.flags & INVERSE) && !selected && !cursor
-      ? s->background_alpha : 255;
+    bool plain = z.bg == DEFAULT_BG && !(z.flags & INVERSE) && !selected && !cursor;
+    unsigned base_alpha = plain ? s->background_alpha : 255;
+    if (!overlay && graphic_below_text(*s)) {
+      // Negative z sits under the glyph; the lowest band also sits under a
+      // non-default cell background. The glyph blend takes it as its background.
+      unsigned under = s->background_alpha;
+      uint32_t base = graphic_pixel(*s, x, y, premultiply(resolved(*s, DEFAULT_BG), under), under, 0);
+      if (!plain) { base = bg; under = 255; }
+      base = graphic_pixel(*s, x, y, base, under, 1);
+      bg = unpremultiply(base, under); base_alpha = under;
+    }
     opacity = alpha + (base_alpha * (255 - alpha) + 127) / 255;
     if (alpha == 255) color = fg;
     else if (!alpha && base_alpha == 255) color = bg;
@@ -1950,7 +1967,7 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     }
   }
   if (!overlay && x >= 0 && y >= 0 && c < s->cols && r < s->rows)
-    color = graphic_pixel(*s, x, y, color, opacity);
+    color = graphic_pixel(*s, x, y, color, opacity, 2);
   out[output_y * w + output_x] =
       (opacity << 24) | ((color & 255) << 16) | (color & 0xff00) | (color >> 16);
 }

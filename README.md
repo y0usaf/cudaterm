@@ -56,8 +56,10 @@ placements share one decoded image; `c`/`r` scale the source crop, preserving it
 aspect ratio when only one dimension is given. Decoded images stay in
 VRAM; transient upload storage is freed after each completed transfer. Limits
 are 128 images, 256 placements, 32 MiB per image and 64 MiB retained image data.
-Scaling uses nearest-neighbor sampling. PNG, file/shared-memory transport,
-animation, z ordering, and Unicode/relative placements are not implemented.
+Scaling uses nearest-neighbor sampling. Placements stack by `z` as in Kitty:
+negative z draws under text, and below -1073741824 also under non-default cell
+backgrounds. PNG, file/shared-memory transport, animation, and Unicode/relative
+placements are not implemented.
 This is a bounded Kitty implementation, not full
 Kitty/Foot/Monstar feature parity.
 
