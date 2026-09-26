@@ -1,6 +1,8 @@
 #pragma once
+#include <algorithm>
 #include <string>
 #include <cstddef>
+#include <cstring>
 
 namespace ct {
 class ClipboardWrites {
@@ -60,6 +62,23 @@ class ClipboardWrites {
 public:
   template<class Write> void feed(const unsigned char *bytes, size_t length, Write write) {
     for (size_t i = 0; i < length; ++i) {
+      if (state == Ground) {
+        auto *escape = static_cast<const unsigned char *>(std::memchr(bytes + i, 27, length - i));
+        if (!escape) return;
+        i = size_t(escape - bytes);
+      } else if (state == Osc || state == Other) {
+        size_t end = i;
+        while (end < length && bytes[end] != 27 && bytes[end] != 0x18 && bytes[end] != 0x1a &&
+               (state == Other || bytes[end] != 7))
+          ++end;
+        if (state == Osc) {
+          size_t take = std::min(end - i, limit - payload.size());
+          payload.append(reinterpret_cast<const char *>(bytes + i), take);
+          overflow = overflow || take < end - i;
+        }
+        if (end == length) return;
+        i = end;
+      }
       unsigned char c = bytes[i];
       if (c == 0x18 || c == 0x1a) { state = Ground; payload.clear(); continue; }
       switch (state) {
