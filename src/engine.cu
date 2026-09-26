@@ -1289,41 +1289,36 @@ __device__ void byte(DeviceState &s, unsigned char c) {
 __device__ size_t csi_run(DeviceState &s, const unsigned char *input, size_t n,
                           size_t offset) {
   int index = s.csi_n, value = s.params[index];
-  int ignore = s.csi_ignore, priv = s.csi_private;
+  int ignore = s.csi_ignore, priv = s.csi_private, has_param = s.csi_has_param;
+  int intermediate = s.csi_intermediate, prefix = s.csi_prefix;
+  unsigned char c = 0;
   while (offset < n) {
-    unsigned char c = input[offset];
+    c = input[offset];
     if (c < 32 || c >= 127)
       break;
     ++offset;
     if (c >= '0' && c <= '9') {
-      s.csi_has_param = 1;
-      if (s.csi_intermediate) ignore = 1;
+      has_param = 1;
+      if (intermediate) ignore = 1;
       if (!ignore)
         value = dmin(1000000, value * 10 + c - '0');
     } else if (c == ';') {
-      s.csi_has_param = 1;
-      if (s.csi_intermediate) ignore = 1;
+      has_param = 1;
+      if (intermediate) ignore = 1;
       if (index < 15) {
         s.params[index++] = value;
         value = 0;
       } else
         ignore = 1;
     } else if ((c == '?' || c == '>' || c == '<' || c == '=') &&
-               index == 0 && value == 0 && !s.csi_intermediate) {
+               index == 0 && value == 0 && !intermediate) {
       if (c == '?')
         priv = 1;
-      s.csi_prefix = c;
-    } else if (c == ' ' && !s.csi_intermediate) {
-      s.csi_intermediate = c;
+      prefix = c;
+    } else if (c == ' ' && !intermediate) {
+      intermediate = c;
     } else if (c >= 0x40 && c <= 0x7e) {
-      s.params[index] = value;
-      s.csi_n = index;
-      s.csi_private = priv;
-      s.csi_ignore = ignore;
-      if (!ignore)
-        csi(s, c);
-      s.csi = 0;
-      return offset;
+      break;
     } else
       ignore = 1;
   }
@@ -1331,6 +1326,14 @@ __device__ size_t csi_run(DeviceState &s, const unsigned char *input, size_t n,
   s.csi_n = index;
   s.csi_private = priv;
   s.csi_ignore = ignore;
+  s.csi_has_param = has_param;
+  s.csi_intermediate = intermediate;
+  s.csi_prefix = prefix;
+  if (c >= 0x40 && c <= 0x7e) {
+    if (!ignore)
+      csi(s, c);
+    s.csi = 0;
+  }
   return offset;
 }
 #include "styled.cuh"
