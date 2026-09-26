@@ -34,27 +34,25 @@ __device__ bool osc_color(const char *p, const char *end, uint32_t &color) {
   }
   return p == end;
 }
-__device__ int osc_decimal(char *out, int n, int value) {
-  char digits[8]; int count = 0;
-  do { digits[count++] = '0' + value % 10; value /= 10; } while (value);
-  while (count) out[n++] = digits[--count];
+__device__ int decimal_digits(int value) {
+  int n = 1;
+  while (value /= 10) ++n;
   return n;
 }
 __device__ void osc_reply(DeviceState &s, int command, int index, uint32_t color, bool bell) {
-  char out[48] = {27, ']'};
-  int n = osc_decimal(out, 2, command);
-  out[n++] = ';';
-  if (command == 4) { n = osc_decimal(out, n, index); out[n++] = ';'; }
-  out[n++] = 'r'; out[n++] = 'g'; out[n++] = 'b'; out[n++] = ':';
-  const char *hex = "0123456789abcdef";
+  int n = 21 + decimal_digits(command) + (command == 4 ? decimal_digits(index) + 1 : 0) + (bell ? 1 : 2);
+  if (s.reply_len + n > REPLY_CAP) return;
+  reply_text(s, "\033]");
+  reply_decimal(s, command);
+  reply_text(s, ";");
+  if (command == 4) { reply_decimal(s, index); reply_text(s, ";"); }
+  reply_text(s, "rgb:");
   for (int shift = 16; shift >= 0; shift -= 8) {
     unsigned v = ((color >> shift) & 255) * 257;
-    for (int bit = 12; bit >= 0; bit -= 4) out[n++] = hex[(v >> bit) & 15];
-    if (shift) out[n++] = '/';
+    for (int bit = 12; bit >= 0; bit -= 4) reply_byte(s, "0123456789abcdef"[(v >> bit) & 15]);
+    if (shift) reply_text(s, "/");
   }
-  if (bell) out[n++] = 7;
-  else { out[n++] = 27; out[n++] = '\\'; }
-  if (s.reply_len + n <= REPLY_CAP) reply(s, out, n);
+  reply_text(s, bell ? "\a" : "\033\\");
 }
 __device__ bool title_utf8(const char *p, const char *end) {
   while (p < end) {

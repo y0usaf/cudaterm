@@ -1,6 +1,7 @@
+constexpr int STYLED_BLOCK = 128;
 struct LinePen {
   uint32_t fg, bg, flags;
-  int params[16], csi_n;
+  int *params, csi_n;
 };
 struct LineScan {
   int rows, col, pending;
@@ -101,7 +102,8 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
   scan[i] = line_identity();
   if (i && b[i - 1] != '\n')
     return;
-  LinePen p{0xffffffffu, 0xffffffffu, 0, {}, 0};
+  __shared__ int params[STYLED_BLOCK][17];
+  LinePen p{0xffffffffu, 0xffffffffu, 0, params[threadIdx.x], 0};
   uint32_t one = 15;
   int pos = i, rows = 0;
   int col = i == 0 ? (s->wrap_pending ? s->cols : s->col) : 0;
@@ -264,10 +266,11 @@ __global__ void styled_paint(DeviceState *s, const unsigned char *b, int n,
   StyledMeta m = *meta;
   LineScan before = i ? scan[i - 1] : line_identity();
   int logical = m.row + before.rows;
+  __shared__ int params[STYLED_BLOCK][17];
   LinePen p{before.fg == 0xffffffffu ? m.fg : before.fg,
             before.bg == 0xffffffffu ? m.bg : before.bg,
             (m.flags & before.one) | (~m.flags & before.zero),
-            {},
+            params[threadIdx.x],
             0};
   int col = i == 0 ? (m.pending ? s->cols : m.col) : 0;
   if (i)

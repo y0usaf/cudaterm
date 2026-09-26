@@ -20,6 +20,9 @@ __device__ inline void set_head(ct::Cell &c, uint32_t h) {
   c.reserved = (c.reserved & 1u) | (h << 1);
 }
 
+__device__ inline uint32_t inline_mark(const ct::Cell &c, int i) {
+  return i == 0 ? c.combining[0] : i == 1 ? c.combining[1] : c.combining[2];
+}
 __device__ inline uint32_t inline_count(const ct::Cell &c) {
   uint32_t n = 0;
   for (int i = 0; i < 3 && c.combining[i]; ++i) ++n;
@@ -53,7 +56,7 @@ __device__ inline bool append_mark(ct::Cell &c, uint32_t cp, const Arena &a) {
 
 __device__ inline bool mark_at(const ct::Cell &c, const Arena &a, uint32_t ordinal,
                                uint32_t &cp) {
-  if (ordinal < 3) { cp = c.combining[ordinal]; return cp != 0; }
+  if (ordinal < 3) { cp = inline_mark(c, ordinal); return cp != 0; }
   uint32_t ref = head(c), n = *a.used;
   if (n > a.capacity) { *a.status = MALFORMED; return false; }
   uint32_t length = 0, scan = ref;
@@ -75,7 +78,7 @@ __device__ inline bool mark_at(const ct::Cell &c, const Arena &a, uint32_t ordin
 }
 __device__ inline bool overlay_mark(const ct::Cell &c, const Arena &a,
                                     int &inline_pos, uint32_t &ref, uint32_t &cp) {
-  if (inline_pos < 3 && c.combining[inline_pos]) { cp = c.combining[inline_pos++]; return true; }
+  if (inline_pos < 3 && inline_mark(c, inline_pos)) { cp = inline_mark(c, inline_pos++); return true; }
   inline_pos = 3;
   if (!ref) return false;
   if (ref > *a.used || a.nodes[ref - 1].parent >= ref) { *a.status = MALFORMED; return false; }

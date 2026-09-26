@@ -246,21 +246,16 @@ __device__ void graphic_reply(DeviceState &s, const GraphicsParams &p, bool succ
   unsigned q = graphic_value(p, 'q');
   uint32_t id = graphic_value(p, 'i');
   if (!id || q == 2 || (q == 1 && success)) return;
-  char out[80] = {27, '_', 'G', 'i', '='};
-  char digits[10]; int n = 5, count = 0;
-  do { digits[count++] = '0' + id % 10; id /= 10; } while (id);
-  while (count) out[n++] = digits[--count];
+  reply_text(s, "\033_Gi=");
+  reply_decimal(s, id);
   unsigned placement = graphic_value(p, 'p');
   if (placement) {
-    out[n++] = ','; out[n++] = 'p'; out[n++] = '=';
-    do { digits[count++] = '0' + placement % 10; placement /= 10; } while (placement);
-    while (count) out[n++] = digits[--count];
+    reply_text(s, ",p=");
+    reply_decimal(s, placement);
   }
-  out[n++] = ';';
-  const char *message = success ? "OK" : "EINVAL: invalid or unsupported graphics command";
-  for (int i = 0; message[i]; ++i) out[n++] = message[i];
-  out[n++] = 27; out[n++] = '\\';
-  reply(s, out, n);
+  reply_text(s, ";");
+  reply_text(s, success ? "OK" : "EINVAL: invalid or unsupported graphics command");
+  reply_text(s, "\033\\");
 }
 __device__ int base64_digit(unsigned char c) {
   if (c >= 'A' && c <= 'Z') return c - 'A';

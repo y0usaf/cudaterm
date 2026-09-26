@@ -129,9 +129,25 @@ struct DeviceState {
   size_t selection_output_len;
 };
 
-__device__ void reply(DeviceState &s, const char *x, int n) {
-  for (int i = 0; i < n && s.reply_len < REPLY_CAP; ++i)
-    s.replies->bytes[s.reply_len++] = (unsigned char)x[i];
+__device__ void reply_byte(DeviceState &s, unsigned char c) {
+  if (s.reply_len < REPLY_CAP)
+    s.replies->bytes[s.reply_len++] = c;
+  s.replies->length = s.reply_len;
+}
+__device__ void reply_text(DeviceState &s, const char *text) {
+  for (; *text; ++text)
+    if (s.reply_len < REPLY_CAP)
+      s.replies->bytes[s.reply_len++] = (unsigned char)*text;
+  s.replies->length = s.reply_len;
+}
+template <typename T> __device__ void reply_decimal(DeviceState &s, T value) {
+  int end = s.reply_len + 1;
+  for (T rest = value / 10; rest; rest /= 10)
+    ++end;
+  for (int i = end - 1; i >= s.reply_len; --i, value /= 10)
+    if (i < REPLY_CAP)
+      s.replies->bytes[i] = (unsigned char)('0' + value % 10);
+  s.reply_len = dmin(end, REPLY_CAP);
   s.replies->length = s.reply_len;
 }
 __host__ __device__ uint32_t resolved(const DeviceState &s, uint32_t color) {
@@ -458,7 +474,7 @@ __device__ bool zwj_joinable(const DeviceState &s, const Cell &cell) {
       cp = s.marks.nodes[ref - 1].cp;
       ref = s.marks.nodes[ref - 1].parent;
     } else {
-      cp = cell.combining[inline_pos--];
+      cp = mark_pool::inline_mark(cell, inline_pos--);
     }
     if (!saw_zwj) {
       if (grapheme_zwj_ignorable(cp)) continue;
@@ -494,7 +510,7 @@ __device__ bool emoji_modifier_attachment(const DeviceState &s,
       cp = s.marks.nodes[ref - 1].cp;
       ref = s.marks.nodes[ref - 1].parent;
     } else {
-      cp = cell.combining[inline_pos--];
+      cp = mark_pool::inline_mark(cell, inline_pos--);
     }
     if (cp == 0xfe0f) continue;
     if (cp == 0x200d || grapheme_default_ignorable_zero(cp) ||
@@ -769,12 +785,9 @@ __device__ void alternate_screen(DeviceState &s, bool on) {
   }
 }
 __device__ void kitty_keyboard_reply(DeviceState &s) {
-  char out[32] = {27, '[', '?'};
-  int n = osc_decimal(out, 3,
-                      static_cast<int>(keyboard::current(s.keyboard,
-                                                          s.alt_active != 0)));
-  out[n++] = 'u';
-  reply(s, out, n);
+  reply_text(s, "\033[?");
+  reply_decimal(s, static_cast<int>(keyboard::current(s.keyboard, s.alt_active != 0)));
+  reply_text(s, "u");
 }
 __device__ void kitty_keyboard_command(DeviceState &s) {
   const bool alternate = s.alt_active != 0;
@@ -1010,48 +1023,27 @@ __device__ void csi(DeviceState &s, unsigned char f) {
     break;
   case 'n':
     if (!s.csi_private && a == 5) {
-      const char x[] = "\x1b[0n";
-      reply(s, x, 4);
+      reply_text(s, "\x1b[0n");
     } else if (a == 6) {
-      char x[64];
-      int n = 0;
-      x[n++] = '\x1b';
-      x[n++] = '[';
-      n += 0;
-      int q = s.row + 1 - (s.origin ? s.top : 0);
-      char t[12];
-      int z = 0;
-      do {
-        t[z++] = (char)('0' + q % 10);
-        q /= 10;
-      } while (q);
-      for (int j = z - 1; j >= 0; --j)
-        x[n++] = t[j];
-      x[n++] = ';';
-      q = s.col + 1;
-      z = 0;
-      do {
-        t[z++] = (char)('0' + q % 10);
-        q /= 10;
-      } while (q);
-      for (int j = z - 1; j >= 0; --j)
-        x[n++] = t[j];
-      x[n++] = 'R';
-      reply(s, x, n);
+      reply_text(s, "\x1b[");
+      reply_decimal(s, s.row + 1 - (s.origin ? s.top : 0));
+      reply_text(s, ";");
+      reply_decimal(s, s.col + 1);
+      reply_text(s, "R");
     }
     break;
   case 't':
     if (!s.csi_private && s.params[0] == 16) {
-      char out[32] = {27, '[', '6', ';'};
-      int n = osc_decimal(out, 4, s.cell_height);
-      out[n++] = ';'; n = osc_decimal(out, n, s.cell_width); out[n++] = 't';
-      reply(s, out, n);
+      reply_text(s, "\033[6;");
+      reply_decimal(s, s.cell_height);
+      reply_text(s, ";");
+      reply_decimal(s, s.cell_width);
+      reply_text(s, "t");
     }
     break;
-  case 'c': {
-    const char x[] = "\x1b[?1;2c";
-    reply(s, x, 7);
-  } break;
+  case 'c':
+    reply_text(s, "\x1b[?1;2c");
+    break;
   }
 }
 #include "graphics.cuh"
@@ -2063,11 +2055,10 @@ __global__ void selected_text_kernel(DeviceState *s, int batch_start, int batch_
           return;
         }
         auto node = s->marks.nodes[ref - 1];
-        if (out) {
-          unsigned char encoded[4];
-          int bytes = int(append_utf8(encoded, 0, node.cp));
-          while (bytes) out[pos++] = encoded[--bytes];
-        } else pos = append_utf8(nullptr, pos, node.cp);
+        size_t start = pos;
+        pos = append_utf8(out, pos, node.cp);
+        if (out) for (size_t i = start, j = pos; i < --j; ++i)
+          dswap(out[i], out[j]);
         ref = node.parent;
       }
       if (out) for (size_t i = suffix_start, j = pos; i < j && i < --j; ++i)
@@ -2126,17 +2117,6 @@ __global__ void scroll_view_kernel(DeviceState *s, int delta) {
   s->selection_active = 0;
   s->copy_flash = 0;
 }
-__device__ int mouse_number(char *out, int value) {
-  char digits[10];
-  int count = 0;
-  do {
-    digits[count++] = char('0' + value % 10);
-    value /= 10;
-  } while (value);
-  for (int i = 0; i < count; ++i)
-    out[i] = digits[count - i - 1];
-  return count;
-}
 __global__ void mouse_kernel(DeviceState *s, int button, int row, int col,
                              int modifiers, int action, int pixel_x, int pixel_y,
                              int *handled) {
@@ -2158,25 +2138,22 @@ __global__ void mouse_kernel(DeviceState *s, int button, int row, int col,
   s->mouse_row = row;
   s->mouse_col = col;
   int code = button + (modifiers & 28) + (action == 2 ? 32 : 0);
-  char out[40] = {27, '['};
-  int n = 2;
   if (s->mouse_sgr || s->mouse_pixels) {
-    out[n++] = '<';
-    n += mouse_number(out + n, code);
-    out[n++] = ';';
-    n += mouse_number(out + n, col + 1);
-    out[n++] = ';';
-    n += mouse_number(out + n, row + 1);
-    out[n++] = action == 1 ? 'm' : 'M';
+    reply_text(*s, "\033[<");
+    reply_decimal(*s, code);
+    reply_text(*s, ";");
+    reply_decimal(*s, col + 1);
+    reply_text(*s, ";");
+    reply_decimal(*s, row + 1);
+    reply_text(*s, action == 1 ? "m" : "M");
   } else {
     if (col >= 223 || row >= 223)
       return;
-    out[n++] = 'M';
-    out[n++] = char(32 + (action == 1 ? 3 + (modifiers & 28) : code));
-    out[n++] = char(33 + col);
-    out[n++] = char(33 + row);
+    reply_text(*s, "\033[M");
+    reply_byte(*s, (unsigned char)(32 + (action == 1 ? 3 + (modifiers & 28) : code)));
+    reply_byte(*s, (unsigned char)(33 + col));
+    reply_byte(*s, (unsigned char)(33 + row));
   }
-  reply(*s, out, n);
 }
 __global__ void follow_output_kernel(DeviceState *s) {
   s->view_offset = 0;
@@ -2535,7 +2512,7 @@ static std::vector<unsigned char> read_data(const char *name, size_t size) {
 Engine::Engine(int c, int r) : p(nullptr) {
   dims(c, r);
   configure_runtime();
-  ck(cudaDeviceSetLimit(cudaLimitStackSize, 128));
+  ck(cudaDeviceSetLimit(cudaLimitStackSize, 32));
   p = new Impl;
   try {
     ck(cudaMalloc(&p->graphics, sizeof(GraphicsState)));
@@ -2727,7 +2704,7 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
     }
     if (ascii_prefix != (int)n &&
         (ascii_prefix < 256 || (int)n - ascii_prefix >= 256)) {
-      styled_lines<<<(n + 127) / 128, 128>>>(p->d, device_input, (int)n,
+      styled_lines<<<(n + STYLED_BLOCK - 1) / STYLED_BLOCK, STYLED_BLOCK>>>(p->d, device_input, (int)n,
                                              p->lines, p->styled_limit);
       ck(cudaGetLastError());
       ck(cub::DeviceScan::InclusiveScan(p->scan_storage, p->scan_bytes,
@@ -2738,7 +2715,7 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
       ck(cudaGetLastError());
       prepare_history<<<256, 256>>>(p->d, p->styled_done, p->styled_meta);
       ck(cudaGetLastError());
-      styled_paint<<<(n + 127) / 128, 128>>>(
+      styled_paint<<<(n + STYLED_BLOCK - 1) / STYLED_BLOCK, STYLED_BLOCK>>>(
           p->d, device_input, (int)n, p->lines, p->styled_done, p->styled_meta);
       ck(cudaGetLastError());
     }
@@ -2937,7 +2914,7 @@ Snapshot Engine::snapshot() {
           keyboard::current(s.keyboard, s.alt_active != 0)};
 }
 __global__ void focus_kernel(DeviceState *s, bool focused) {
-  if (s->focus_reporting) reply(*s, focused ? "\033[I" : "\033[O", 3);
+  if (s->focus_reporting) reply_text(*s, focused ? "\033[I" : "\033[O");
 }
 void Engine::focus(bool focused) {
   focus_kernel<<<1, 1>>>(p->d, focused);
