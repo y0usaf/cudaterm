@@ -2,7 +2,7 @@
 
 A Linux terminal with CUDA VT parsing, GPU screen state, and CUDA
 pixel rasterization. The CPU transports PTY bytes and input events, manages the
-child process, and presents CUDA output through an OpenGL buffer shared with
+child process, and presents CUDA output through an OpenGL texture shared with
 GLFW. OpenGL presents pixels; it does not draw glyphs.
 
 The default window uses an installed monospace font with native-size grayscale

@@ -75,8 +75,8 @@ Mesa/LLVM alongside NVIDIA. Disabling GLFW libdecor avoids loading GTK; GLFW's
 fallback decorations remain available. Explicit CUDA/EGL environment settings
 are honored, and configuration occurs after forking the child.
 
-The CUDA stack limit is 128 bytes for the current sm_89 build (maximum compiled
-frame 96 bytes); the driver can grow it when required. This saved 168 MiB of
+The CUDA stack limit is 32 bytes for the current sm_89 build (maximum compiled
+frame 24 bytes); the driver can grow it when required. This saved 184 MiB of
 VRAM compared with the 1024-byte default.
 Input and scan buffers grow on demand. History allocation tracks actual retained
 rows and shrinks on reset/alternate-screen transitions without dropping retained
