@@ -3,8 +3,8 @@
 
 namespace ct {
 struct Theme {
-  uint32_t colors[262]; // Palette, defaults, cursor and selection.
-  uint32_t customized; // Optional cursor/selection overrides; otherwise invert.
+  uint32_t colors[262];
+  uint32_t customized;
 };
 inline Theme default_theme() {
   Theme theme{};

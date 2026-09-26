@@ -12,9 +12,6 @@
 #include <vector>
 
 namespace ct {
-// Font discovery and glyph coverage preparation are host work. Terminal text,
-// layout and pixel composition remain on the GPU. Rebuild at the actual pixel
-// size, rather than magnifying a previously rasterized atlas.
 struct ResolvedFont { std::string path; int index = 0; bool direct = false; };
 inline ResolvedFont resolve_font(const std::string &family, int style) {
   if (family.empty()) return {};
@@ -43,8 +40,6 @@ inline FontAtlas rasterize_font(const std::string &family, float pixels, float l
   const char *properties = std::getenv("FREETYPE_PROPERTIES");
   cache_field(key, properties ? properties : "");
 #ifdef CUDATERM_FONT_CACHE_ID
-  // Nix fingerprints the renderer and its dependencies, so unrelated rebuilds
-  // can reuse the atlas. Native builds conservatively use executable identity.
   cache_field(key, CUDATERM_FONT_CACHE_ID);
   bool cacheable = true;
 #else
@@ -111,15 +106,12 @@ inline FontAtlas rasterize_font(const std::string &family, float pixels, float l
         if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL)) continue;
         const auto &bitmap = face->glyph->bitmap;
         if (bitmap.pixel_mode != FT_PIXEL_MODE_GRAY && bitmap.pixel_mode != FT_PIXEL_MODE_MONO) continue;
-        // Four real style faces share a bounded 64 MiB glyph budget.
         if (data.size() + stride > 16 * 1024 * 1024)
           throw std::runtime_error("font atlas exceeds 16 MiB per style; choose a smaller font size");
         size_t offset = data.size();
         data.resize(offset + stride, 0);
         int span = atlas.width * widths[cp];
         int left = face->glyph->bitmap_left;
-        // Italic bearings can extend beyond either cell edge. Keep the whole
-        // bitmap inside the cell, shrinking only when it is wider than the span.
         bool fit = (font_index || (style & 2)) && bitmap.width > unsigned(span);
         if ((style & 2) && !fit)
           left = std::clamp(left, 0, span - int(bitmap.width));
@@ -140,8 +132,6 @@ inline FontAtlas rasterize_font(const std::string &family, float pixels, float l
             data[offset + dy * atlas.width * 2 + dx] = coverage / (last - first);
           }
         }
-        // Cell rules must meet across line spacing; font ascenders alone leave
-        // gaps in full-screen application borders.
         unsigned arms = cp == 0x2500 ? 3 : cp == 0x2502 ? 12 : cp == 0x250c ? 10 :
           cp == 0x2510 ? 9 : cp == 0x2514 ? 6 : cp == 0x2518 ? 5 : cp == 0x251c ? 14 :
           cp == 0x2524 ? 13 : cp == 0x252c ? 11 : cp == 0x2534 ? 7 : cp == 0x253c ? 15 : 0;
@@ -175,8 +165,6 @@ inline FontAtlas rasterize_font(const std::string &family, float pixels, float l
     }
     return data;
   };
-  // Read regular-face metrics before workers access the shared dimensions.
-  // Each worker owns its FreeType library; deferred execution handles thread limits.
   rasterize_style(0, true);
   std::array<std::future<std::vector<unsigned char>>, 4> styles;
   for (int style = 0; style < 4; ++style)

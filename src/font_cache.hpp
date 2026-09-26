@@ -24,8 +24,6 @@ inline bool cache_file_identity(std::string &key, const std::string &path) {
   std::error_code error;
   auto resolved = std::filesystem::canonical(path, error).string();
   if (!error && resolved.rfind("/nix/store/", 0) == 0) {
-    // Store paths are immutable identities, including across cache substitution
-    // on another machine. Mutable files still use precise filesystem metadata.
     cache_field(key, resolved);
     return true;
   }
@@ -54,8 +52,6 @@ inline std::string prepared_font_cache_path(const std::string &key) {
   if (!directory || *directory != '/') return {};
   return std::string(directory) + "/" + std::to_string(font_cache_hash(key.data(), key.size())) + ".bin";
 }
-// Cache files are disposable: reject partial/corrupt entries and regenerate.
-// The full key is checked as well as its filename hash; writes publish atomically.
 inline bool read_font_cache(const std::string &path, const std::string &key, FontAtlas &atlas) {
   if (path.empty()) return false;
   std::ifstream file(path, std::ios::binary);

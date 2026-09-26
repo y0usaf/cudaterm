@@ -13,20 +13,6 @@ See [configuration and shortcuts](docs/configuration.md).
 ```sh
 nix build .
 nix run . -- -e bash
-nix run .#test
-nix run .#plain-test
-nix run .#vt-test
-nix run .#csi-test
-nix run .#styled-test
-nix run .#unicode-test
-nix run .#workspace-test
-nix run .#selection-test
-nix run .#scrollback-test
-nix run .#charset-test
-nix run .#mouse-test
-nix run .#graphics-test
-nix run .#sync-test
-nix run .#appearance-test
 nix run .#bench -- --bytes 65536
 nix flake check
 ```
@@ -39,8 +25,8 @@ nix build --impure --file nix/finix-preview.nix --out-link result-finix
 ```
 
 It uses the desktop font, line height and Wallust colors. See
-[Finix replacement checks and integration](docs/finix-replacement.md) for the
-validated workflows, memory measurements, enablement and remaining differences.
+[Finix replacement and integration](docs/finix-replacement.md) for workflows,
+memory measurements, enablement and remaining differences.
 
 Ekko v2's shell/browser workspace is supported. From this checkout:
 
@@ -69,13 +55,11 @@ process GPU memory from 484 to 316 MiB. CUDA driver/GL resources still require
 host RAM; these totals exclude Ekko and browser processes. Queue sizing, EGL
 vendor selection and avoiding libdecor's GTK dependency cut RAM; a smaller CUDA
 stack and lazy buffers cut VRAM. Alternate-screen redraws do not grow main
-scrollback. See [measurements and integration evidence](docs/ekko.md).
+scrollback. See [Ekko measurements and integration](docs/ekko.md).
 
 The current build targets NVIDIA Ada (`sm_89`) and is being developed on an RTX
 4090. A working NVIDIA driver and graphical session are needed for the app;
-the engine tests need the GPU but no display. Nix build checks exercise the PTY
-benchmark protocol without GPU access; `nix run .#test` runs actual CUDA tests. The build also checks special-key
-encoding, including Shift/Alt/Ctrl navigation and function keys.
+`nix run .#bench` needs the GPU but no display.
 
 The GPU validates plain-text prefixes and uses parallel prefix scans to compute
 line layout and scrolling. A cooperative warp interprets controls and UTF-8,
@@ -86,11 +70,13 @@ processing. The CPU reads classifier results and consumed counts to select launc
 Screen parsing and terminal state stay on the GPU; a host observer handles OSC 52
 desktop clipboard writes.
 
-**Overall performance parity is not established**. The latest matched-grid
-comparison trails Foot on text, ANSI and graphics, and beats Monstar on
-all five measured PTY workloads. Compositor-capture latency has been measured,
-but physical display latency remains unverified. See the
-[latest measurements](docs/progress.md) for raw samples and limits.
+A 2026-09-06 PTY parser-barrier [comparison](docs/current-pty-comparison.md)
+with Foot and Monstar at 80×24 and 318×89 cells gave cudaterm the lowest median
+on every workload except 80×24 tabs, where Foot led. At 318×89 its p90 was also
+lowest; at 80×24 its p90 was not the lowest on text, ANSI, Unicode or DEC graphics.
+Those runs used a harness whose startup redraw overlapped each launch's first
+sample; the harness is fixed, but the comparison has not been re-measured. The barrier is
+not a display measurement, and overall performance parity is not established.
 
 The built-in fallback uses GNU Unifont 17.0.05, converted to a static atlas during
 the Nix build and rasterized in CUDA. The explicit `bitmap` font uses 8×16 cells;
@@ -106,13 +92,9 @@ Font copyright and license files are installed in `result/share/cudaterm`.
 The [Finix desktop candidate](docs/finix-replacement.md) adds configured fonts and
 colors, responsive input during image decoding, Wayland clipboard verification,
 and terminal/launcher integration. Broader VT compatibility, full grapheme
-handling, and physical display-latency measurements remain open.
-
-See the [Monstar parity matrix](docs/monstar-parity.md),
-[completion requirements](docs/acceptance.md) and the
-[benchmark procedure](bench/README.md). The initial JSON files used different geometries. New `*-matched-*.json` runs
-verify 318×89 cells, settle before timing, and reject geometry changes. Font
-rendering still differs between implementations.
+handling, and physical display-latency measurements remain open. See the
+[Monstar parity matrix](docs/monstar-parity.md) and the
+[benchmark procedure](bench/README.md).
 
 Drag with the left mouse button to select visible cells; release to copy automatically.
 Ctrl-Shift-C copies again. Copied selections flash pale yellow for 200 ms, including
@@ -169,6 +151,7 @@ scrollback locally while tracking is enabled. Legacy coordinates are limited to
 cell-size queries (CSI 16 t), and synchronized updates (2026, with a timeout)
 support Ekko and browser input. Without application mouse tracking, the wheel
 sends arrow keys in the alternate screen and browses history in the main screen.
+Special-key encoding includes Shift/Alt/Ctrl navigation and function keys.
 
 Window configuration accepts `--app-id`, `--title`, `--working-directory`,
 `--theme` (Monstar/Wallust color file), `--font-face` (CTFACE01 atlas),
@@ -188,4 +171,3 @@ File drops paste quoted shell paths. See the
 Wayland text-input-v3 supports IME composition, including transient CUDA
 preedit and local search input. Applications can negotiate Kitty keyboard
 disambiguation (flag 1); advanced event/text-reporting flags remain unsupported.
-The private acceptance fixture is `nix run .#window-ime-test`.

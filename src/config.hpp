@@ -51,7 +51,7 @@ struct Settings {
   std::string font_family = "monospace", font_face, font_fallback, theme = "midnight";
   float font_size = 14, line_height = 1.3f, opacity = 1, scroll_multiplier = 3;
   int padding_x = 12, padding_y = 10;
-  int cursor_style = 2; // DECSCUSR: steady block; applications may override.
+  int cursor_style = 2;
   bool cursor_blink = false;
   float cursor_animation = 0.08f;
 };

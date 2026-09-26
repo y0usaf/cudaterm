@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Paired startup phases and first GL-swap return; not physical presentation."""
 import argparse, csv, json, os, pathlib, resource, shutil, statistics, subprocess, tempfile, time
 
 p=argparse.ArgumentParser()

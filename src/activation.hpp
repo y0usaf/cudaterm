@@ -1,11 +1,5 @@
 #pragma once
 
-//! xdg-activation-v1: a BEL in an unfocused window asks the compositor to
-//! raise it (foot's bell.urgent). Wayland only; other platforms ignore the
-//! bell. The global binds lazily off GLFW's display on first request, and
-//! token `done` events ride the default queue — glfwPollEvents dispatches
-//! them.
-
 #include <GLFW/glfw3.h>
 #if defined(__linux__)
 #ifndef GLFW_EXPOSE_NATIVE_WAYLAND
@@ -43,8 +37,6 @@ inline const xdg_activation_token_v1_listener token_listener = {token_done};
 
 #endif
 
-// Ask the compositor to raise `window`. The token is serial-less, so the
-// compositor decides between focusing it and marking it urgent.
 inline void request(GLFWwindow *window) {
 #if defined(__linux__)
   if (glfwGetPlatform() != GLFW_PLATFORM_WAYLAND)
@@ -71,4 +63,4 @@ inline void request(GLFWwindow *window) {
 #endif
 }
 
-} // namespace ct::activation
+}

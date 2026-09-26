@@ -1,4 +1,3 @@
-// Included inside the engine's device namespace after DeviceState is defined.
 struct ReflowPlan {
   int source_rows, output_rows, cursor_pos, saved_pos, view_pos;
   int cursor_edge, saved_edge, screen_start;
@@ -25,7 +24,6 @@ __device__ bool reflow_blank(const Cell &v, const mark_pool::Arena &marks) {
 struct ReflowRow {
   int used, wide, base, count;
 };
-// Determine padding and wide-cell presence with coalesced parallel reads.
 __global__ void inspect_reflow_rows(const DeviceState *s, ReflowRow *info) {
   int y = blockIdx.x;
   if (y >= s->history_count + s->rows) return;
@@ -53,9 +51,6 @@ __device__ int reflow_position(const ReflowRow *info, const int *map,
   if (col >= info[row].count) return -1;
   return info[row].wide ? map[row * old_cols + col] : info[row].base + col;
 }
-// Row planning is serial; single-width rows map arithmetically in the scatter.
-// Only rows containing wide pairs need the per-cell planning fallback.
-// Scratch is bounded by the input cells plus the retained output row count.
 __global__ void plan_reflow(const DeviceState *s, int cols, int rows,
                             int *map, int *wrap, ReflowRow *info, ReflowPlan *p) {
   int cr = s->history_count + (s->alt_active ? s->main_row : s->row);
@@ -98,7 +93,6 @@ __global__ void plan_reflow(const DeviceState *s, int cols, int rows,
       if (!s->alt_active && y == sr && sc < n) p->saved_pos = info[y].base + sc;
       if (n) {
         int last_row = row + (col + n - 1) / cols;
-        // Only the last retained wrap slots matter for an enormous line.
         for (int k = dmax(row, last_row - cap); k < last_row; ++k) wrap[k % cap] = cols;
         col = (col + n - 1) % cols + 1;
         row = last_row;
@@ -124,15 +118,12 @@ __global__ void plan_reflow(const DeviceState *s, int cols, int rows,
     }
     if (y == cr && cc >= n) { p->cursor_pos = row * cols + col; p->cursor_edge = col == cols; }
     if (!s->alt_active && y == sr && sc >= n) { p->saved_pos = row * cols + col; p->saved_edge = col == cols; }
-    // Blank trailing cells remain coordinate anchors, but aren't scattered.
     if (!joined || y == last) {
       wrap[row % cap] = 0;
       ++row; col = 0;
     }
   }
   p->output_rows = row;
-  // Keep existing blank space below the primary cursor. Widening must not
-  // pull history into that space and move an otherwise stationary prompt.
   int anchor = dmax(0, old_screen_pos / cols - dmax(0, rows - s->rows));
   p->screen_start = dmax(dmax(0, row - rows), anchor);
 }
@@ -191,8 +182,6 @@ __global__ void commit_reflow(DeviceState *s, Cell *a, Cell *b, Cell *h,
     rw[y] = s->alt_active ? alternate : primary;
     arw[y] = s->alt_active ? primary : alternate;
   }
-  // Images retain pixel allocations and intra-cell offsets. Evicted anchors
-  // become hidden, just as they do when scrolling out of retained history.
   auto &g = *s->graphics;
   g.visible_count = 0;
   for (int i = 0; i < GRAPHIC_PLACEMENT_SLOTS; ++i) {

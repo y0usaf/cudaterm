@@ -1,5 +1,3 @@
-// Bounded OSC handling on the GPU. Unknown commands and malformed/oversized
-// strings are discarded; bytes never become printable terminal input.
 __device__ int osc_number(const char *&p, const char *end) {
   if (p == end || *p < '0' || *p > '9') return -1;
   int n = 0;
@@ -82,16 +80,12 @@ __device__ void finish_osc(DeviceState &s, bool bell) {
   int command = osc_number(p, end);
   if (command < 0 || (p < end && *p++ != ';')) return;
   if (command == 8) {
-    // Parameters (including id=) are opaque; the URI begins at the next ';'.
     const char *uri = p;
     while (uri < end && *uri != ';') ++uri;
     if (uri == end) return;
     ++uri;
     if (!title_utf8(uri, end)) return;
     if (uri == end) {
-      // An empty URI closes the link only when no non-empty id parameter is
-      // present. Ghostty treats `id=foo;` as malformed, preserving the
-      // current link, while `;;` and `id=;` are valid closes.
       const char *params_end = uri - 1;
       for (const char *param = p; param < params_end;) {
         const char *stop = param;
@@ -108,8 +102,6 @@ __device__ void finish_osc(DeviceState &s, bool bell) {
     }
     if (s.hyperlinks_disabled) { s.hyperlink_id = 0; return; }
     if (!s.hyperlinks) {
-      // Stop at the OSC boundary. The host allocates storage, then a CUDA
-      // kernel retries this same buffered command before any following text.
       s.graphics->request = {};
       s.graphics->request.ready = 1;
       s.graphics->request.barrier = 3;
@@ -123,7 +115,6 @@ __device__ void finish_osc(DeviceState &s, bool bell) {
       while (uri + n < end && entry.uri[n] == uri[n]) ++n;
       if (uri + n == end && !entry.uri[n]) { s.hyperlink_id = entry.id; return; }
     }
-    // Never wrap IDs: an ancient retained cell must not alias a fresh link.
     if (links.next_id == HYPERLINK_MAX_ID) { s.hyperlink_id = 0; return; }
     uint32_t id = ++links.next_id;
     auto &entry = links.entries[(id - 1) % HYPERLINK_SLOTS];

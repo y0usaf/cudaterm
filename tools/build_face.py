@@ -7,8 +7,6 @@ import struct
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFont
 
-
-# Terminal rules join at cell centres, regardless of the font's glyph bearings.
 BOX_ARMS = {'─': 'lr', '│': 'ud', '┌': 'rd', '┐': 'ld', '└': 'ru', '┘': 'lu',
             '├': 'urd', '┤': 'uld', '┬': 'lrd', '┴': 'lru', '┼': 'lrud'}
 
@@ -48,7 +46,6 @@ def main():
         for cp in sorted(cmap):
             if cp in glyphs or cp < 32 or cp >= len(widths) or widths[cp] not in (1, 2): continue
             span = width * widths[cp]
-            # Fit oversized fallback symbols into their terminal cell span.
             left, top, right, bottom = font.getbbox(chr(cp), anchor='ls')
             canvas = Image.new('L', (max(span, right - min(0, left)), args.height))
             ImageDraw.Draw(canvas).text((-min(0,left), baseline), chr(cp), font=font, fill=255, anchor='ls')

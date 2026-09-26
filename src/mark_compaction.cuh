@@ -14,8 +14,6 @@ __host__ __device__ inline bool use_serial(uint32_t n, uint32_t root_count) {
   return n <= 512 && root_count <= 256;
 }
 
-// Prefix inputs are bounded nonnegative 0/1 counts (sum <= 1<<20), so reuse
-// the engine's existing signed-int CUB scan storage and allocation.
 static_assert(sizeof(int) == sizeof(uint32_t), "CUB scan type sizes differ");
 inline cudaError_t scan_prefix(void *temporary, size_t &bytes,
                                uint32_t *map, uint32_t n) {
@@ -71,9 +69,6 @@ __global__ void jump_kernel(mark_pool::Arena a, uint32_t *map,
                             const uint32_t *jump, uint32_t *next, uint32_t n) {
   uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i >= n) return;
-  // A failed precondition or root validation leaves the disposable buffers
-  // uninitialized; do not inspect them after status becomes malformed.
-  // The status pointer is carried through the arena by the caller.
   if (*a.status != mark_pool::OK) return;
   uint32_t ref = jump[i];
   uint32_t flags = atomicOr(map + i, 0u);
@@ -172,10 +167,6 @@ __global__ void serial_kernel(mark_pool::Arena a, mark_pool::RootSpan *spans,
   *a.used = write;
 }
 
-// Caller owns map/scratch/scan_temp and performs the final stream sync.
-// RootSpan ranges must be non-overlapping; each logical root is visited once.
-// scratch is reinterpreted as two uint32[n] pointer-jump buffers before the
-// prefix scan, then as Node[n] compacted output after the scan.
 static void parallel_compact(mark_pool::Arena a, mark_pool::RootSpan *spans,
                              uint32_t span_count, uint32_t n,
                              uint32_t root_count, uint32_t *map,
@@ -217,4 +208,4 @@ static void parallel_compact(mark_pool::Arena a, mark_pool::RootSpan *spans,
   check(cudaGetLastError());
 }
 
-} // namespace mark_compaction_parallel
+}

@@ -158,9 +158,6 @@ __device__ void graphics_clear(DeviceState &s, int screen) {
   for (int i = 0; i < IMAGE_SLOTS; ++i) {
     if (!g.images[i].pixels || (screen >= 0 && g.images[i].screen != screen)) continue;
     g.request.release[i / 32] |= 1u << (i % 32);
-    // A released image owns the bytes referenced by every placement, even
-    // one pinned to the other screen. Remove those records before the host
-    // frees the allocation.
     for (int j = 0; j < GRAPHIC_PLACEMENT_SLOTS; ++j)
       if (g.placements[j].occupied && g.placements[j].image_slot == i)
         g.placements[j] = {};
@@ -195,7 +192,6 @@ __device__ void graphics_scroll(DeviceState &s, int top, int bottom, int count) 
 __device__ void history_push(DeviceState &s, const Cell *row) {
   Cell *dst = s.history + s.history_head * s.history_cols;
   s.history_wrap[s.history_head] = s.row_wrap[s.rowmap[s.top]];
-  // Capture after earlier queued edits and before recycling clears the row.
   s.jobs[s.job_count++] = {dst, s.cols, {}, row};
   s.history_head = (s.history_head + 1) % s.history_capacity;
   if (s.history_count < s.history_capacity)
@@ -229,8 +225,6 @@ __device__ int *bulk_wrap(DeviceState &s, int logical, int scroll, int base) {
     return &s.history_wrap[(base + logical) % s.history_capacity];
   return nullptr;
 }
-// Commits rotate only row indices. Read the old rows through the inverse
-// rotation before any clearing or painting overwrites their physical cells.
 template <class Meta>
 __global__ void prepare_history(DeviceState *s, const int *accepted,
                                 const Meta *m) {
@@ -410,7 +404,6 @@ __device__ void insert_cells(DeviceState &s, int n) {
   s.row_wrap[s.rowmap[s.row]] = 0;
   s.repair_row = s.row;
 }
-// Promote an eagerly printed base; queued edits precede any scroll copy.
 __device__ bool promote_emoji(DeviceState &s, int col, Cell cell) {
   if (s.cols == 1 || (col == s.cols - 1 && !s.autowrap)) return false;
   int row = s.row;
@@ -421,7 +414,6 @@ __device__ bool promote_emoji(DeviceState &s, int col, Cell cell) {
     newline(s, true);
     row = s.row;
     col = 0;
-    // A recycled row is cleared by queued jobs; do not inspect its old pairs.
     if (!recycled) {
       if (s.insert_mode) {
         s.col = 0;
@@ -451,9 +443,6 @@ __device__ bool promote_emoji(DeviceState &s, int col, Cell cell) {
   s.wrap_pending = next == s.cols && s.autowrap;
   return true;
 }
-// GB11's suffix test is deliberately based on the cell's complete mark
-// sequence.  Overflow marks are immutable and newest-first, so walking the
-// suffix backwards also works after compaction and across feed boundaries.
 __device__ bool zwj_joinable(const DeviceState &s, const Cell &cell) {
   uint32_t used = *s.marks.used;
   if (used > s.marks.capacity) { *s.marks.status = mark_pool::MALFORMED; return false; }
@@ -472,13 +461,10 @@ __device__ bool zwj_joinable(const DeviceState &s, const Cell &cell) {
       cp = cell.combining[inline_pos--];
     }
     if (!saw_zwj) {
-      // A default ignorable may sit between the component and its ZWJ. It is
-      // retained in the mark arena but does not change the GB11 suffix.
       if (grapheme_zwj_ignorable(cp)) continue;
       if (cp != 0x200d) return false;
       saw_zwj = true;
     } else if (grapheme_zwj_ignorable(cp)) {
-      // Monstar keeps default ignorables transparent on either side of ZWJ.
       continue;
     } else if (!grapheme_extend(cp)) {
       return grapheme_extended_pictographic(cp);
@@ -486,8 +472,6 @@ __device__ bool zwj_joinable(const DeviceState &s, const Cell &cell) {
   }
   return saw_zwj && grapheme_extended_pictographic(cell.cp);
 }
-// Emoji modifiers are immediate to the last meaningful component, even when
-// that component was appended after a ZWJ and the mark sequence spans feeds.
 __device__ bool emoji_modifier_attachment(const DeviceState &s,
                                           const Cell &cell) {
   uint32_t used = *s.marks.used;
@@ -512,8 +496,6 @@ __device__ bool emoji_modifier_attachment(const DeviceState &s,
     } else {
       cp = cell.combining[inline_pos--];
     }
-    // VS16 is transparent to the modifier relation. Other default
-    // ignorables and every ordinary Extend break the required adjacency.
     if (cp == 0xfe0f) continue;
     if (cp == 0x200d || grapheme_default_ignorable_zero(cp) ||
         grapheme_extend(cp))
@@ -537,21 +519,16 @@ __device__ void put(DeviceState &s, uint32_t cp, bool force_single = false) {
   bool modifier = !force_single && cp >= 0x1f3fb && cp <= 0x1f3ff;
   bool default_ignorable = !force_single &&
                            grapheme_default_ignorable_zero(cp);
-  // Emoji modifiers are GCB Extend in Unicode, but Monstar tailors them to
-  // remain visible as standalone scalars unless an emoji base accepts them.
   bool extend = !force_single && !modifier && grapheme_extend(cp);
   bool attach_modifier = false;
   bool attach_extend = false;
   bool attach_zwj = false;
-  // A clipped no-wrap cursor cannot identify the last printed base reliably.
   if ((modifier || extend) && (s.col > 0 || s.wrap_pending) &&
       (s.autowrap || s.col < s.cols - 1)) {
     int previous = s.wrap_pending ? s.col : s.col - 1;
     if ((s.grid[at(s, s.row, previous)].flags & TAIL) && previous > 0)
       --previous;
     Cell cell = s.grid[at(s, s.row, previous)];
-    // Marks retained on an untouched blank are leading marks, not a base for
-    // a later Extend or emoji modifier. Explicit spaces remain valid bases.
     bool base = cell.cp != 32 || (cell.reserved & 1u);
     int next = previous + ((cell.flags & WIDE) ? 2 : 1);
     bool adjacent = s.wrap_pending ? next == s.cols : s.col == next;
@@ -571,8 +548,6 @@ __device__ void put(DeviceState &s, uint32_t cp, bool force_single = false) {
     bool promote = (cp == 0xfe0f || attach_modifier || attach_zwj ||
                     (attach_extend && grapheme_extend_widthful(cp))) &&
                    !(cell.flags & WIDE) &&
-      // With autowrap disabled the clipped cursor does not identify the last
-      // printed cell; retain scalar behavior until that tracking is explicit.
       (s.autowrap || s.col < s.cols - 1) &&
       (attach_modifier || attach_zwj ||
        (attach_extend && grapheme_extend_widthful(cp)) ||
@@ -609,8 +584,6 @@ __device__ void put(DeviceState &s, uint32_t cp, bool force_single = false) {
       width = 1;
     }
   }
-  // A scroll's history copy precedes its queued row clear. Do not shift that
-  // recycled row before the copy; insertion into the cleared row needs no shift.
   if (s.insert_mode && !fresh_row)
     insert_cells(s, width);
   else {
@@ -740,13 +713,8 @@ __device__ void switch_screen(DeviceState &s, bool on) {
   for (int r = 0; r < s.rows; ++r)
     dswap(s.rowmap[r], s.alt_rowmap[r]);
   s.alt_active = on;
-  // Hyperlink state belongs to the active screen. Monstar/Ghostty end it
-  // whenever the active screen changes, so it must never leak into the new
-  // screen or be restored from an ID that may have been evicted.
   s.hyperlink_id = 0;
   s.view_offset = 0;
-  // Yield at screen transitions so the host can reserve history before any
-  // subsequent primary-screen output, without reserving it for TUI frames.
   auto &request = s.graphics->request;
   if (!request.ready) request = {};
   request.ready = request.barrier = 1;
@@ -812,9 +780,6 @@ __device__ void kitty_keyboard_command(DeviceState &s) {
   const bool alternate = s.alt_active != 0;
   switch (s.csi_prefix) {
   case '?':
-    // CSI ? u is the only Kitty query.  The parser tracks whether a parameter
-    // was present so explicit CSI ? 0 u remains malformed rather than being
-    // confused with the omitted form.
     if (!s.csi_has_param)
       kitty_keyboard_reply(s);
     break;
@@ -842,9 +807,6 @@ __device__ void csi(DeviceState &s, unsigned char f) {
     kitty_keyboard_command(s);
     return;
   }
-  // Kitty's >, =, and < prefixes belong only to the keyboard protocol.  Do
-  // not let a malformed prefixed CSI reach a legacy handler (for example,
-  // CSI >5n must not be mistaken for a device-status report).
   if (s.csi_prefix == '>' || s.csi_prefix == '=' || s.csi_prefix == '<')
     return;
   if (s.csi_intermediate) {
@@ -982,7 +944,7 @@ __device__ void csi(DeviceState &s, unsigned char f) {
           if (!on && s.synchronized_updates) {
             if (!s.graphics->request.ready) s.graphics->request = {};
             s.graphics->request.ready = 1;
-            s.graphics->request.barrier = 2; // Completed presentation boundary.
+            s.graphics->request.barrier = 2;
           }
           s.replies->synchronized_updates = s.synchronized_updates = on;
         } else if (mode == 47 || mode == 1047) {
@@ -1148,7 +1110,7 @@ __device__ void byte(DeviceState &s, unsigned char c) {
       return;
     }
     s.utf_need = 0;
-    put(s, 0xfffd); // Reprocess the non-continuation byte.
+    put(s, 0xfffd);
   }
   if (c == 27) {
     s.esc = 1;
@@ -1187,8 +1149,6 @@ __device__ void byte(DeviceState &s, unsigned char c) {
     return;
   }
   if (s.csi) {
-    // Printable CSI syntax is consumed by csi_run. Remaining non-ASCII
-    // bytes retain the existing ignore-until-final behavior.
     s.csi_ignore = 1;
     return;
   }
@@ -1249,8 +1209,6 @@ __device__ void byte(DeviceState &s, unsigned char c) {
       s.col = 0;
       newline(s);
     } else if (c == 'c') {
-      // RIS supersedes earlier effects in this dispatch. Two whole-grid
-      // fills avoid exhausting the bounded FillJob queue.
       s.job_count = 0;
       graphics_clear(s, -1);
       clear_history(s);
@@ -1336,8 +1294,6 @@ __device__ void byte(DeviceState &s, unsigned char c) {
   } else
     put(s, 0xfffd);
 }
-// Keep the current CSI value in a register while consuming printable syntax.
-// C0 controls and ESC return to byte(), preserving interruption semantics.
 __device__ size_t csi_run(DeviceState &s, const unsigned char *input, size_t n,
                           size_t offset) {
   int index = s.csi_n, value = s.params[index];
@@ -1404,8 +1360,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
   }
   input += skip;
   n -= skip;
-  // A warp cooperates on printable runs. The leader preserves VT ordering for
-  // controls and UTF-8; frequently changed parser state stays in shared memory.
   __shared__ DeviceState s;
   __shared__ FillJob jobs[MAX_ROWS + 4];
   __shared__ size_t offset;
@@ -1418,8 +1372,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
     s.pool_wait = 0;
   }
   __syncwarp();
-  // A scalar that completed on the previous fragment is committed before
-  // parsing any new byte. Flush its queued edits while the job list is empty.
   if (lane == 0 && s.pending_valid) {
     uint32_t pending = s.pending_cp;
     s.pending_valid = 0;
@@ -1436,8 +1388,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
   }
   __syncwarp();
   while (offset < n && !s.graphics->request.ready && !s.pool_wait) {
-    // Opaque graphics payloads are copied cooperatively instead of taking the
-    // scalar VT interpreter through every base64 character.
     if (s.osc == 5) {
       auto &g = *s.graphics;
       size_t index = offset + lane;
@@ -1468,8 +1418,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
       int count = mask == 0xffffffffu ? 32 : __ffs(~mask) - 1;
       if (count) {
         if (s.insert_mode) {
-          // Descending blocks preserve overlapping source cells. All lanes
-          // load before any store, then finish stores before the next block.
           for (int end = s.cols - 1; end >= s.col + count; end -= 32) {
             int dest = end - lane;
             Cell moved{};
@@ -1481,8 +1429,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
             __syncwarp();
           }
         }
-        // Only the two edges can leave half of an old wide glyph behind.
-        // Finish these reads before any lane overwrites the run.
         if (lane == 0 && s.complex_cells) {
           if (s.col > 0 && (s.grid[at(s, s.row, s.col)].flags & TAIL))
             clear_cell(s.grid[at(s, s.row, s.col - 1)], s.fg, s.bg);
@@ -1510,8 +1456,7 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
         continue;
       }
     }
-    __syncwarp(); // Finish shared predicate reads before the leader mutates
-                  // state.
+    __syncwarp();
     if (lane == 0) {
       s.job_count = 0;
       s.repair_row = -1;
@@ -1525,8 +1470,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
                (s.esc || s.csi || (s.osc && s.osc != 5) || s.utf_need));
     }
     __syncwarp();
-    // Effects are applied in stream order: a wrap can clear a row and then
-    // write its first glyph within the same byte dispatch.
     for (int job = 0; job < s.job_count; ++job) {
       FillJob op = jobs[job];
       for (int i = lane; i < op.count; i += 32)
@@ -1537,8 +1480,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
       repair_row(s, s.repair_row);
     __syncwarp();
     auto &g = *s.graphics;
-    // Valid continuation chunks use already-reserved device storage. Yield to
-    // the host only for capacity growth or the final decode/commit operation.
     if (g.request.ready && !g.request.reset && !g.request.barrier && g.active &&
         !g.invalid && graphic_value(g.command, 'm') &&
         g.request.input_bytes <= g.input_capacity) {
@@ -1564,9 +1505,6 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
       *resume = (int)offset;
   }
 }
-// CRLF-delimited ASCII can be laid out independently in parallel. Validation
-// happens on the GPU; controls, Unicode, and partial parser state use the warp
-// interpreter. Prefix scans give each glyph a unique logical row and column.
 struct PlainMeta {
   int start_row, start_col, scroll, history_base;
 };
@@ -1759,8 +1697,6 @@ __global__ void plain_wrap_metadata(DeviceState *s, const unsigned char *b,
     if (wrap) *wrap = 0;
   }
 }
-// Snapshot flags are immutable during repair: adjacent lanes may clear cells
-// independently without racing on the wide-pair predicates.
 __global__ void plain_repair(DeviceState *s, const int *rejected) {
   if (*rejected < 256 || !s->complex_cells)
     return;
@@ -1784,7 +1720,6 @@ __global__ void repair_history(DeviceState *s, const int *accepted,
     Cell *row =
         s->history +
         ((m->history_base + logical) % s->history_capacity) * s->history_cols;
-    // One thread owns a complete row, so neighbor repair has no data race.
     for (int c = 0; c < s->cols; ++c) {
       uint32_t f = row[c].flags;
       if (((f & WIDE) && (c + 1 == s->cols || !(row[c + 1].flags & TAIL))) ||
@@ -1931,7 +1866,6 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
       if ((z.flags & BOLD) && s->face_pixels[1] == s->face_pixels[0] && face_x > 0)
         alpha = dmax(alpha, face_alpha(s, z.cp, face_x - 1, face_y, font_style));
       if ((z.flags & UNDERLINE) && glyph_y == 14) alpha = 255;
-      // Combining marks retain the existing Unifont placement/coverage.
       uint32_t face_mark_ref = mark_pool::head(z);
       for (int m = 0;;) {
         uint32_t mark;
@@ -1948,8 +1882,6 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
     bool plain = z.bg == DEFAULT_BG && !(z.flags & INVERSE) && !selected && !cursor;
     unsigned base_alpha = plain ? s->background_alpha : 255;
     if (!overlay && graphic_below_text(*s)) {
-      // Negative z sits under the glyph; the lowest band also sits under a
-      // non-default cell background. The glyph blend takes it as its background.
       unsigned under = s->background_alpha;
       uint32_t base = graphic_pixel(*s, x, y, premultiply(resolved(*s, DEFAULT_BG), under), under, 0);
       if (!plain) { base = bg; under = 255; }
@@ -1979,9 +1911,6 @@ __global__ void set_selection_output_kernel(DeviceState *s,
                                             unsigned char *output) {
   s->selection_output = output;
 }
-// Word selection groups letters/digits/underscore and non-ASCII glyphs;
-// ASCII punctuation selects runs of the same character. Combining marks remain
-// attached to their base cell. This is not Unicode word segmentation.
 __device__ uint32_t selection_class(DeviceState &s, int row, int col) {
   Cell z = viewed_cell(s, row, col);
   if ((z.flags & TAIL) && col > 0) z = viewed_cell(s, row, col - 1);
@@ -2025,8 +1954,6 @@ __global__ void select_kernel(DeviceState *s, int sr, int sc, int er, int ec,
     uint32_t first = selection_token(*s, sr, sc, mode);
     uint32_t last = selection_token(*s, er, ec, mode);
     while (sc > 0 && selection_token(*s, sr, sc - 1, mode) == first) --sc;
-    // A word can continue across a soft-wrapped row.  Positive wrap lengths
-    // are the only row joins; retained-history boundaries and hard breaks stop it.
     while (sc == 0 && sr > min_row && viewed_wrap(*s, sr - 1) > 0) {
       int candidate_row = sr - 1;
       int limit = viewed_wrap(*s, candidate_row);
@@ -2100,8 +2027,6 @@ __global__ void selected_text_kernel(DeviceState *s, int batch_start, int batch_
     bool joined = !s->selection_rectangle && wrap > 0 && r != s->selection_end_row;
     if (wrap > 0)
       last = dmin(last, wrap - 1);
-    // Preserve actual edge spaces inside a logical line, but omit synthetic
-    // wide-wrap/resize padding using the recorded continuation length.
     while (!joined && last >= first) {
       Cell z = viewed_cell(*s, r, last);
       if (z.flags & TAIL) {
@@ -2136,7 +2061,6 @@ __global__ void selected_text_kernel(DeviceState *s, int batch_start, int batch_
         } else pos = append_utf8(nullptr, pos, node.cp);
         ref = node.parent;
       }
-      // Reversing both each scalar's bytes and the suffix restores forward UTF-8.
       if (out) for (size_t i = suffix_start, j = pos; i < j && i < --j; ++i)
         dswap(out[i], out[j]);
     }
@@ -2164,8 +2088,6 @@ __global__ void grow_history_kernel(const DeviceState *s, Cell *out) {
   out[i] = s->history[slot * s->history_cols + col];
 }
 __global__ void commit_history_growth(DeviceState *s, Cell *out, int capacity) {
-  // This kernel launches one thread. Shared scratch avoids a 16 KiB per-thread
-  // CUDA stack reservation while protecting the in-place ring permutation.
   __shared__ int wrap[HISTORY_CAP];
   for (int row = 0; row < s->history_count; ++row) {
     int old_slot = (s->history_head - s->history_count + row +
@@ -2253,7 +2175,7 @@ __global__ void follow_output_kernel(DeviceState *s) {
   s->copy_flash = 0;
 }
 
-} // namespace
+}
 
 struct Engine::Impl {
   unsigned char *face = nullptr;
@@ -2383,8 +2305,6 @@ void Engine::Impl::service_graphics(GraphicsRequest &request) {
     ck(cudaGetLastError());
     return;
   }
-  // The GPU supplies validated allocation sizes and slot ownership. The host
-  // only allocates/frees device storage; it never decodes terminal/image bytes.
   unsigned char *output = nullptr;
   bool failed = false;
   if (request.history_growth) {
@@ -2482,8 +2402,6 @@ void Engine::Impl::reserve_scan(size_t requested) {
   scan_capacity = (int)n;
 }
 void Engine::Impl::reserve_history(size_t bytes) {
-  // One byte can flush an invalid UTF-8 scalar and then emit another glyph
-  // or newline. Reserving two rows per byte bounds both without host parsing.
   if (alternate) return;
   size_t bound = std::min(size_t(HISTORY_CAP), size_t(history_rows) + 2 * bytes);
   if (bound <= size_t(history_capacity))
@@ -2513,7 +2431,7 @@ void Engine::Impl::history_capacity_to(int capacity) {
   history_capacity = capacity;
 }
 void Engine::Impl::grow_mark_pool() {
-  constexpr uint32_t limit = 1u << 20; // At most 8 MiB of immutable suffix nodes.
+  constexpr uint32_t limit = 1u << 20;
   if (mark_capacity >= limit)
     throw std::runtime_error("mark suffix arena exhausted with live nodes");
   uint32_t capacity = std::max<uint32_t>(64, std::min(limit, mark_capacity * 2));
@@ -2608,9 +2526,6 @@ static std::vector<unsigned char> read_data(const char *name, size_t size) {
 Engine::Engine(int c, int r) : p(nullptr) {
   dims(c, r);
   configure_runtime();
-  // This sm_89 build's largest compiled frame is 96 bytes. CUDA's 1024-byte
-  // default reserves 168 MiB more on a 4090. The driver can grow this limit
-  // for kernels requiring larger frames; no recursive device calls are used.
   ck(cudaDeviceSetLimit(cudaLimitStackSize, 128));
   p = new Impl;
   try {
@@ -2750,7 +2665,6 @@ void Engine::feed(const unsigned char *b, size_t n) {
 }
 std::string Engine::feed_and_replies(const unsigned char *b, size_t n) {
   enqueue_feed(b, n);
-  // The blocking reply-buffer copy completes preceding default-stream work.
   return take_replies();
 }
 FeedResult Engine::feed_frame(const unsigned char *b, size_t n) {
@@ -2784,7 +2698,6 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
     ck(cudaGetLastError());
     return;
   }
-  // An upload in progress is opaque graphics transport, not text to classify.
   if (n >= 256 && !p->graphics_capacity) {
     p->reserve_scan(n);
     int input_size = (int)n;
@@ -2798,15 +2711,11 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
     ck(cudaMemcpy(&ascii_prefix, p->rejected, sizeof(int),
                   cudaMemcpyDeviceToHost));
     if (ascii_prefix < 0) {
-      // GPU finishes a bounded fragment; the host only transports its consumed
-      // byte count, then launches the classifier on the untouched remainder.
       feed_kernel<<<1, 32>>>(p->d, device_input, std::min(n, size_t(4096)),
                              nullptr, nullptr, p->styled_done);
       ck(cudaGetLastError());
       return;
     }
-    // A short non-ASCII tail costs less in the interpreter than a styled scan
-    // of the entire input. The plain path still commits the classified prefix.
     if (ascii_prefix != (int)n &&
         (ascii_prefix < 256 || (int)n - ascii_prefix >= 256)) {
       styled_lines<<<(n + 127) / 128, 128>>>(p->d, device_input, (int)n,
@@ -3048,8 +2957,6 @@ void Engine::scroll_view(int delta) {
   p->view_possible = true;
 }
 void Engine::follow_output() {
-  // Only host viewport navigation can leave the live view. Terminal output
-  // may reset that state, so this conservative hint can only cause extra work.
   if (!p->view_possible && !p->selection_possible)
     return;
   follow_output_kernel<<<1, 1>>>(p->d);
@@ -3240,7 +3147,6 @@ std::string Engine::selected_text() {
       ck(cudaMemcpy(result.data() + old, p->selection_output, needed, cudaMemcpyDeviceToHost));
     }
   }
-  // Large copy buffers are transient; ordinary selections retain at most 64 KiB.
   if (p->selection_output_capacity > (64u << 10)) {
     cudaFree(p->selection_output); p->selection_output = nullptr; p->selection_output_capacity = 0;
     set_selection_output_kernel<<<1, 1>>>(p->d, nullptr);
@@ -3255,7 +3161,7 @@ void Engine::render(uint32_t *out, int w, int h) {
   render_kernel<<<g, b>>>(p->d, out, w, h, p->prompt_cells, p->prompt_preedit);
   ck(cudaGetLastError());
 }
-} // namespace ct
+}
 
 namespace ct {
 __global__ void theme_kernel(DeviceState *s, Theme theme) {
@@ -3279,9 +3185,6 @@ bool Engine::take_bell() {
 namespace ct {
 void Engine::set_decode_pump(void (*pump)(void *, bool), void *context) {
   if (p->decoding) throw std::logic_error("cannot replace active decode pump");
-  // Lazy kernel loading can synchronize the context on the first input event.
-  // Preload just the kernels used by input callbacks, retaining lazy loading
-  // for unrelated work and the small single-connection queue configuration.
   if (pump) {
     cudaFuncAttributes attributes;
     ck(cudaFuncGetAttributes(&attributes, mouse_kernel));
@@ -3369,8 +3272,6 @@ void Engine::load_faces(const std::array<std::vector<unsigned char>, 4> &faces) 
   unsigned char *next = nullptr;
   ck(cudaMalloc(&next, total));
   try {
-    // Validate every face before allocation; copy directly into the final device
-    // allocation instead of assembling another full atlas on the host.
     for (int style = 0; style < 4; ++style)
       if (!faces[style].empty())
         ck(cudaMemcpy(next + offsets[style], faces[style].data(), faces[style].size(), cudaMemcpyHostToDevice));

@@ -7,9 +7,6 @@
 #include <string_view>
 
 namespace ct::keyboard {
-
-// Keys with a stable Kitty functional-key identity.  Layout-dependent text
-// keys use Key::Character and carry their identity in KeyEvent::codepoint.
 enum class Key : uint8_t {
   Character,
   Escape,
@@ -39,7 +36,6 @@ enum class Key : uint8_t {
   F10,
   F11,
   F12,
-  // Use codepoint for Kitty's extended function/media/keypad identities.
   Functional,
   Unknown,
 };
@@ -55,10 +51,6 @@ enum Modifier : uint32_t {
   NumLock = 1u << 5,
 };
 
-// The caller supplies `codepoint` from the layout-resolved key identity when
-// possible.  `unshifted_codepoint` is the base-layout identity used by Kitty
-// for the primary key field; it is also what a GLFW key-name lookup should
-// populate.  `text` is the UTF-8 character callback payload.
 struct KeyEvent {
   Key key = Key::Unknown;
   uint32_t codepoint = 0;
@@ -70,9 +62,6 @@ struct KeyEvent {
   bool application_cursor = false;
 };
 
-// Decode one valid Unicode scalar from the beginning of a UTF-8 view.  A
-// zero result means empty or invalid input; keyboard layout names cannot
-// validly use NUL as a key identity.
 inline uint32_t first_codepoint(std::string_view text) {
   if (text.empty())
     return 0;
@@ -177,9 +166,6 @@ inline void append_decimal(std::string &out, uint32_t value) {
 }
 
 inline uint32_t kitty_modifiers(uint32_t modifiers) {
-  // Kitty uses a one-based modifier value and reserves bits 6/7 for the lock
-  // state.  The public values above are intentionally layout-independent and
-  // do not reuse GLFW's different bit ordering.
   uint32_t raw = 0;
   if (modifiers & Shift)
     raw |= 1;
@@ -197,9 +183,6 @@ inline uint32_t kitty_modifiers(uint32_t modifiers) {
 }
 
 inline bool binding_modifier(uint32_t modifiers) {
-  // Shift is represented by the text callback's resulting character.  It is
-  // therefore not a binding modifier unless the caller also supplies a
-  // non-text key or one of the other modifier bits.
   return modifiers & (Alt | Control | Super);
 }
 
@@ -373,13 +356,8 @@ inline std::string special_sequence(const Functional &key, uint32_t modifiers,
   return std::string("\033[") + key.final;
 }
 
-} // namespace detail
+}
 
-// Encode a key according to the currently negotiated Kitty flags.  An empty
-// result means the caller should use its normal legacy/key-character path.
-// The device currently negotiates only DISAMBIGUATE, but the formatter keeps
-// exact event/alternate/associated-text fields available to the host caller
-// when those flags are enabled in a future increment.
 inline std::string encode(const KeyEvent &event, uint32_t flags) {
   flags &= ALL_FLAGS;
   if (!flags)
@@ -410,8 +388,6 @@ inline std::string encode(const KeyEvent &event, uint32_t flags) {
         event.action != Action::Release) {
       if (detail::has_printable_text(event.text))
         return std::string(event.text);
-      // A key callback can arrive without a character callback for a control
-      // or dead-key layout.  Leave unknown text to the caller's legacy path.
       if (event.key == Key::Unknown)
         return {};
     }
@@ -432,9 +408,6 @@ inline std::string encode(const KeyEvent &event, uint32_t flags) {
   if (!functional.final)
     return {};
   if (detail::control_key(event.key)) {
-    // Kitty deliberately leaves these three keys in their legacy form when
-    // report-all is disabled, so a crashed child can still be reset.  Escape
-    // remains CSI-u under disambiguation because its byte is ambiguous.
     if (event.key != Key::Escape && !report_all &&
         !detail::physical_modifier(event.modifiers))
       return detail::legacy_control(event.key);
@@ -468,4 +441,4 @@ inline std::string encode_disambiguated(
   return encode(event, DISAMBIGUATE);
 }
 
-} // namespace ct::keyboard
+}

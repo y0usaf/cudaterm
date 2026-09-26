@@ -13,10 +13,6 @@
 #endif
 
 namespace ct::primary_selection {
-
-// GLFW's public clipboard API names only the regular clipboard. Keep the
-// platform split here so callers can copy a terminal selection to the native
-// primary selection without knowing which GLFW backend is active.
 enum class Backend { Unsupported, X11, Wayland };
 
 inline Backend backend() noexcept {
@@ -54,8 +50,6 @@ inline bool set(const char *text) noexcept {
 #endif
 }
 
-// The returned pointer is owned by GLFW and is valid until the next primary
-// selection get/set call or library termination. Copy it before another call.
 inline const char *get() noexcept {
 #if defined(__linux__)
   switch (backend()) {
@@ -88,4 +82,4 @@ inline bool supported() noexcept {
 #endif
 }
 
-} // namespace ct::primary_selection
+}

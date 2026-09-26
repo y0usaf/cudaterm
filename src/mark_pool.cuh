@@ -35,8 +35,6 @@ __device__ inline bool append_node(const Arena &a, uint32_t parent, uint32_t cp,
   return true;
 }
 
-// The cell is written only after every required suffix node exists. A failed
-// append therefore leaves the caller's input cell byte-for-byte unchanged.
 __device__ inline bool append_mark(ct::Cell &c, uint32_t cp, const Arena &a) {
   for (int i = 0; i < 3; ++i)
     if (!c.combining[i]) { c.combining[i] = cp; return true; }
@@ -47,8 +45,6 @@ __device__ inline bool append_mark(ct::Cell &c, uint32_t cp, const Arena &a) {
     *a.status = MALFORMED; return false;
   }
   uint32_t next;
-  // One leader owns this serial append. No speculative counter increment is
-  // performed, so FULL leaves both the root and arena counter unchanged.
   if (n == a.capacity) { *a.status = FULL; return false; }
   if (!append_node(a, ref, cp, next)) { c = original; return false; }
   set_head(c, next);
@@ -77,7 +73,6 @@ __device__ inline bool mark_at(const ct::Cell &c, const Arena &a, uint32_t ordin
   cp = a.nodes[ref - 1].cp;
   return true;
 }
-// Rendering and byte-counting may visit overflow marks newest-first.
 __device__ inline bool overlay_mark(const ct::Cell &c, const Arena &a,
                                     int &inline_pos, uint32_t &ref, uint32_t &cp) {
   if (inline_pos < 3 && c.combining[inline_pos]) { cp = c.combining[inline_pos++]; return true; }
@@ -97,4 +92,4 @@ __device__ inline uint32_t mark_count(const ct::Cell &c, const Arena &a) {
   return count;
 }
 
-} // namespace mark_pool
+}

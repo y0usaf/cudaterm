@@ -84,4 +84,4 @@ inline void set_cursor_rectangle(GLFWwindow *window, int x, int y, int width,
 #endif
 }
 
-} // namespace ct::ime
+}

@@ -1,4 +1,3 @@
-// Included in the engine device namespace. Scratch exists only during search.
 struct SearchWork {
   uint32_t query[512];
   int length, step, cells;
@@ -75,7 +74,6 @@ __global__ void commit_search(DeviceState *s, SearchWork *q) {
   int cell = int(token >> 32), sr = cell / s->cols, sc = cell % s->cols, er, ec;
   if (!search_at(*s, *q, token, er, ec)) return;
   int history = s->alt_active ? 0 : s->history_count;
-  // Keep a fitting match above the prompt row whenever possible.
   int visible = dmax(1, s->rows - 1);
   int top = dmax(0, dmin(sr, er - visible + 1));
   s->view_offset = dmax(0, dmin(history, history - top));
@@ -107,7 +105,6 @@ __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
   for (int i = 0; i < length; ++i) {
     uint32_t cp = text[i];
     int width = s->text_widths[cp];
-    // Prompt input is complete, so determine presentation before truncation.
     if (width == 1 && i + 1 < length && text[i + 1] == 0xfe0f &&
         emoji_vs16_base(cp)) width = 2;
     bool zwj_join = grapheme_extended_pictographic(cp) && zwj_joinable;
@@ -138,8 +135,6 @@ __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
           int base = x - 1;
           if (cells[base].flags & TAIL) --base;
           if (widen) {
-            // base_wide is tracked separately so count-only and materialized
-            // passes make the same geometry decision.
             cells[base].flags |= WIDE;
             cells[base + 1] = {32, DEFAULT_BG, DEFAULT_FG, TAIL};
           }
@@ -162,10 +157,9 @@ __global__ void search_prompt_cells(const DeviceState *s, const uint32_t *text,
       zwj_joinable = ep_extend_suffix;
       ep_extend_suffix = false;
     } else if (grapheme_zwj_ignorable(cp)) {
-      // Preserve both sides of the GB11 suffix across hidden format chars.
     } else {
       if (!grapheme_extend(cp)) ep_extend_suffix = grapheme_extended_pictographic(cp);
-      zwj_joinable = false; // Extend after ZWJ cannot satisfy GB11.
+      zwj_joinable = false;
     }
   }
   if (count_only) *s->marks.status = needed;

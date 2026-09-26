@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Build cudaterm's fixed 16-row BMP and supplementary font atlas."""
 import argparse
 import struct
 

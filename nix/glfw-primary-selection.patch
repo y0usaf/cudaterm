@@ -198,7 +198,7 @@
  #define GLFW_BORDER_SIZE    4
  #define GLFW_CAPTION_HEIGHT 24
  
-@@ -1352,8 +1355,113 @@
+@@ -1352,8 +1355,109 @@
              return NULL;
          }
  
@@ -211,8 +211,6 @@
 +    return string;
 +}
 +
-+// Reads the specified primary selection offer as the specified MIME type
-+//
 +static char* readPrimarySelectionOfferAsString(
 +    struct zwp_primary_selection_offer_v1* offer, const char* mimeType)
 +{
@@ -263,8 +261,6 @@
 +            return NULL;
 +        }
 +
-+        // Read one extra byte when the cap is reached so an exactly-cap-sized
-+        // transfer is accepted while a larger transfer is rejected.
 +        const size_t remaining = maxLength + 1 - length;
 +        const size_t readSize = remaining < 4096 ? remaining : 4096;
 +        const size_t requiredSize = length + readSize + 1;
@@ -312,7 +308,7 @@
  
      close(fds[0]);
  
-@@ -3135,8 +3243,347 @@
+@@ -3135,8 +3239,341 @@
      dataSourceHandleSend,
      dataSourceHandleCancelled,
  };
@@ -390,10 +386,6 @@
 +    primarySelectionDeviceHandleSelection
 +};
 +
-+// Write primary selection data without allowing a consumer that closes its
-+// pipe early to terminate the terminal with SIGPIPE.  The mask is local to
-+// this thread and the signal disposition is never changed, so child
-+// processes inherit their normal SIGPIPE behavior.
 +static void writePrimarySelectionString(int fd, const char* string, size_t length)
 +{
 +    sigset_t block;
@@ -546,8 +538,6 @@
 +
 +void _glfwSetWaylandPrimarySelectionString(const char* string)
 +{
-+    // Primary selection is optional on Wayland. Keep ordinary clipboard copy
-+    // successful when the compositor does not advertise this protocol.
 +    if (!_glfwWaylandPrimarySelectionSupported())
 +        return;
 +
@@ -660,7 +650,7 @@
  {
      if (_glfw.wl.selectionSource)
      {
-@@ -3304,5 +3751,4 @@
+@@ -3304,5 +3741,4 @@
      return window->wl.surface;
  }
  
@@ -668,63 +658,16 @@
 -
 --- a/include/GLFW/glfw3native.h
 +++ b/include/GLFW/glfw3native.h
-@@ -530,8 +530,62 @@
+@@ -530,8 +530,15 @@
   *
   *  @ingroup native
   */
  GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
 +
-+/*! @brief Returns whether the Wayland primary selection protocol is available.
-+ *
-+ *  @return `GLFW_TRUE` when the compositor exposes the primary selection
-+ *  protocol, or `GLFW_FALSE` otherwise.
-+ *
-+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
-+ *  GLFW_PLATFORM_UNAVAILABLE.
-+ *
-+ *  @thread_safety This function must only be called from the main thread.
-+ *
-+ *  @since Added by Cudaterm's GLFW Wayland primary-selection extension.
-+ *
-+ *  @ingroup native
-+ */
 +GLFWAPI int glfwWaylandPrimarySelectionSupported(void);
 +
-+/*! @brief Sets the current Wayland primary selection to the specified string.
-+ *
-+ *  @param[in] string A UTF-8 encoded string.
-+ *
-+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
-+ *  GLFW_PLATFORM_UNAVAILABLE and @ref GLFW_PLATFORM_ERROR.
-+ *
-+ *  @pointer_lifetime The specified string is copied before this function
-+ *  returns.
-+ *
-+ *  @thread_safety This function must only be called from the main thread.
-+ *
-+ *  @since Added by Cudaterm's GLFW Wayland primary-selection extension.
-+ *
-+ *  @ingroup native
-+ */
 +GLFWAPI void glfwSetWaylandPrimarySelectionString(const char* string);
 +
-+/*! @brief Returns the current Wayland primary selection as a string.
-+ *
-+ *  @return The primary selection as UTF-8, or `NULL` if unavailable.
-+ *
-+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
-+ *  GLFW_PLATFORM_UNAVAILABLE, @ref GLFW_PLATFORM_ERROR and @ref
-+ *  GLFW_FORMAT_UNAVAILABLE.
-+ *
-+ *  @pointer_lifetime The returned string is allocated and freed by GLFW. It
-+ *  remains valid until the next get or set call, or until termination.
-+ *
-+ *  @thread_safety This function must only be called from the main thread.
-+ *
-+ *  @since Added by Cudaterm's GLFW Wayland primary-selection extension.
-+ *
-+ *  @ingroup native
-+ */
 +GLFWAPI const char* glfwGetWaylandPrimarySelectionString(void);
 +
  #endif

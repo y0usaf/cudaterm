@@ -3,9 +3,6 @@
 #include <cstddef>
 
 namespace ct {
-// Desktop clipboard writes are host effects. Observe the consumed PTY stream,
-// preserving string boundaries so graphics/DCS payloads cannot become requests.
-// Reads (OSC 52 ... ?) are deliberately unsupported.
 class ClipboardWrites {
   enum State { Ground, Escape, Osc, OscEscape, Other, OtherEscape } state = Ground;
   std::string payload;
@@ -88,4 +85,4 @@ public:
     }
   }
 };
-} // namespace ct
+}

@@ -1,11 +1,5 @@
 #pragma once
 
-// Generated from Unicode 17.0.0 emoji-data.txt (2025-07-25):
-// https://www.unicode.org/Public/17.0.0/ucd/emoji/emoji-data.txt
-// Copyright Unicode, Inc.; Unicode data files are distributed under
-// the Unicode Terms of Use: https://www.unicode.org/terms_of_use.html
-//
-// 134 code points in 50 ranges.
 struct EmojiModifierBaseRange { uint32_t first, last; };
 static __device__ __constant__ const EmojiModifierBaseRange
     emoji_modifier_base_ranges[] = {

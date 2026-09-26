@@ -12,7 +12,6 @@ namespace ct {
 struct Cell {
   uint32_t cp, fg, bg, flags;
   uint32_t combining[3] = {};
-  // Bit 0 records an explicit space; higher bits hold the immutable mark head.
   uint32_t reserved = 0;
 };
 
@@ -53,8 +52,6 @@ public:
 
   void feed(const unsigned char *bytes, size_t length);
   std::string feed_and_replies(const unsigned char *bytes, size_t length);
-  // Stop at a GPU-parsed synchronized-update end, before the next frame mutates
-  // state. The caller retains the unconsumed transport bytes and takes replies.
   FeedResult feed_frame(const unsigned char *bytes, size_t length);
   void resize(int cols, int rows);
   Snapshot snapshot();
@@ -68,18 +65,12 @@ public:
   SearchMatch search(const std::string &, SearchDirection, bool restart = false);
   void clear_search();
   void set_search_prompt(const std::string &);
-  // Transient composition at the terminal cursor; never changes terminal cells.
   void set_preedit(const std::string &);
   std::string selected_text();
-  // Explicit OSC 8 target at a viewport cell; empty after close/eviction.
   std::string hyperlink_at(int row, int col);
   void render(uint32_t *device_pixels, int width, int height);
   void scroll_view(int delta);
   void follow_output();
-  // Buttons: 0/1/2 left/middle/right, 3 none, 64/65/66/67 wheel up/down/left/right.
-  // Zero-based cells; modifiers 4/8/16 Shift/Alt/Control; actions 0/1/2
-  // press/release/motion. Returns whether application tracking owns the event.
-  // Encoded reports are retrieved with take_replies().
   bool mouse(int button, int row, int col, int modifiers, int action,
              int pixel_x = -1, int pixel_y = -1);
   void focus(bool focused);
@@ -93,11 +84,7 @@ public:
   void set_cursor_position(float col, float row);
   void set_background_opacity(float opacity);
   bool take_title(std::string &title);
-  // True once per BEL received while bell activation (CSI ? 1042) is on.
   bool take_bell();
-  // Pump host input while image decompression runs independently. The callback
-  // may use input/selection methods, but must not feed more PTY output. `busy`
-  // is false once decoding is complete, allowing deferred resize/allocation.
   void set_decode_pump(void (*pump)(void *, bool), void *context);
 
 private:
@@ -107,4 +94,4 @@ private:
   Impl *p;
 };
 
-} // namespace ct
+}

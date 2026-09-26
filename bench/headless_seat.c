@@ -4,9 +4,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-// Backend API declarations from the pinned Weston 16 libweston-internal.h.
-// A virtual seat makes seat-dependent clients usable in an isolated compositor;
-// this module never opens input devices or connects to the user's desktop.
 void weston_seat_init(struct weston_seat *, struct weston_compositor *, const char *);
 int weston_seat_init_pointer(struct weston_seat *);
 int weston_seat_init_keyboard(struct weston_seat *, struct xkb_keymap *);

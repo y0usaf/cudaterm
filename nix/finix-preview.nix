@@ -1,4 +1,3 @@
-# Impure local preview, using the desktop's actual configured font and metrics.
 let
   terminal = builtins.getFlake (toString ../.);
   finix = builtins.getFlake "path:/home/y0usaf/finix";

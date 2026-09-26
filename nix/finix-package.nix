@@ -1,7 +1,6 @@
 { pkgs, terminal, widths, fontCacheBuilder, fontFile, fontSize ? 16, lineHeight ? 24 }:
 let
   pixels = builtins.floor (fontSize * 96.0 / 72.0 + 0.5);
-  # Runtime-only path strings remain usable without becoming build inputs.
   fontCache = if !(builtins.hasContext "${fontFile}") then null else pkgs.runCommand "cudaterm-finix-font-cache" {} ''
     mkdir -p $out
     ${fontCacheBuilder}/bin/cudaterm-build-font-cache \

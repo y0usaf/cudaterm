@@ -1,6 +1,4 @@
 #pragma once
-// Bounded RFC 1950/1951 decoder. Input, output and Huffman workspace are device
-// memory; no host codec or device heap. Caller supplies the exact output size.
 namespace ct::inflate {
 struct Bits {
   const unsigned char *data;
@@ -32,8 +30,6 @@ template <int FastBits> struct Tree {
       space = 2 * space - counts[i];
       if (space < 0) return false;
     }
-    // Empty distance alphabets and a single one-bit code are legal. Other
-    // incomplete trees cannot arise from a valid DEFLATE encoder.
     if (space && counts[0] != n && !(counts[0] == n - 1 && counts[1] == 1))
       return false;
     int index = 0;
@@ -92,8 +88,6 @@ struct Workspace {
   int type;
   bool final, valid, end;
 };
-// A block speculates on Huffman token boundaries, commits the valid chain,
-// and resolves LZ references in parallel through an immutable shared window.
 __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
                        size_t size, Workspace &w) {
   int lane = threadIdx.x;
@@ -158,7 +152,6 @@ __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
     if (!w.type) {
       for (unsigned i = lane; i < w.length; i += blockDim.x)
         out[w.pos + i] = w.bits.data[w.bits.bit / 8 + i];
-      // Store only the final window: a stored block may exceed 32 KiB.
       for (unsigned i = lane; i < w.length && i < 32768; i += blockDim.x) {
         size_t at = w.pos + w.length - 1 - i;
         w.window[at & 32767] = w.bits.data[w.bits.bit / 8 + w.length - 1 - i];
@@ -170,13 +163,7 @@ __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
     }
     while (w.valid && !w.end) {
       __syncthreads();
-      // Speculate at each possible bit start in a small tile. Huffman lookup
-      // and length/distance decoding run across the block; only the real chain
-      // starting at the known bit position is committed. Invalid guesses are
-      // ignored, and every selected token remains fully bounds checked.
       const size_t start_bit = w.bits.bit;
-      // Dense LZ streams benefit from one direct token and a parallel copy;
-      // literal-heavy streams amortize coordination over speculative tiles.
       const int guesses = n < size / 64 ? 1 : 512;
       for (int i = lane; i < guesses; i += blockDim.x) {
         Bits bits = w.bits;
@@ -213,7 +200,7 @@ __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
           bit += token.bits;
           if (token.symbol == 256) end = true;
           else {
-            token.bits = pos - w.batch_start; // Output offset of selected token.
+            token.bits = pos - w.batch_start;
             w.tokens[count++] = token;
             pos += token.length;
           }
@@ -223,8 +210,6 @@ __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
       }
       __syncthreads();
       if (!w.valid) break;
-      // Stop each batch below 16 KiB plus one match, preserving its entire
-      // output in the 32 KiB window for the next batch.
       for (size_t i = w.batch_start + lane; i < w.pos; i += blockDim.x) {
         size_t source = i;
         unsigned char value = 0;
@@ -244,8 +229,6 @@ __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
         out[i] = value;
       }
       __syncthreads();
-      // Keep the previous history immutable while resolving all references.
-      // Every dependency steps into an earlier token or the previous window.
       for (size_t i = w.batch_start + lane; i < w.pos; i += blockDim.x)
         w.window[i & 32767] = out[i];
       __syncthreads();
@@ -270,4 +253,4 @@ __device__ bool decode(const unsigned char *in, size_t n, unsigned char *out,
                       (unsigned(in[n-2]) << 8) | in[n-1];
   return w.checksum == expected;
 }
-} // namespace ct::inflate
+}

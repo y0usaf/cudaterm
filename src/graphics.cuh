@@ -39,7 +39,6 @@ __device__ bool graphic_placement_matches(const GraphicsState &g,
   uint32_t id = graphic_value(p, 'p');
   return !id || placement.placement == id;
 }
-// Kitty stacks placements by z, then by image id.
 __device__ bool graphic_below(const GraphicsState &g, int a, int b) {
   const auto &pa = g.placements[a], &pb = g.placements[b];
   if (pa.z != pb.z) return pa.z < pb.z;
@@ -55,10 +54,6 @@ __device__ void graphic_visible(GraphicsState &g) {
     g.visible[j] = i;
   }
 }
-// Resolve Kitty's destination size from a source crop.  c and r are cell
-// counts: both set requests an exact rectangle, while one set preserves the
-// crop aspect ratio.  The result is deliberately bounded because the values
-// are untrusted terminal input and are later used by cursor/history code.
 __device__ bool graphic_destination_size(const DeviceState &s, int source_width,
                                          int source_height, const GraphicsParams &p,
                                          int &dest_width, int &dest_height) {
@@ -99,7 +94,6 @@ __device__ void graphic_begin(GraphicsState &g) {
 }
 __device__ void graphic_parameter(GraphicsState &g) {
   if (g.phase != 2 || !g.digits || g.command.seen[g.key]) g.invalid = 1;
-  // z is the only signed key; it is stored as its 32-bit two's complement.
   if (g.key == 'z' && g.value > (g.negative ? 0x80000000u : 0x7fffffffu)) g.invalid = 1;
   if (!g.invalid) {
     g.command.seen[g.key] = 1;
@@ -140,7 +134,6 @@ __device__ void graphic_plan(DeviceState &s) {
   auto &p = g.command;
   unsigned action = graphic_value(p, 'a', 't');
   if (g.active) {
-    // Continuations carry only m and optionally q.
     for (int i = 0; i < 128; ++i)
       if (p.seen[i] && i != 'm' && i != 'q') g.invalid = 1;
     if (p.seen['q']) { g.upload.seen['q'] = 1; g.upload.value['q'] = p.value['q']; }
@@ -178,7 +171,6 @@ __device__ void graphic_plan(DeviceState &s) {
       if (!id) {
         do { ++g.next_id; } while (!g.next_id || image_slot(g, g.next_id) >= 0);
         g.upload.seen['i'] = 1; g.upload.value['i'] = id = g.next_id;
-        // Anonymous transfers do not request a response.
         g.upload.seen['q'] = 1; g.upload.value['q'] = 2;
       }
       int slot = image_slot(g, id);
@@ -201,9 +193,6 @@ __device__ void graphic_plan(DeviceState &s) {
       if (which == 'A' || which == 'I')
         g.request.release[placement.image_slot / 32] |= 1u << (placement.image_slot % 32);
     }
-    // Uppercase all/image deletes also discard an image that has no current
-    // placement.  Keep the image screen check so switching screens retains
-    // the other screen's image store, matching the existing behavior.
     if (which == 'A' || which == 'I') {
       for (int i = 0; i < IMAGE_SLOTS && !g.invalid; ++i) {
         const auto &im = g.images[i];
@@ -213,8 +202,6 @@ __device__ void graphic_plan(DeviceState &s) {
       }
     }
   } else if (action != 'p') g.invalid = 1;
-  // Placement can scroll hundreds of rows even for a tiny compressed command.
-  // Tell the allocator that bound before executing it, without CPU parsing.
   if (!g.invalid && !s.alt_active) {
     if (g.active && action == 'T' && g.request.output_bytes && !graphic_value(g.upload, 'C')) {
       unsigned sx = graphic_value(g.upload, 'x'), sy = graphic_value(g.upload, 'y');
@@ -319,9 +306,6 @@ __device__ bool graphic_place(DeviceState &s, GraphicPlacement &placement,
   h = dmin(h, unsigned(image.height) - source_y);
   int dest_width = 0, dest_height = 0;
   if (!graphic_destination_size(s, int(w), int(h), p, dest_width, dest_height)) return false;
-  // sx/sy are destination offsets consumed by graphics_scroll when the
-  // placement is clipped.  Keep the source crop separately so a scaled
-  // placement can map every remaining destination pixel safely.
   placement.occupied = 1; placement.image_slot = image_index;
   placement.placement = graphic_value(p, 'p');
   placement.screen = s.alt_active; placement.visible = 1;
@@ -397,7 +381,6 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
   }
   bool ok = !g.invalid && !allocation_failed;
   if (r.barrier && !r.reset) {
-    // Storage ownership is unchanged; only the host's history hint changes.
   } else if (g.active) {
     bool more = graphic_value(g.command, 'm');
     if (!more || !ok) {
@@ -409,9 +392,6 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
         im.channels = graphic_value(g.upload, 'f', 32) / 8; im.screen = s->alt_active;
         int placement = -1;
         if (action == 'T') {
-          // Reserve a placement before replacing an image.  If the table is
-          // full, one of the old image's records can be recycled because a
-          // successful retransmission removes every old placement.
           int old_slot = image_slot(g, im.id);
           uint32_t id = graphic_value(g.upload, 'p');
           placement = id ? graphic_placement_slot(g, old_slot, id)
@@ -438,8 +418,6 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
           if (old_slot >= 0) graphic_remove_image_placements(g, old_slot);
           g.images[r.slot] = im; r.committed = 1;
         } else {
-          // The query action validates and decodes its payload, but does not
-          // retain an image or placement.
           ok = false;
         }
       }
@@ -492,7 +470,6 @@ __global__ void graphics_execute(DeviceState *s, unsigned char *input,
   graphic_visible(g);
   r.ready = 0;
 }
-// Kitty's z bands: below non-default cell backgrounds, below text, above text.
 __device__ int graphic_band(int z) { return z < -1073741824 ? 0 : z < 0 ? 1 : 2; }
 __device__ bool graphic_below_text(const DeviceState &s) {
   const auto &g = *s.graphics;

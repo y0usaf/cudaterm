@@ -1,5 +1,3 @@
-// Parallel layout for bounded UTF-8/SGR lines. Unsupported input stays on the
-// general VT path; all eligibility checks and parsing happen on the device.
 struct LinePen {
   uint32_t fg, bg, flags;
   int params[16], csi_n;
@@ -46,8 +44,6 @@ __device__ int read_sgr(LinePen &p, const unsigned char *b, int n, int i) {
   }
   return -1;
 }
-// Invalid or incomplete scalars reject the line without mutating terminal
-// state; the streaming interpreter then handles its exact recovery semantics.
 __device__ int read_scalar(const unsigned char *b, int n, int i, uint32_t &cp) {
   unsigned char c = b[i++];
   if (c >= 32 && c < 127) {
@@ -85,8 +81,6 @@ __device__ int line_tabcol(const DeviceState *s, int col) {
       return next;
   return s->cols - 1;
 }
-// Complete inline sequences can be laid out before painting. A suffix whose
-// base was emitted by another feed still belongs to the streaming interpreter.
 __device__ bool inline_vs16(uint32_t cp, const unsigned char *b, int pos, int n) {
   return pos + 3 <= n && b[pos] == 0xef && b[pos + 1] == 0xb8 &&
          b[pos + 2] == 0x8f && emoji_vs16_base(cp);
@@ -134,8 +128,6 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       apply_sgr(p, one);
       pos = end;
     } else if (c == '\r') {
-      // Repeated CRs before LF have the same layout as one CRLF. PTY output
-      // processing can produce these when an application writes CRLF itself.
       int end = pos;
       while (end < cap && b[end] == '\r')
         ++end;
@@ -156,9 +148,6 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
         return;
       }
       pos = end;
-      // ZWJ joins need the scalar interpreter: styled_lines has no suffix
-      // arena transaction and cannot safely promote the preceding cell.
-      // A leading pictograph may also join a stored ZWJ at a feed boundary.
       bool leading_join = i == 0 && !have_base && zwj_attachment(*s, cp);
       if (cp == 0x200d || leading_join) {
         atomicMin(limit, i);
@@ -179,9 +168,6 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       }
       inline_selector = inline_vs16(cp, b, pos, cap);
       int width = cp < 127 ? 1 : s->text_widths[cp];
-      // The scalar path owns cluster attachment and promotion for nonzero
-      // GCB Extend values and default ignorables whose width table predates
-      // Unicode 17 (for example U+1ADD and U+3164).
       if (width > 0 && (grapheme_extend(cp) ||
                         grapheme_default_ignorable_zero(cp))) {
         atomicMin(limit, i);
@@ -193,8 +179,6 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
         width = 1;
       if (!width) {
         ++marks;
-        // A line beginning with a mark may attach to a base from an earlier
-        // feed; conservatively send that line through the scalar interpreter.
         if (marks > 3 || !have_base) {
           atomicMin(limit, i);
           return;
@@ -212,8 +196,6 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
       }
     }
   }
-  // A control-only fragment must preserve a preceding cursor-control barrier.
-  // Let the interpreter handle it rather than committing fictitious new text.
   if (!have_base && !newline) { atomicMin(limit, i); return; }
   if (newline) {
     ++rows;
@@ -260,7 +242,6 @@ __device__ void styled_clear(DeviceState *s, int logical, const StyledMeta &m,
   if (logical >= s->rows && target) {
     int *w = bulk_wrap(*s, logical, m.scroll, m.history_base); if (w) *w = 0;
   }
-  // prepare_history already blanked new history rows with the final pen.
   if (m.history_base >= 0 && logical < m.scroll && p.fg == s->fg &&
       p.bg == s->bg)
     return;

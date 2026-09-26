@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Generate Unicode scalar widths and Unicode combining placement offsets."""
 import argparse
 import unicodedata
 
@@ -32,8 +31,6 @@ def build(combining, out, offsets_out, version_out):
     for cp in range(MAX):
         ch = chr(cp)
         if cp == 0x00AD:
-            # Monstar/ghostty deliberately renders SOFT HYPHEN as a visible
-            # standalone character even though it is default-ignorable.
             widths[cp] = 1
         elif (unicodedata.combining(ch) or
                 unicodedata.category(ch) in ("Mn", "Me", "Cf")):

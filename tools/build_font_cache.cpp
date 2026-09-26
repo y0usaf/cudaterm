@@ -20,7 +20,6 @@ int main(int argc, char **argv) {
       throw std::runtime_error("cannot configure font cache output");
     ct::rasterize_font(std::string("file:") + argv[1], pixels, line_height,
                        std::string("file:") + argv[2]);
-    // Runtime cache writes are best-effort; a build must fail if no atlas was saved.
     auto directory = output / "cudaterm/fonts";
     if (!std::filesystem::is_directory(directory) ||
         std::distance(std::filesystem::directory_iterator(directory), std::filesystem::directory_iterator()) != 1)

@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace ct::input {
-// File drops insert shell arguments without evaluating filenames as shell code.
 inline std::string dropped_paths(int count, const char *const *paths) {
   std::string text;
   for (int i = 0; i < count; ++i) {
@@ -21,8 +20,6 @@ inline std::string dropped_paths(int count, const char *const *paths) {
   }
   return text;
 }
-// PTY writes may consume only a prefix. Keep that prefix as an offset rather
-// than moving a large paste after every write, and release it when drained.
 class PendingBytes {
   std::vector<unsigned char> bytes;
   size_t offset = 0;
@@ -202,7 +199,6 @@ inline std::string keypad_sequence(Keypad key, unsigned modifiers,
     else if (key == Keypad::Divide)
       byte = '\037';
     else if (key != Keypad::Enter) {
-      // Legacy modified-key form uses the keypad keysym when no C0 byte exists.
       const unsigned keysym[] = {65456,65457,65458,65459,65460,65461,65462,65463,
         65464,65465, decimal_separator ? 65452u : 65454u, 65421, 65451,65453,
         65450,65455,65469};
@@ -215,4 +211,4 @@ inline std::string keypad_sequence(Keypad key, unsigned modifiers,
   return result;
 }
 
-} // namespace ct::input
+}

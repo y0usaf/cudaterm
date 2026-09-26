@@ -1,13 +1,5 @@
 #pragma once
 
-// Generated from Unicode 17.0.0 emoji-variation-sequences.txt (2025-01-30):
-// https://www.unicode.org/Public/17.0.0/ucd/emoji/emoji-variation-sequences.txt
-// Copyright Unicode, Inc.; the Unicode data files are distributed under the
-// Unicode Terms of Use: https://www.unicode.org/terms_of_use.html
-//
-// The table contains the bases of the 371 sanctioned FE0F (emoji style)
-// sequences. Adjacent bases are folded into inclusive ranges to keep this
-// predicate small in device code.
 struct EmojiVS16Range { uint32_t first, last; };
 static __device__ __constant__ const EmojiVS16Range emoji_vs16_ranges[] = {
   {0x0023,0x0023},{0x002a,0x002a},{0x0030,0x0039},{0x00a9,0x00a9},

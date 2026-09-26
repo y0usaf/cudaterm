@@ -7,8 +7,6 @@
 #include <unistd.h>
 
 namespace ct {
-// The handler only wakes the existing eventfd waiter. Configuration and GLFW
-// calls stay on the window thread, including when the terminal was idle.
 class ReloadSignal {
   inline static std::atomic<int> descriptor{-1};
   inline static std::atomic<bool> requested{false};

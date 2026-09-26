@@ -146,7 +146,7 @@ struct FrameTimer {
     return double(ms) * 1000000;
   }
 };
-} // namespace
+}
 int main(int argc, char **argv) {
   try {
     const Options o = parse(argc, argv);

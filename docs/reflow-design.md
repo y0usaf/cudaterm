@@ -8,9 +8,9 @@ an insertion boundary; it never joins an existing following row. Complete Cell
 records are scattered in parallel into fresh primary/history arrays. Parallel
 row inspection finds used endpoints and wide-cell flags. Serial row planning
 uses arithmetic positions for single-width rows; wide rows retain a per-cell
-planning fallback. Wide pairs
-move together, with U+FFFD at width one. The alternate grid keeps its physical
-layout and remains separate from primary history.
+planning fallback, which remains a measured cost. Wide pairs move together,
+with U+FFFD at width one. The alternate grid keeps its physical layout and
+remains separate from primary history.
 
 The temporary source-cell map is bounded by `(history_capacity + MAX_ROWS) *
 old_columns` integers, plus `(HISTORY_CAP + new_rows)` output wrap lengths and one fixed-size descriptor per source row.
@@ -50,34 +50,17 @@ offsets and pixel allocations. Blank cells containing visible image anchors are
 included in packing. Anchors outside retained history become hidden; alternate
 images stay physical. Deleting an image uses the existing release path.
 
-## Evidence and remaining validation
-
-`tests/reflow_test.cu` covers logical joins, hard breaks, pending wrap with an
-existing following row, wide/combining cells, typed versus erased spaces,
-viewport anchoring, alternate content, cursor continuation and height changes.
-Updated existing tests require actual reflow instead of historical clipping.
-The optimized CUDA suites, 38 graphics cases, 90 engine-host lifecycle cycles
-and zero-finding sanitizer runs are retained in `bench/reflow-fast-*.log` and
-`bench/reflow-fast-lifecycle.json`. Resize request distributions and the passed
-incremental median/p90 gates are in `bench/reflow-fast-cost-validation.json`.
-They compare against the measured initial functional reflow implementation;
-matched comparator resize performance remains unknown. Wide-row serial
-planning remains a measured cost. See `docs/progress.md` for final integration
-status, retention numbers and remaining compatibility questions.
-
 ## Comparator provenance
 
-The installed Foot package exposes its binary, README, and man pages at
-`/nix/store/ls22769pvdl3c28rg16gqc5psckf6kxx-foot-1.27.0`; source files are not
-present in that store path, so this audit makes no claim about Foot's internal
-resize algorithm. The local Monstar checkout is
-`/home/y0usaf/dev/sandbox/monstar`; its `src/Config.zig:112` says the configured
-scrollback limit affects startup because libghostty-vt does not resize live
-scrollback. The bundled libghostty source contains a separate reflow-capable
-`Screen.resize` implementation and tests, including explicit saved-cursor and
-pending-wrap cases (`src/terminal/Screen.zig` and `Terminal.zig`), but that is
-implementation-reference material, not proof that the installed Monstar binary
-uses every path. Its terminal resize code documents primary reflow and
-alternate-screen no-reflow as separate policies. These sources support the
-primary-only design choice while leaving runtime comparator behavior to a
-matched test.
+The installed Foot package contains no source, so this note makes no claim
+about Foot's internal resize algorithm. Monstar's `src/Config.zig:112` says the
+configured scrollback limit affects startup because libghostty-vt does not
+resize live scrollback. The bundled libghostty source contains a separate
+reflow-capable `Screen.resize` implementation and tests, including explicit
+saved-cursor and pending-wrap cases (`src/terminal/Screen.zig` and
+`Terminal.zig`), but that is implementation-reference material, not proof that
+the installed Monstar binary uses every path. Its terminal resize code documents
+primary reflow and alternate-screen no-reflow as separate policies. These
+sources support the primary-only design choice while leaving runtime comparator
+behavior to a matched test. Matched comparator resize performance remains
+unknown.
