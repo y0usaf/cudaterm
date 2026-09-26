@@ -1,0 +1,103 @@
+--- a/src/wl_init.c
++++ b/src/wl_init.c
+@@ -36,6 +36,7 @@
+ #include <string.h>
+ #include <sys/mman.h>
+ #include <sys/timerfd.h>
++#include <sys/eventfd.h>
+ #include <unistd.h>
+ #include <time.h>
+ #include <assert.h>
+@@ -588,6 +589,7 @@
+     // These must be set before any failure checks
+     _glfw.wl.keyRepeatTimerfd = -1;
+     _glfw.wl.cursorTimerfd = -1;
++    _glfw.wl.emptyEventFd = -1;
+ 
+     _glfw.wl.tag = glfwGetVersionString();
+ 
+@@ -888,6 +890,15 @@
+             timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+     }
+ 
++    _glfw.wl.emptyEventFd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
++    if (_glfw.wl.emptyEventFd == -1)
++    {
++        _glfwInputError(GLFW_PLATFORM_ERROR,
++                        "Wayland: Failed to create empty event descriptor: %s",
++                        strerror(errno));
++        return GLFW_FALSE;
++    }
++
+     if (!_glfw.wl.wmBase)
+     {
+         _glfwInputError(GLFW_PLATFORM_ERROR,
+@@ -1043,6 +1054,8 @@
+         close(_glfw.wl.keyRepeatTimerfd);
+     if (_glfw.wl.cursorTimerfd >= 0)
+         close(_glfw.wl.cursorTimerfd);
++    if (_glfw.wl.emptyEventFd >= 0)
++        close(_glfw.wl.emptyEventFd);
+ 
+     _glfw_free(_glfw.wl.clipboardString);
+     _glfw_free(_glfw.wl.primarySelectionString);
+--- a/src/wl_platform.h
++++ b/src/wl_platform.h
+@@ -500,6 +500,7 @@
+     uint32_t                    pointerEnterSerial;
+ 
+     int                         keyRepeatTimerfd;
++    int                         emptyEventFd;
+     int32_t                     keyRepeatRate;
+     int32_t                     keyRepeatDelay;
+     int                         keyRepeatScancode;
+--- a/src/wl_window.c
++++ b/src/wl_window.c
+@@ -1412,13 +1412,14 @@
+ #endif
+ 
+     GLFWbool event = GLFW_FALSE;
+-    enum { DISPLAY_FD, KEYREPEAT_FD, CURSOR_FD, LIBDECOR_FD };
++    enum { DISPLAY_FD, KEYREPEAT_FD, CURSOR_FD, LIBDECOR_FD, EMPTY_FD };
+     struct pollfd fds[] =
+     {
+         [DISPLAY_FD] = { wl_display_get_fd(_glfw.wl.display), POLLIN },
+         [KEYREPEAT_FD] = { _glfw.wl.keyRepeatTimerfd, POLLIN },
+         [CURSOR_FD] = { _glfw.wl.cursorTimerfd, POLLIN },
+-        [LIBDECOR_FD] = { -1, POLLIN }
++        [LIBDECOR_FD] = { -1, POLLIN },
++        [EMPTY_FD] = { _glfw.wl.emptyEventFd, POLLIN }
+     };
+ 
+     if (_glfw.wl.libdecor.context)
+@@ -1496,6 +1497,17 @@
+             if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
+                 event = GLFW_TRUE;
+         }
++
++        if (fds[EMPTY_FD].revents & POLLIN)
++        {
++            uint64_t count;
++
++            while (read(_glfw.wl.emptyEventFd, &count, sizeof(count)) == -1 &&
++                   errno == EINTR)
++                ;
++
++            event = GLFW_TRUE;
++        }
+     }
+ }
+ 
+@@ -2962,8 +2974,10 @@
+ 
+ void _glfwPostEmptyEventWayland(void)
+ {
+-    wl_display_sync(_glfw.wl.display);
+-    flushDisplay();
++    const uint64_t one = 1;
++
++    while (write(_glfw.wl.emptyEventFd, &one, sizeof(one)) == -1 && errno == EINTR)
++        ;
+ }
+ 
+ void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos)

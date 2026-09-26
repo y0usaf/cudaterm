@@ -7,7 +7,7 @@
     cuda = pkgs.cudaPackages_12_9;
     stdenv = pkgs.overrideCC pkgs.stdenv cuda.backendStdenv.cc;
     glfw = pkgs.glfw.overrideAttrs (old: {
-      patches = (old.patches or []) ++ [ ./nix/glfw-pointer-enter.patch ./nix/glfw-primary-selection.patch ./nix/glfw-ime.patch ];
+      patches = (old.patches or []) ++ [ ./nix/glfw-pointer-enter.patch ./nix/glfw-primary-selection.patch ./nix/glfw-ime.patch ./nix/glfw-empty-event.patch ];
     });
     headlessSeat = pkgs.stdenv.mkDerivation {
       name = "cudaterm-headless-seat";
