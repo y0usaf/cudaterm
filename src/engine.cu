@@ -1345,6 +1345,46 @@ __device__ void copy_state(DeviceState *to, const DeviceState *from, int lane) {
   for (int i = lane; i < int(sizeof(DeviceState) / sizeof(*dst)); i += 32)
     dst[i] = src[i];
 }
+__device__ void csi_warp(DeviceState &s, unsigned char c, size_t &offset, int lane) {
+  __shared__ unsigned char window[32];
+  __shared__ int separators[16];
+  unsigned head = __ballot_sync(0xffffffffu, (lane == 0 && c == 27) || (lane == 1 && c == '['));
+  if (head != 3u)
+    return;
+  bool semi = c == ';';
+  bool prefix = lane == 2 && (c == '?' || c == '>' || c == '<' || c == '=');
+  unsigned body = __ballot_sync(0xffffffffu, lane >= 2 && ((c >= '0' && c <= '9') || semi || prefix));
+  unsigned rest = ~body & ~3u;
+  int end = rest ? __ffs(rest) - 1 : 32;
+  unsigned semis = __ballot_sync(0xffffffffu, semi && lane >= 2 && lane < end);
+  unsigned prefixed = __ballot_sync(0xffffffffu, prefix);
+  int count = __popc(semis);
+  if (count > 15)
+    return;
+  int first = prefixed ? 3 : 2;
+  window[lane] = c;
+  if (semi && lane >= 2 && lane < end)
+    separators[__popc(semis & ((1u << lane) - 1))] = lane;
+  __syncwarp();
+  if (lane <= count) {
+    int start = lane ? separators[lane - 1] + 1 : first;
+    int stop = lane < count ? separators[lane] : end;
+    int value = 0;
+    for (int i = start; i < stop; ++i)
+      value = dmin(1000000, value * 10 + window[i] - '0');
+    s.params[lane] = value;
+  }
+  __syncwarp();
+  if (lane == 0) {
+    s.csi = 1;
+    s.csi_n = count;
+    s.csi_private = prefixed && window[2] == '?';
+    s.csi_ignore = s.csi_intermediate = 0;
+    s.csi_prefix = prefixed ? window[2] : 0;
+    s.csi_has_param = end > first;
+    offset += end;
+  }
+}
 __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
                             size_t n, const int *rejected = nullptr,
                             const int *styled = nullptr,
@@ -1410,13 +1450,13 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
         continue;
       }
     }
-    if (resume && offset > 0 && !s.esc && !s.csi && !s.osc && !s.utf_need)
+    bool ground = !s.esc && !s.csi && !s.osc && !s.utf_need;
+    if (resume && offset > 0 && ground)
       break;
-    if (!s.esc && !s.csi && !s.osc && !s.utf_need && !s.wrap_pending &&
-        (!s.insert_mode || !s.complex_cells)) {
-      size_t index = offset + lane;
-      unsigned char c = index < n ? input[index] : 0;
-      bool printable = index < n && lane < s.cols - s.col && c >= 32 && c < 127;
+    size_t index = offset + lane;
+    unsigned char c = ground && index < n ? input[index] : 0;
+    if (ground && !s.wrap_pending && (!s.insert_mode || !s.complex_cells)) {
+      bool printable = lane < s.cols - s.col && c >= 32 && c < 127;
       unsigned mask = __ballot_sync(0xffffffffu, printable);
       int count = mask == 0xffffffffu ? 32 : __ffs(~mask) - 1;
       if (count) {
@@ -1460,17 +1500,21 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
       }
     }
     __syncwarp();
+    if (ground)
+      csi_warp(s, c, offset, lane);
     if (lane == 0) {
       s.job_count = 0;
       s.repair_row = -1;
-      do {
+      while (offset < n) {
         size_t next = s.csi ? csi_run(s, input, n, offset) : offset;
         if (next == offset)
           byte(s, input[offset++]);
         else
           offset = next;
-      } while (offset < n && s.job_count == 0 && !s.graphics->request.ready &&
-               (s.esc || s.csi || (s.osc && s.osc != 5) || s.utf_need));
+        if (!(s.esc || s.csi || (s.osc && s.osc != 5) || s.utf_need) || s.job_count ||
+            s.graphics->request.ready)
+          break;
+      }
     }
     __syncwarp();
     for (int job = 0; job < s.job_count; ++job) {
