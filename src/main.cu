@@ -1420,6 +1420,8 @@ int main(int argc, char **argv) {
     startup_checkpoint("startup_glfw");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_DEPTH_BITS, 0);
+    glfwWindowHint(GLFW_STENCIL_BITS, 0);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
     glfwWindowHintString(GLFW_WAYLAND_APP_ID, o.app_id.c_str());
     glfwWindowHintString(GLFW_X11_CLASS_NAME, o.app_id.c_str());
