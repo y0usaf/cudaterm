@@ -68,7 +68,7 @@ public:
   void set_preedit(const std::string &);
   std::string selected_text();
   std::string hyperlink_at(int row, int col);
-  void render(uint32_t *device_pixels, int width, int height);
+  void render(unsigned long long surface, int width, int height);
   void scroll_view(int delta);
   bool follow_output();
   bool mouse(int button, int row, int col, int modifiers, int action,

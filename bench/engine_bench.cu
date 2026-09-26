@@ -122,23 +122,31 @@ void ck(cudaError_t status) {
     throw std::runtime_error(cudaGetErrorString(status));
 }
 struct FrameTimer {
-  uint32_t *pixels = nullptr;
+  cudaArray_t pixels = nullptr;
+  cudaSurfaceObject_t surface = 0;
   cudaEvent_t begin = nullptr, end = nullptr;
   ~FrameTimer() {
-    cudaFree(pixels);
+    if (surface)
+      cudaDestroySurfaceObject(surface);
+    cudaFreeArray(pixels);
     if (begin)
       cudaEventDestroy(begin);
     if (end)
       cudaEventDestroy(end);
   }
   void init(int width, int height) {
-    ck(cudaMalloc(&pixels, size_t(width) * height * sizeof(uint32_t)));
+    const cudaChannelFormatDesc format = cudaCreateChannelDesc<uchar4>();
+    ck(cudaMallocArray(&pixels, &format, width, height, cudaArraySurfaceLoadStore));
+    cudaResourceDesc target{};
+    target.resType = cudaResourceTypeArray;
+    target.res.array.array = pixels;
+    ck(cudaCreateSurfaceObject(&surface, &target));
     ck(cudaEventCreate(&begin));
     ck(cudaEventCreate(&end));
   }
   double sample(ct::Engine &engine, int width, int height) {
     ck(cudaEventRecord(begin));
-    engine.render(pixels, width, height);
+    engine.render(surface, width, height);
     ck(cudaEventRecord(end));
     ck(cudaEventSynchronize(end));
     float ms = 0;

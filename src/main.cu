@@ -83,14 +83,11 @@ struct Pty {
 };
 struct Graphics {
   GLFWwindow *window = nullptr;
-  GLuint pbo = 0;
   GLuint texture = 0;
   cudaGraphicsResource *resource = nullptr;
   ~Graphics() {
     if (resource)
       cudaGraphicsUnregisterResource(resource);
-    if (pbo)
-      glDeleteBuffers(1, &pbo);
     if (texture)
       glDeleteTextures(1, &texture);
     if (window)
@@ -1470,11 +1467,6 @@ int main(int argc, char **argv) {
       std::rethrow_exception(app.error);
     ImeSession ime_session(app);
     startup_checkpoint("startup_resize");
-    GLuint &pbo = graphics.pbo;
-    size_t pbo_capacity = (size_t)o.cols * CellW * o.rows * CellH * 4;
-    glGenBuffers(1, &pbo);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, pbo_capacity, nullptr, GL_STREAM_DRAW);
     glGenTextures(1, &graphics.texture);
     glBindTexture(GL_TEXTURE_2D, graphics.texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -1482,9 +1474,6 @@ int main(int argc, char **argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     cudaGraphicsResource *&resource = graphics.resource;
-    check_cuda(cudaGraphicsGLRegisterBuffer(
-                   &resource, pbo, cudaGraphicsRegisterFlagsWriteDiscard),
-               "cudaGraphicsGLRegisterBuffer");
     startup_checkpoint("startup_interop");
     bool eof = false;
     int status = 0;
@@ -1653,23 +1642,21 @@ int main(int argc, char **argv) {
       int wsx, wsy;
       glfwGetFramebufferSize(win, &wsx, &wsy);
       size_t needed = (size_t)wsx * wsy * 4;
-      if (needed && (needed > pbo_capacity || needed < pbo_capacity / 2)) {
-        check_cuda(cudaGraphicsUnregisterResource(resource),
-                   "cudaGraphicsUnregisterResource");
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, needed, nullptr, GL_STREAM_DRAW);
-        pbo_capacity = needed;
-        check_cuda(cudaGraphicsGLRegisterBuffer(
-                       &resource, pbo, cudaGraphicsRegisterFlagsWriteDiscard),
-                   "cudaGraphicsGLRegisterBuffer");
-      }
-      if (wsx > 0 && wsy > 0 && (texture_w != wsx || texture_h != wsy)) {
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+      if (wsx > 0 && wsy > 0 && (wsx > texture_w || wsy > texture_h ||
+                                 needed < (size_t)texture_w * texture_h * 2)) {
+        if (resource)
+          check_cuda(cudaGraphicsUnregisterResource(resource),
+                     "cudaGraphicsUnregisterResource");
+        resource = nullptr;
         glBindTexture(GL_TEXTURE_2D, graphics.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, wsx, wsy, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE, nullptr);
         texture_w = wsx;
         texture_h = wsy;
+        check_cuda(cudaGraphicsGLRegisterImage(&resource, graphics.texture, GL_TEXTURE_2D,
+                                               cudaGraphicsRegisterFlagsSurfaceLoadStore |
+                                                   cudaGraphicsRegisterFlagsWriteDiscard),
+                   "cudaGraphicsGLRegisterImage");
       }
       if (app.dirty && wsx > 0 && wsy > 0 &&
           (!sync_active || (eof && !pending) || std::chrono::steady_clock::now() - sync_started >=
@@ -1686,33 +1673,34 @@ int main(int argc, char **argv) {
           }
         }
         glViewport(0, 0, wsx, wsy);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-        void *device = nullptr;
-        size_t bytes = 0;
+        cudaArray_t array = nullptr;
+        cudaSurfaceObject_t surface = 0;
         uint64_t trace_start = trace.begin();
         check_cuda(cudaGraphicsMapResources(1, &resource),
                    "cudaGraphicsMapResources");
-        check_cuda(
-            cudaGraphicsResourceGetMappedPointer(&device, &bytes, resource),
-            "cudaGraphicsResourceGetMappedPointer");
-        trace.record(trace_start, "graphics_map_pointer", bytes);
+        check_cuda(cudaGraphicsSubResourceGetMappedArray(&array, resource, 0, 0),
+                   "cudaGraphicsSubResourceGetMappedArray");
+        cudaResourceDesc target{};
+        target.resType = cudaResourceTypeArray;
+        target.res.array.array = array;
+        check_cuda(cudaCreateSurfaceObject(&surface, &target), "cudaCreateSurfaceObject");
+        trace.record(trace_start, "graphics_map_pointer", needed);
         trace_start = trace.begin();
-        engine.render((uint32_t *)device, wsx, wsy);
+        engine.render(surface, wsx, wsy);
+        check_cuda(cudaDestroySurfaceObject(surface), "cudaDestroySurfaceObject");
         check_cuda(cudaGraphicsUnmapResources(1, &resource),
                    "cudaGraphicsUnmapResources");
-        trace.record(trace_start, "engine_render_unmap", bytes);
+        trace.record(trace_start, "engine_render_unmap", needed);
         trace_start = trace.begin();
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+        const float u = float(wsx) / texture_w, v = float(wsy) / texture_h;
         glBindTexture(GL_TEXTURE_2D, graphics.texture);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, wsx, wsy, GL_RGBA,
-                        GL_UNSIGNED_BYTE, nullptr);
         glEnable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f);
+        glTexCoord2f(0.0f, v);
         glVertex2f(-1.0f, -1.0f);
-        glTexCoord2f(1.0f, 1.0f);
+        glTexCoord2f(u, v);
         glVertex2f(1.0f, -1.0f);
-        glTexCoord2f(1.0f, 0.0f);
+        glTexCoord2f(u, 0.0f);
         glVertex2f(1.0f, 1.0f);
         glTexCoord2f(0.0f, 0.0f);
         glVertex2f(-1.0f, 1.0f);

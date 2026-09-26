@@ -1770,7 +1770,7 @@ __device__ uint32_t unpremultiply(uint32_t color, unsigned alpha) {
     out |= dmin(255u, (((color >> shift) & 255) * 255 + alpha / 2) / alpha) << shift;
   return out;
 }
-__global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
+__global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int w,
                               int h, const Cell *prompt, bool preedit) {
   int x = blockIdx.x * blockDim.x + threadIdx.x,
       y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -1901,8 +1901,8 @@ __global__ void render_kernel(const DeviceState *s, uint32_t *out, int w,
   }
   if (!overlay && x >= 0 && y >= 0 && c < s->cols && r < s->rows)
     color = graphic_pixel(*s, x, y, color, opacity, 2);
-  out[output_y * w + output_x] =
-      (opacity << 24) | ((color & 255) << 16) | (color & 0xff00) | (color >> 16);
+  surf2Dwrite((opacity << 24) | ((color & 255) << 16) | (color & 0xff00) | (color >> 16),
+              out, output_x * 4, output_y);
 }
 __global__ void clear_selection_kernel(DeviceState *s) {
   s->selection_active = 0;
@@ -3141,7 +3141,7 @@ std::string Engine::selected_text() {
   }
   return result;
 }
-void Engine::render(uint32_t *out, int w, int h) {
+void Engine::render(unsigned long long out, int w, int h) {
   if (!out || w < 1 || h < 1)
     return;
   dim3 b(16, 16), g((w + 15) / 16, (h + 15) / 16);
