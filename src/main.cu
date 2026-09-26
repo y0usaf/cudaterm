@@ -1701,7 +1701,6 @@ int main(int argc, char **argv) {
         check_cuda(cudaGraphicsUnmapResources(1, &resource),
                    "cudaGraphicsUnmapResources");
         trace.record(trace_start, "engine_render_unmap", bytes);
-        glClear(GL_COLOR_BUFFER_BIT);
         trace_start = trace.begin();
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
         glBindTexture(GL_TEXTURE_2D, graphics.texture);
