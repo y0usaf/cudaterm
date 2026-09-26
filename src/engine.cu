@@ -2965,14 +2965,15 @@ void Engine::scroll_view(int delta) {
   p->selection_possible = false;
   p->view_possible = true;
 }
-void Engine::follow_output() {
+bool Engine::follow_output() {
   if (!p->view_possible && !p->selection_possible)
-    return;
+    return false;
   follow_output_kernel<<<1, 1>>>(p->d);
   ck(cudaGetLastError());
   ck(cudaStreamSynchronize(nullptr));
   p->selection_possible = false;
   p->view_possible = false;
+  return true;
 }
 std::vector<Cell> Engine::cells() {
   DeviceState s;

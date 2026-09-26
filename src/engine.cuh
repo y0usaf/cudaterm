@@ -70,7 +70,7 @@ public:
   std::string hyperlink_at(int row, int col);
   void render(uint32_t *device_pixels, int width, int height);
   void scroll_view(int delta);
-  void follow_output();
+  bool follow_output();
   bool mouse(int button, int row, int col, int modifiers, int action,
              int pixel_x = -1, int pixel_y = -1);
   void focus(bool focused);

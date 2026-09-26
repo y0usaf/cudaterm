@@ -361,10 +361,9 @@ void flush_input(App *a) {
   }
 }
 void follow_output(App *a) {
-  a->engine->follow_output();
+  if (a->engine->follow_output()) a->dirty = true;
   a->selecting = false; a->link_click = false;
   a->last_input = glfwGetTime();
-  a->dirty = true;
 }
 constexpr size_t SearchMaxCodepoints = 512, SearchMaxBytes = 2048;
 bool append_search_utf8(std::string &query, const unsigned char *p, size_t n) {
@@ -602,9 +601,11 @@ void key_impl(GLFWwindow *w, int key, int scancode, int action, int mods) {
     return;
   std::vector<unsigned char> b;
   a->cursor_deadline = glfwGetTime() + 0.6;
-  a->cursor_phase = true;
-  a->engine->set_cursor_phase(true, a->focused);
-  a->dirty = true;
+  if (!a->cursor_phase) {
+    a->cursor_phase = true;
+    a->engine->set_cursor_phase(true, a->focused);
+    a->dirty = true;
+  }
   bool ctrl = mods & GLFW_MOD_CONTROL, alt = mods & GLFW_MOD_ALT;
   if (ctrl && (mods & GLFW_MOD_SHIFT) && key == GLFW_KEY_N && !alt) {
     new_window(a); return;
