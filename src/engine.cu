@@ -1343,6 +1343,13 @@ __device__ size_t csi_run(DeviceState &s, const unsigned char *input, size_t n,
 }
 #include "styled.cuh"
 
+__device__ void copy_state(DeviceState *to, const DeviceState *from, int lane) {
+  static_assert(sizeof(DeviceState) % sizeof(unsigned long long) == 0);
+  auto *dst = reinterpret_cast<unsigned long long *>(to);
+  auto *src = reinterpret_cast<const unsigned long long *>(from);
+  for (int i = lane; i < int(sizeof(DeviceState) / sizeof(*dst)); i += 32)
+    dst[i] = src[i];
+}
 __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
                             size_t n, const int *rejected = nullptr,
                             const int *styled = nullptr,
@@ -1364,8 +1371,9 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
   __shared__ FillJob jobs[MAX_ROWS + 4];
   __shared__ size_t offset;
   int lane = threadIdx.x;
+  copy_state(&s, state, lane);
+  __syncwarp();
   if (lane == 0) {
-    s = *state;
     s.jobs = jobs;
     s.job_count = 0;
     offset = 0;
@@ -1498,12 +1506,13 @@ __global__ void feed_kernel(DeviceState *state, const unsigned char *input,
     s.graphics->request.pool_wait = s.pool_wait;
     s.graphics->request.pool_gc = s.mark_gc;
     s.mark_gc = 0;
-    *state = s;
     s.graphics->request.alternate = s.alt_active;
     s.graphics->request.history_rows = s.history_count;
     if (resume)
       *resume = (int)offset;
   }
+  __syncwarp();
+  copy_state(state, &s, lane);
 }
 struct PlainMeta {
   int start_row, start_col, scroll, history_base;
