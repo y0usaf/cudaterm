@@ -129,6 +129,12 @@ struct DeviceState {
   size_t selection_output_len;
 };
 
+__device__ void rotate_rowmap(DeviceState *s, int shift) {
+  int row = threadIdx.x, value = row < s->rows ? s->rowmap[(row + shift) % s->rows] : 0;
+  __syncthreads();
+  if (row < s->rows)
+    s->rowmap[row] = value;
+}
 __device__ void reply_byte(DeviceState &s, unsigned char c) {
   if (s.reply_len < REPLY_CAP)
     s.replies->bytes[s.reply_len++] = c;
@@ -1643,12 +1649,8 @@ __global__ void plain_advances(const DeviceState *s, const unsigned char *b,
   }
   advances[i] = count;
 }
-__global__ void plain_commit(DeviceState *s, const unsigned char *b, int n,
-                             const int *starts, const int *advances,
-                             const int *rejected, PlainMeta *meta) {
-  n = *rejected;
-  if (n < 256)
-    return;
+__device__ void commit_plain(DeviceState *s, const unsigned char *b, int n,
+                             const int *starts, const int *advances, PlainMeta *meta) {
   meta->start_row = s->row;
   meta->start_col = s->wrap_pending ? s->cols : s->col;
   int start = starts[n - 1], total = advances[n - 1];
@@ -1675,9 +1677,19 @@ __global__ void plain_commit(DeviceState *s, const unsigned char *b, int n,
   meta->scroll = scroll;
   graphics_scroll(*s, 0, s->rows - 1, scroll);
   meta->history_base = reserve_history(*s, scroll);
-  rotate_rows(s->rowmap, s->rows, scroll);
   s->row = dmin(s->rows - 1, finalrow);
   s->join_blocked = 0;
+}
+__global__ void plain_commit(DeviceState *s, const unsigned char *b, int n,
+                             const int *starts, const int *advances,
+                             const int *rejected, PlainMeta *meta) {
+  n = *rejected;
+  if (n < 256)
+    return;
+  if (threadIdx.x == 0)
+    commit_plain(s, b, n, starts, advances, meta);
+  __syncthreads();
+  rotate_rowmap(s, meta->scroll);
 }
 __global__ void plain_clear(DeviceState *s, const int *rejected,
                             const PlainMeta *meta) {
@@ -2757,8 +2769,8 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
       ck(cub::DeviceScan::InclusiveScan(p->scan_storage, p->scan_bytes,
                                         p->lines, p->lines, JoinLines(),
                                         (int)n));
-      styled_commit<<<1, 1>>>(p->d, device_input, p->lines, p->styled_limit,
-                              p->styled_done, p->styled_meta, p->rejected);
+      styled_commit<<<1, MAX_ROWS>>>(p->d, device_input, p->lines, p->styled_limit,
+                                     p->styled_done, p->styled_meta, p->rejected);
       ck(cudaGetLastError());
       prepare_history<<<256, 256>>>(p->d, p->styled_done, p->styled_meta);
       ck(cudaGetLastError());
@@ -2780,13 +2792,13 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
       ck(cub::DeviceScan::InclusiveSum(p->scan_storage, p->scan_bytes,
                                        p->advances, p->advances, (int)n));
     }
-    plain_commit<<<1, 1>>>(p->d, device_input, n, p->starts, p->advances,
-                           p->rejected, p->plain);
+    plain_commit<<<1, MAX_ROWS>>>(p->d, device_input, n, p->starts, p->advances,
+                                  p->rejected, p->plain);
     ck(cudaGetLastError());
     prepare_history<<<256, 256>>>(p->d, p->rejected, p->plain);
     ck(cudaGetLastError());
-    plain_clear<<<(MAX_ROWS * MAX_COLS + 255) / 256, 256>>>(p->d, p->rejected,
-                                                            p->plain);
+    const int cells = int(p->grid_bytes / (2 * sizeof(Cell)));
+    plain_clear<<<(cells + 255) / 256, 256>>>(p->d, p->rejected, p->plain);
     ck(cudaGetLastError());
     plain_scatter<<<(n + 255) / 256, 256>>>(p->d, device_input, n, p->starts,
                                             p->advances, p->rejected, p->plain);
@@ -2796,7 +2808,7 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
     ck(cudaGetLastError());
     repair_history<<<16, 256>>>(p->d, p->rejected, p->plain);
     ck(cudaGetLastError());
-    plain_repair<<<(MAX_ROWS * MAX_COLS + 255) / 256, 256>>>(p->d, p->rejected);
+    plain_repair<<<(cells + 255) / 256, 256>>>(p->d, p->rejected);
     ck(cudaGetLastError());
     feed_kernel<<<1, 32>>>(p->d, device_input, n, p->rejected, p->styled_done);
   } else

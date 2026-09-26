@@ -212,19 +212,14 @@ __global__ void styled_lines(const DeviceState *s, const unsigned char *b,
              one,
              wide};
 }
-__global__ void styled_commit(DeviceState *s, const unsigned char *b,
-                              const LineScan *scan, const int *limit, int *done,
+__device__ void commit_styled(DeviceState *s, const LineScan *scan, int n, int *done,
                               StyledMeta *meta, int *plain_rejected) {
-  int n = *limit;
-  if (n < 256)
-    return;
   LineScan total = scan[n - 1];
   *meta = {s->row, s->col, s->wrap_pending, 0, s->fg, s->bg, s->flags};
   int scroll = dmax(0, s->row + total.rows - s->rows + 1);
   meta->scroll = scroll;
   graphics_scroll(*s, 0, s->rows - 1, scroll);
   meta->history_base = reserve_history(*s, scroll);
-  rotate_rows(s->rowmap, s->rows, scroll);
   s->row = dmin(s->rows - 1, s->row + total.rows);
   s->complex_cells |= total.wide;
   s->col = total.col;
@@ -237,6 +232,17 @@ __global__ void styled_commit(DeviceState *s, const unsigned char *b,
   s->join_blocked = 0;
   *done = n;
   *plain_rejected = 0;
+}
+__global__ void styled_commit(DeviceState *s, const unsigned char *b,
+                              const LineScan *scan, const int *limit, int *done,
+                              StyledMeta *meta, int *plain_rejected) {
+  int n = *limit;
+  if (n < 256)
+    return;
+  if (threadIdx.x == 0)
+    commit_styled(s, scan, n, done, meta, plain_rejected);
+  __syncthreads();
+  rotate_rowmap(s, meta->scroll);
 }
 __device__ void styled_clear(DeviceState *s, int logical, const StyledMeta &m,
                              const LinePen &p) {
