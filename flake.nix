@@ -65,7 +65,7 @@
         root = ./.;
         fileset = pkgs.lib.fileset.unions [ ./src ./bench/engine_bench.cu ];
       };
-      nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.wayland-scanner ];
+      nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.wayland-scanner pkgs.removeReferencesTo ];
       buildInputs = [ cuda.cuda_cudart glfw pkgs.libGL pkgs.freetype pkgs.fontconfig pkgs.xxhash pkgs.wayland pkgs.libx11 pkgs.libxrandr ];
       buildPhase = ''
         runHook preBuild
@@ -87,6 +87,7 @@
       postFixup = ''
         for exe in $out/bin/*; do
           patchelf --add-rpath /run/opengl-driver/lib "$exe"
+          remove-references-to -t ${cuda.cuda_nvcc} "$exe"
         done
       '';
     };
