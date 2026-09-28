@@ -21,6 +21,6 @@ Round by round, the current build meets Foot's median and p90 everywhere except 
 
 With five intervals per launch, the first interval dominates cudaterm's p90. After 0.2 s of settling the GPU has been idle, and the first submission after about 200 µs without work completes 0.45–0.75 ms late on this shared GPU; Foot parses on the CPU and does not pay it. Later intervals take 0.2–0.35 ms at 80×24.
 
-Launch to the first buffer commit (WAYLAND_DEBUG, 80×24, 12 warm launches in alternating order, median): Foot 10.5 ms, cudaterm 8e8dd4c 55.8 ms, current 48.2 ms with the bitmap font and 53.7 ms with DejaVu from the font cache. A process that only creates a CUDA context returns from `cudaFree(0)` after 41.2 ms. Peak RSS: Foot 12.9 MiB, cudaterm 127.3 → 119.9 MiB.
+Launch to the first buffer committed on the terminal's toplevel surface (WAYLAND_DEBUG, 80×24, 12 warm launches in alternating order, median): Foot 10.2 ms, cudaterm 8e8dd4c 57.1 ms, current 47.7 ms with the bitmap font. In the same period a process that only creates a CUDA context returned from `cudaFree(0)` after 29.3 ms. Peak RSS: Foot 12.9 MiB, cudaterm 127.4 → 120.2 MiB.
 
 Fonts, pixel geometry and history policy are not identical across clients; Monstar history is byte-limited. “Graphics” means DEC special line-drawing characters, not image uploads. CSI 6 n completes a PTY/parser barrier, not a compositor observation or physical display event. This is not display or full performance parity.
