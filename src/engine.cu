@@ -2696,6 +2696,31 @@ Engine::Engine(int c, int r) : p(nullptr) {
     s.selection_output_len = 0;
     s.selection_active = 0;
     ck(cudaMemcpy(p->d, &s, sizeof(s), cudaMemcpyHostToDevice));
+    p->reserve_scan(256);
+    ck(cudaMemset(p->starts, 0, 256 * sizeof(int)));
+    ck(cudaMemset(p->advances, 0, 256 * sizeof(int)));
+    ck(cudaMemset(p->lines, 0, 256 * sizeof(LineScan)));
+    ck(cub::DeviceScan::InclusiveScan(p->scan_storage, p->scan_bytes, p->starts,
+                                      p->starts, cub::Max(), 256));
+    ck(cub::DeviceScan::InclusiveSum(p->scan_storage, p->scan_bytes, p->advances,
+                                     p->advances, 256));
+    ck(cub::DeviceScan::InclusiveScan(p->scan_storage, p->scan_bytes, p->lines,
+                                      p->lines, JoinLines(), 256));
+    for (const void *kernel : {
+             (const void *)plain_classify, (const void *)plain_scan_small,
+             (const void *)plain_advances, (const void *)plain_commit,
+             (const void *)prepare_history<PlainMeta>,
+             (const void *)prepare_history<StyledMeta>, (const void *)plain_clear,
+             (const void *)plain_scatter, (const void *)plain_wrap_metadata,
+             (const void *)repair_history, (const void *)plain_repair,
+             (const void *)styled_lines, (const void *)styled_commit,
+             (const void *)styled_paint, (const void *)feed_kernel,
+             (const void *)grow_history_kernel, (const void *)commit_history_growth,
+             (const void *)reset_replies, (const void *)render_kernel}) {
+      cudaFuncAttributes attributes;
+      ck(cudaFuncGetAttributes(&attributes, kernel));
+    }
+    ck(cudaStreamSynchronize(nullptr));
   } catch (...) {
     delete p;
     p = nullptr;
