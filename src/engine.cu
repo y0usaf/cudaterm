@@ -130,6 +130,9 @@ struct DeviceState {
   float trail[8];
   int trail_active;
   int view_shift;
+  const uint32_t *emoji_table, *emoji_sequences, *emoji_pixels;
+  uint32_t emoji_mask;
+  int emoji_width, emoji_height;
 };
 
 __device__ void rotate_rowmap(DeviceState *s, int shift) {
@@ -1819,6 +1822,47 @@ __device__ bool inside_trail(const float *q, float px, float py) {
   }
   return in;
 }
+__host__ __device__ inline uint32_t emoji_hash(uint32_t h, uint32_t cp) {
+  return (h ^ cp) * 16777619u;
+}
+__device__ uint32_t emoji_find(const DeviceState *s, const uint32_t *key, int n, bool vs16) {
+  uint32_t h = 2166136261u;
+  for (int i = 0; i < n; ++i) h = emoji_hash(h, key[i]);
+  for (uint32_t i = h & s->emoji_mask, step = 0; step <= s->emoji_mask;
+       i = (i + 1) & s->emoji_mask, ++step) {
+    uint32_t offset = s->emoji_table[i];
+    if (offset == 0xffffffffu) break;
+    const uint32_t *record = s->emoji_sequences + offset;
+    if (record[0] != uint32_t(n)) continue;
+    int k = 0;
+    while (k < n && record[2 + k] == key[k]) ++k;
+    if (k < n) continue;
+    return (record[1] >> 31) && !vs16 ? 0xffffffffu : record[1] & 0x7fffffffu;
+  }
+  return 0xffffffffu;
+}
+__device__ uint32_t emoji_slot(const DeviceState *s, const Cell &z) {
+  uint32_t key[16];
+  int n = 1;
+  key[0] = z.cp;
+  for (int i = 0; i < 3 && z.combining[i]; ++i) key[n++] = z.combining[i];
+  int end = n;
+  uint32_t used = *s->marks.used;
+  for (uint32_t ref = mark_pool::head(z); ref; ref = s->marks.nodes[ref - 1].parent) {
+    if (ref > used || s->marks.nodes[ref - 1].parent >= ref || end == 16) return 0xffffffffu;
+    ++end;
+  }
+  for (uint32_t ref = mark_pool::head(z), i = end; ref; ref = s->marks.nodes[ref - 1].parent)
+    key[--i] = s->marks.nodes[ref - 1].cp;
+  bool vs16 = false;
+  for (int i = n = 1; i < end; ++i) {
+    if (key[i] == 0xfe0e) return 0xffffffffu;
+    if (key[i] == 0xfe0f) vs16 = true;
+    else key[n++] = key[i];
+  }
+  uint32_t slot = emoji_find(s, key, n, vs16);
+  return slot == 0xffffffffu && n > 1 ? emoji_find(s, key, 1, vs16) : slot;
+}
 __device__ void selection_columns(const DeviceState &s, int row, int &first, int &last) {
   first = s.selection_rectangle || row == s.selection_start_row ? s.selection_start_col : 0;
   last = s.selection_rectangle || row == s.selection_end_row ? s.selection_end_col : s.cols - 1;
@@ -1954,6 +1998,18 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
             (glyph(s, slot, glyph_y) & (0x8000u >> mx))) alpha = 255;
       }
     }
+    uint32_t emoji = 0;
+    if (s->emoji_table && (z.flags & WIDE) && !(z.flags & HIDDEN) &&
+        (!cursor || (s->window_focused && style <= 2))) {
+      uint32_t emoji_index = emoji_slot(s, z);
+      if (emoji_index != 0xffffffffu) {
+        int pair_x = local_x + (gx >= 8 ? s->cell_width : 0);
+        emoji = s->emoji_pixels[(size_t(emoji_index) * s->emoji_height +
+                                 local_y * s->emoji_height / s->cell_height) * s->emoji_width +
+                                pair_x * s->emoji_width / (2 * s->cell_width)];
+        alpha = (z.flags & UNDERLINE) && glyph_y == 14 ? 255 : 0;
+      }
+    }
     if ((z.flags & STRIKE) && local_y == s->cell_height / 2) alpha = 255;
     if (z.flags & HIDDEN) alpha = 0;
     bool plain = z.bg == DEFAULT_BG && !(z.flags & INVERSE) && !selected && !cursor;
@@ -1967,6 +2023,14 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
     }
     opacity = alpha + (base_alpha * (255 - alpha) + 127) / 255;
     if (alpha == 255) color = fg;
+    else if (emoji >> 24) {
+      unsigned cover = emoji >> 24;
+      opacity = cover + (base_alpha * (255 - cover) + 127) / 255;
+      color = 0;
+      for (int shift = 0; shift <= 16; shift += 8)
+        color |= ((((emoji >> shift) & 255) * 65025 +
+          ((bg >> shift) & 255) * base_alpha * (255 - cover) + 32512) / 65025) << shift;
+    }
     else if (!alpha && base_alpha == 255) color = bg;
     else {
       color = 0;
@@ -2242,6 +2306,8 @@ __global__ void follow_output_kernel(DeviceState *s) {
 struct Engine::Impl {
   unsigned char *face = nullptr;
   size_t face_bytes = 0;
+  uint32_t *emoji = nullptr;
+  size_t emoji_bytes = 0;
   cudaStream_t decode_stream = nullptr;
   void (*decode_pump)(void *, bool) = nullptr;
   void *pump_context = nullptr;
@@ -2311,6 +2377,7 @@ struct Engine::Impl {
     }
     cudaFree(graphics);
     cudaFree(face);
+    cudaFree(emoji);
     cudaFree(graphics_input);
     for (auto *image : images) cudaFree(image);
     cudaFree(repair_flags);
@@ -2965,7 +3032,7 @@ MemoryUsage Engine::memory_usage() const {
   ck(cudaMemcpy(&mark_nodes, p->mark_used, sizeof(mark_nodes), cudaMemcpyDeviceToHost));
   size_t bytes = sizeof(DeviceState) + sizeof(GraphicsState) + sizeof(ReplyBuffer) +
     sizeof(int) * (3 + 2 * MAX_ROWS + HISTORY_CAP) + sizeof(PlainMeta) + sizeof(StyledMeta) +
-    MAX_ROWS * MAX_COLS * sizeof(uint32_t) + p->font_bytes + p->face_bytes + p->grid_bytes +
+    MAX_ROWS * MAX_COLS * sizeof(uint32_t) + p->font_bytes + p->face_bytes + p->emoji_bytes + p->grid_bytes +
     size_t(p->history_capacity) * p->history_cols * sizeof(Cell) +
     p->input_capacity + size_t(p->scan_capacity) * (sizeof(int) * 2 + sizeof(LineScan)) +
     p->scan_bytes + p->selection_output_capacity + p->graphics_capacity + images +
@@ -3372,6 +3439,56 @@ void Engine::load_faces(const std::array<std::vector<unsigned char>, 4> &faces) 
   } catch (...) { cudaFree(next); throw; }
   cudaFree(p->face);
   p->face = next; p->face_bytes = total;
+}
+__global__ void emoji_kernel(DeviceState *s, const uint32_t *table, uint32_t mask,
+                             const uint32_t *sequences, const uint32_t *pixels,
+                             int width, int height) {
+  s->emoji_table = table; s->emoji_mask = mask; s->emoji_sequences = sequences;
+  s->emoji_pixels = pixels; s->emoji_width = width; s->emoji_height = height;
+}
+void Engine::load_emoji(const EmojiAtlas &atlas) {
+  if (p->decoding) throw std::logic_error("cannot load emoji during decoding");
+  uint32_t *next = nullptr;
+  size_t words = 0;
+  if (!atlas.sequences.empty()) {
+    if (atlas.width < 1 || atlas.width > 128 || atlas.height < 1 || atlas.height > 128 ||
+        atlas.pixels.empty() || atlas.pixels.size() % (size_t(atlas.width) * atlas.height))
+      throw std::runtime_error("invalid emoji atlas dimensions");
+    uint32_t count = atlas.pixels.size() / (size_t(atlas.width) * atlas.height), records = 0;
+    const auto &q = atlas.sequences;
+    for (size_t o = 0; o < q.size(); o += 2 + q[o], ++records)
+      if (q.size() - o < 2 || !q[o] || q[o] > 16 || q.size() - o - 2 < q[o] ||
+          (q[o + 1] & 0x7fffffffu) >= count)
+        throw std::runtime_error("invalid emoji sequence table");
+    uint32_t capacity = 1;
+    while (capacity < 2 * records) capacity *= 2;
+    std::vector<uint32_t> table(capacity, 0xffffffffu);
+    for (size_t o = 0; o < q.size(); o += 2 + q[o]) {
+      uint32_t h = 2166136261u;
+      for (uint32_t k = 0; k < q[o]; ++k) h = emoji_hash(h, q[o + 2 + k]);
+      uint32_t i = h & (capacity - 1);
+      while (table[i] != 0xffffffffu) i = (i + 1) & (capacity - 1);
+      table[i] = o;
+    }
+    words = capacity + q.size() + atlas.pixels.size();
+    ck(cudaMalloc(&next, words * sizeof(uint32_t)));
+    try {
+      ck(cudaMemcpy(next, table.data(), capacity * 4, cudaMemcpyHostToDevice));
+      ck(cudaMemcpy(next + capacity, q.data(), q.size() * 4, cudaMemcpyHostToDevice));
+      ck(cudaMemcpy(next + capacity + q.size(), atlas.pixels.data(), atlas.pixels.size() * 4,
+                    cudaMemcpyHostToDevice));
+      emoji_kernel<<<1,1>>>(p->d, next, capacity - 1, next + capacity,
+                            next + capacity + q.size(), atlas.width, atlas.height);
+      ck(cudaGetLastError());
+      ck(cudaStreamSynchronize(nullptr));
+    } catch (...) { cudaFree(next); throw; }
+  } else {
+    emoji_kernel<<<1,1>>>(p->d, nullptr, 0, nullptr, nullptr, 0, 0);
+    ck(cudaGetLastError());
+    ck(cudaStreamSynchronize(nullptr));
+  }
+  cudaFree(p->emoji);
+  p->emoji = next; p->emoji_bytes = words * sizeof(uint32_t);
 }
 __global__ void presentation_kernel(DeviceState *s, int x, int y, int style) {
   s->padding_x = x; s->padding_y = y; s->default_cursor_style = style;

@@ -24,8 +24,8 @@ rasterization. Fontconfig resolves the installed family and its regular, bold,
 italic and bold-italic faces. FreeType prepares grayscale glyph coverage at the
 requested size. CUDA renders the terminal, including glyph composition, styles,
 selection, graphics and the cursor. Missing glyphs use the existing Unifont
-fallback. This is scalar font rendering: ligature shaping, full grapheme shaping,
-and color emoji are not implemented.
+fallback. This is scalar font rendering: ligature shaping and full grapheme
+shaping are not implemented; color emoji need `emoji-font`.
 
 `line-height` is a multiplier from 0.5 to 3. Padding is in logical pixels.
 `background-opacity` changes the default background; explicit cell backgrounds
@@ -60,6 +60,16 @@ it is, as it does without smooth scrolling. Set it to `0` for row-by-row
 scrolling. Both effects draw frames only while something moves.
 
 Each setting also accepts a CLI flag, for example:
+
+`emoji-font = /path/to/NotoColorEmoji.ttf` draws emoji in color from a font
+with color bitmaps (CBDT, sbix) or COLRv0 layers. Emoji-presentation characters,
+VS16 sequences, skin-tone modifiers, keycaps and the Unicode RGI ZWJ sequences
+fill the two cells of their cluster; text-presentation characters and VS15 keep
+the text glyph, and a sequence the font lacks shows its first emoji. HarfBuzz,
+loaded only while the setting is on, shapes the sequences once, and every RGI
+emoji is rasterized at the cell size on load and zoom. Regional-indicator pairs
+are not joined into clusters, so flags stay as letters. Unset, rendering is
+unchanged.
 
 ```sh
 cudaterm --font-family 'DejaVu Sans Mono' --font-size 16 --theme light

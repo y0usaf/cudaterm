@@ -48,7 +48,7 @@ inline Theme read_theme(const std::string &path) {
 
 namespace ct {
 struct Settings {
-  std::string font_family = "monospace", font_face, font_fallback, theme = "midnight";
+  std::string font_family = "monospace", font_face, font_fallback, emoji_font, theme = "midnight";
   float font_size = 14, line_height = 1.3f, opacity = 1, scroll_multiplier = 3;
   int padding_x = 12, padding_y = 10;
   int cursor_style = 2;
@@ -71,6 +71,7 @@ inline void set_setting(Settings &s, const std::string &key, const std::string &
   if (key == "font-family") { if (value.empty()) throw std::runtime_error("empty font family"); s.font_family = value; s.font_face.clear(); }
   else if (key == "font-file") { s.font_family = "file:" + value; s.font_face.clear(); }
   else if (key == "font-fallback") s.font_fallback = value;
+  else if (key == "emoji-font") s.emoji_font = value;
   else if (key == "font-face") { s.font_face = value; s.font_family = "bitmap"; }
   else if (key == "theme") s.theme = value;
   else if (key == "font-size") s.font_size = setting_number(value, 6, 64);
@@ -111,7 +112,7 @@ inline Settings read_settings(const std::string &path, bool required) {
       if (equal == std::string::npos) throw std::runtime_error("expected key = value");
       auto key = trim_setting(line.substr(0, equal)), value = trim_setting(line.substr(equal + 1));
       bool fallback_file = key == "font-fallback" && value.rfind("file:", 0) == 0;
-      if (fallback_file || key == "font-face" || key == "font-file" || (key == "theme" && value != "midnight" && value != "light" && value != "classic")) {
+      if (fallback_file || key == "font-face" || key == "font-file" || (key == "emoji-font" && !value.empty()) || (key == "theme" && value != "midnight" && value != "light" && value != "classic")) {
         std::filesystem::path target(fallback_file ? value.substr(5) : value);
         if (target.is_relative()) target = std::filesystem::path(path).parent_path() / target;
         value = (fallback_file ? "file:" : "") + target.string();

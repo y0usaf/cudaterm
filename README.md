@@ -84,7 +84,8 @@ Unifont, wide cell pairs, and variable-length combining marks. Three marks stay
 inline in each 32-byte cell; further marks share a GPU suffix arena capped at
 8 MiB. Exhaustion with no reclaimable nodes raises an explicit error. Width data uses
 Unicode 16.0.0 plus Unifont combining overrides. Missing glyphs use a replacement glyph. Supplementary symbols render as
-monochrome bitmaps; shaping and emoji sequences remain unfinished.
+monochrome bitmaps unless `emoji-font` names a color emoji font; text shaping
+remains unfinished.
 Font copyright and license files are installed in `result/share/cudaterm`.
 
 The [Finix desktop candidate](docs/finix-replacement.md) adds configured fonts and
@@ -130,8 +131,9 @@ search against current text.
 
 Copying counts exact UTF-8 bytes before allocating each viewport-sized batch.
 A batch above 64 MiB raises an explicit error; copy buffers above 64 KiB are
-released after use. Combining-mark storage preserves text but does not provide
-ZWJ layout or shaped emoji rendering.
+released after use. Combining-mark storage preserves text; with `emoji-font`, RGI
+ZWJ and modifier sequences draw as one color glyph, and other ZWJ layout is not
+provided.
 
 Alternate-screen modes 47, 1047, and 1049 are supported. Mode 47 retains the
 alternate contents; 1047 clears them when leaving; 1049 saves/restores the main

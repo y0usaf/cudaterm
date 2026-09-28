@@ -5,6 +5,7 @@
 #include "config.hpp"
 #include "face.hpp"
 #include "font.hpp"
+#include "emoji.hpp"
 #include "motion.hpp"
 #include "uri.hpp"
 #include "clipboard.hpp"
@@ -241,7 +242,7 @@ Options options(int argc, char **argv) {
                 "[--app-id ID] [--title TITLE] [--theme PATH] [--working-directory PATH] "
                 "[--font-face PATH] [--cell-width N] [--cell-height N] "
                 "[--background-opacity 0..1] [--config PATH | --no-config] "
-                "[--font-family FAMILY] [--font-size PIXELS] [--line-height 0.5..3] [--font-file PATH] [--font-fallback FAMILY|file:PATH] "
+                "[--font-family FAMILY] [--font-size PIXELS] [--line-height 0.5..3] [--font-file PATH] [--font-fallback FAMILY|file:PATH] [--emoji-font PATH] "
                 "[--padding-x N] [--padding-y N] [--cursor-style block|bar|underline] "
                 "[--cursor-blink true|false] [--cursor-animation 0..0.5] [--cursor-trail 0..1] "
                 "[--smooth-scroll 0..0.5] [--scroll-multiplier N] -e "
@@ -256,7 +257,8 @@ Options options(int argc, char **argv) {
     } else if (!std::strcmp(argv[i], "--no-config")) continue;
     else if (!std::strcmp(argv[i], "--config") && i + 1 < argc) { ++i; continue; }
     else if ((!std::strcmp(argv[i], "--font-family") || !std::strcmp(argv[i], "--font-file") ||
-              !std::strcmp(argv[i], "--font-fallback") || !std::strcmp(argv[i], "--font-size") ||
+              !std::strcmp(argv[i], "--font-fallback") || !std::strcmp(argv[i], "--emoji-font") ||
+              !std::strcmp(argv[i], "--font-size") ||
               !std::strcmp(argv[i], "--line-height") || !std::strcmp(argv[i], "--padding-x") ||
               !std::strcmp(argv[i], "--padding-y") || !std::strcmp(argv[i], "--cursor-style") ||
               !std::strcmp(argv[i], "--cursor-blink") || !std::strcmp(argv[i], "--cursor-animation") ||
@@ -362,7 +364,8 @@ struct App {
   Options *options = nullptr;
   ct::Settings settings;
   float font_pixels = 0, font_line_height = 0;
-  std::string loaded_family, loaded_face;
+  std::string loaded_family, loaded_face, loaded_emoji;
+  int emoji_width = 0, emoji_height = 0;
   bool reload_pending = false, focused = true, cursor_phase = true;
   bool link_click = false;
   int link_row = 0, link_col = 0;
@@ -1320,6 +1323,13 @@ void resized(GLFWwindow *w, int width, int height) {
       CellW = cw; CellH = ch;
       a->engine->set_cell_size(CellW, CellH);
     }
+    if (a->loaded_emoji != a->settings.emoji_font ||
+        (!a->loaded_emoji.empty() && (a->emoji_width != CellW || a->emoji_height != CellH))) {
+      a->engine->load_emoji(a->settings.emoji_font.empty() ? ct::EmojiAtlas{} :
+                            ct::rasterize_emoji(a->settings.emoji_font, CellW, CellH));
+      a->loaded_emoji = a->settings.emoji_font;
+      a->emoji_width = CellW; a->emoji_height = CellH;
+    }
     int c = clamp_cols((width - 2 * PaddingX) / CellW),
         r = clamp_rows((height - 2 * PaddingY) / CellH);
     auto old = a->engine->snapshot();
@@ -1351,6 +1361,8 @@ void reload_settings(App *a) {
       ct::read_settings(a->options->config_path, a->options->config_required);
     for (const auto &entry : a->options->overrides) ct::set_setting(candidate, entry.first, entry.second);
     auto theme = ct::settings_theme(candidate);
+    if (!candidate.emoji_font.empty() && candidate.emoji_font != a->loaded_emoji)
+      ct::EmojiFace check(candidate.emoji_font);
     ct::FontAtlas font;
     float sx, sy; glfwGetWindowContentScale(a->window, &sx, &sy);
     float pixels = std::min(128.0f / candidate.line_height,

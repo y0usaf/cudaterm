@@ -43,6 +43,12 @@ struct SearchMatch {
 
 enum class SelectionMode { Cell, Word, Line, Rectangle, Link };
 
+struct EmojiAtlas {
+  int width = 0, height = 0;
+  std::vector<uint32_t> sequences;
+  std::vector<uint32_t> pixels;
+};
+
 class Engine {
 public:
   Engine(int cols, int rows);
@@ -79,6 +85,7 @@ public:
   void set_cell_size(int width, int height);
   void load_face(const std::string &path);
   void load_faces(const std::array<std::vector<unsigned char>, 4> &faces);
+  void load_emoji(const EmojiAtlas &atlas);
   void set_presentation(int padding_x, int padding_y, int cursor_style);
   void set_cursor_phase(bool visible, bool focused);
   void set_cursor_position(float col, float row);
