@@ -2778,38 +2778,40 @@ FeedResult Engine::enqueue_feed(const unsigned char *b, size_t n, bool stop_at_f
           p->d, device_input, (int)n, p->lines, p->styled_done, p->styled_meta);
       ck(cudaGetLastError());
     }
-    if (n <= 4096) {
-      plain_scan_small<<<1, 256>>>(p->d, device_input, (int)n, p->rejected,
-                                   p->starts, p->advances);
+    if (ascii_prefix >= 256) {
+      if (n <= 4096) {
+        plain_scan_small<<<1, 256>>>(p->d, device_input, (int)n, p->rejected,
+                                     p->starts, p->advances);
+        ck(cudaGetLastError());
+      } else {
+        ck(cub::DeviceScan::InclusiveScan(p->scan_storage, p->scan_bytes,
+                                          p->starts, p->starts, cub::Max(),
+                                          (int)n));
+        plain_advances<<<(n + 255) / 256, 256>>>(
+            p->d, device_input, n, p->starts, p->advances, p->rejected);
+        ck(cudaGetLastError());
+        ck(cub::DeviceScan::InclusiveSum(p->scan_storage, p->scan_bytes,
+                                         p->advances, p->advances, (int)n));
+      }
+      plain_commit<<<1, MAX_ROWS>>>(p->d, device_input, n, p->starts, p->advances,
+                                    p->rejected, p->plain);
       ck(cudaGetLastError());
-    } else {
-      ck(cub::DeviceScan::InclusiveScan(p->scan_storage, p->scan_bytes,
-                                        p->starts, p->starts, cub::Max(),
-                                        (int)n));
-      plain_advances<<<(n + 255) / 256, 256>>>(
-          p->d, device_input, n, p->starts, p->advances, p->rejected);
+      prepare_history<<<256, 256>>>(p->d, p->rejected, p->plain);
       ck(cudaGetLastError());
-      ck(cub::DeviceScan::InclusiveSum(p->scan_storage, p->scan_bytes,
-                                       p->advances, p->advances, (int)n));
+      const int cells = int(p->grid_bytes / (2 * sizeof(Cell)));
+      plain_clear<<<(cells + 255) / 256, 256>>>(p->d, p->rejected, p->plain);
+      ck(cudaGetLastError());
+      plain_scatter<<<(n + 255) / 256, 256>>>(p->d, device_input, n, p->starts,
+                                              p->advances, p->rejected, p->plain);
+      ck(cudaGetLastError());
+      plain_wrap_metadata<<<(n + 255) / 256, 256>>>(
+          p->d, device_input, n, p->starts, p->advances, p->rejected, p->plain);
+      ck(cudaGetLastError());
+      repair_history<<<16, 256>>>(p->d, p->rejected, p->plain);
+      ck(cudaGetLastError());
+      plain_repair<<<(cells + 255) / 256, 256>>>(p->d, p->rejected);
+      ck(cudaGetLastError());
     }
-    plain_commit<<<1, MAX_ROWS>>>(p->d, device_input, n, p->starts, p->advances,
-                                  p->rejected, p->plain);
-    ck(cudaGetLastError());
-    prepare_history<<<256, 256>>>(p->d, p->rejected, p->plain);
-    ck(cudaGetLastError());
-    const int cells = int(p->grid_bytes / (2 * sizeof(Cell)));
-    plain_clear<<<(cells + 255) / 256, 256>>>(p->d, p->rejected, p->plain);
-    ck(cudaGetLastError());
-    plain_scatter<<<(n + 255) / 256, 256>>>(p->d, device_input, n, p->starts,
-                                            p->advances, p->rejected, p->plain);
-    ck(cudaGetLastError());
-    plain_wrap_metadata<<<(n + 255) / 256, 256>>>(
-        p->d, device_input, n, p->starts, p->advances, p->rejected, p->plain);
-    ck(cudaGetLastError());
-    repair_history<<<16, 256>>>(p->d, p->rejected, p->plain);
-    ck(cudaGetLastError());
-    plain_repair<<<(cells + 255) / 256, 256>>>(p->d, p->rejected);
-    ck(cudaGetLastError());
     feed_kernel<<<1, 32>>>(p->d, device_input, n, p->rejected, p->styled_done);
   } else
     feed_kernel<<<1, 32>>>(p->d, device_input, n);
