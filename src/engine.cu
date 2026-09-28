@@ -77,6 +77,7 @@ struct DeviceState {
   float cursor_x, cursor_y;
   float trail[8];
   int trail_active;
+  int view_shift;
   int face_width, face_height;
   int osc_kind, osc_len;
   char osc_text[512];
@@ -1809,6 +1810,7 @@ __device__ unsigned face_alpha(const DeviceState *s, uint32_t cp, int x, int y, 
   if (slot == 0xffffffffu) return 256;
   return s->face_pixels[style][(size_t(slot) * s->face_height + y) * s->face_width * 2 + x];
 }
+__device__ int floor_div(int a, int b) { return a >= 0 ? a / b : -((-a + b - 1) / b); }
 __device__ bool inside_trail(const float *q, float px, float py) {
   bool in = false;
   for (int i = 0, j = 3; i < 4; j = i++) {
@@ -1850,17 +1852,20 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
   int c = x / s->cell_width, r = y / s->cell_height;
   int prompt_col = preedit ? c - dmin(s->col, s->cols - 1) : c;
   bool overlay = prompt && x >= 0 && y >= 0 && c < s->cols &&
-    (preedit ? (!s->view_offset && r == s->row && prompt_col >= 0 &&
+    (preedit ? (!s->view_offset && !s->view_shift && r == s->row && prompt_col >= 0 &&
                 prompt[prompt_col].cp != 0) : r == s->rows - 1);
-  int glyph_y = (y % s->cell_height) * 16 / s->cell_height;
+  int view_y = overlay ? y : y - s->view_shift;
+  int view_r = overlay || !s->view_shift ? r : floor_div(view_y, s->cell_height);
+  int cell_y = view_y - view_r * s->cell_height;
+  int glyph_y = cell_y * 16 / s->cell_height;
   unsigned opacity = s->background_alpha;
   uint32_t color = premultiply(resolved(*s, DEFAULT_BG), opacity);
   if (x >= 0 && y >= 0 && c < s->cols && r < s->rows) {
-    Cell z = overlay ? prompt[prompt_col] : viewed_cell(*s, r, c);
+    Cell z = overlay ? prompt[prompt_col] : viewed_cell(*s, view_r, c);
     int gx = (x % s->cell_width) * 8 / s->cell_width;
     int face_x = (x % s->cell_width) * s->face_width / s->cell_width;
     if ((z.flags & TAIL) && c > 0) {
-      z = overlay ? prompt[prompt_col - 1] : viewed_cell(*s, r, c - 1);
+      z = overlay ? prompt[prompt_col - 1] : viewed_cell(*s, view_r, c - 1);
       gx += 8;
       face_x += s->face_width;
     }
@@ -1871,9 +1876,9 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
       dswap(fg, bg);
     int selection_first = 0, selection_last = -1;
     bool selected = !overlay && s->selection_active &&
-                    r >= s->selection_start_row && r <= s->selection_end_row;
+                    view_r >= s->selection_start_row && view_r <= s->selection_end_row;
     if (selected) {
-      selection_columns(*s, r, selection_first, selection_last);
+      selection_columns(*s, view_r, selection_first, selection_last);
       selected = c >= selection_first && c <= selection_last;
     }
     if (selected) {
@@ -1885,13 +1890,13 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
     float cx = (s->cursor_x < 0 ? float(s->col) : s->cursor_x) * s->cell_width;
     float cy = (s->cursor_y < 0 ? float(s->row) : s->cursor_y) * s->cell_height;
     float cursor_local_x = x - cx, cursor_local_y = y - cy;
-    bool cursor = !overlay && !s->view_offset && s->cursor_visible &&
+    bool cursor = !overlay && !s->view_offset && !s->view_shift && s->cursor_visible &&
                   (s->trail_active ? inside_trail(s->trail, x + 0.5f, y + 0.5f) :
                    cursor_local_x >= 0 && cursor_local_x < s->cell_width &&
                    cursor_local_y >= 0 && cursor_local_y < s->cell_height);
     int style = s->cursor_style ? s->cursor_style : s->default_cursor_style;
     bool blink_on = !(style & 1) || s->cursor_phase;
-    int local_x = x % s->cell_width, local_y = y % s->cell_height;
+    int local_x = x % s->cell_width, local_y = cell_y;
     bool cursor_pixel = cursor && (s->window_focused ? blink_on : true);
     if (s->trail_active) {
     } else if (!s->window_focused)
@@ -1931,7 +1936,7 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
     if ((z.flags & UNDERLINE) && glyph_y == 14)
       ink = true;
     int font_style = (z.flags & BOLD ? 1 : 0) | (z.flags & ITALIC ? 2 : 0);
-    const int face_y = (y % s->cell_height) * s->face_height / s->cell_height;
+    const int face_y = cell_y * s->face_height / s->cell_height;
     unsigned alpha = face_alpha(s, z.cp, face_x, face_y, font_style);
     if (alpha == 256) alpha = ink ? 255 : 0;
     else {
@@ -1955,9 +1960,9 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
     unsigned base_alpha = plain ? s->background_alpha : 255;
     if (!overlay && graphic_below_text(*s)) {
       unsigned under = s->background_alpha;
-      uint32_t base = graphic_pixel(*s, x, y, premultiply(resolved(*s, DEFAULT_BG), under), under, 0);
+      uint32_t base = graphic_pixel(*s, x, view_y, premultiply(resolved(*s, DEFAULT_BG), under), under, 0);
       if (!plain) { base = bg; under = 255; }
-      base = graphic_pixel(*s, x, y, base, under, 1);
+      base = graphic_pixel(*s, x, view_y, base, under, 1);
       bg = unpremultiply(base, under); base_alpha = under;
     }
     opacity = alpha + (base_alpha * (255 - alpha) + 127) / 255;
@@ -1971,7 +1976,7 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
     }
   }
   if (!overlay && x >= 0 && y >= 0 && c < s->cols && r < s->rows)
-    color = graphic_pixel(*s, x, y, color, opacity, 2);
+    color = graphic_pixel(*s, x, view_y, color, opacity, 2);
   surf2Dwrite((opacity << 24) | ((color & 255) << 16) | (color & 0xff00) | (color >> 16),
               out, output_x * 4, output_y);
 }
@@ -3397,6 +3402,11 @@ void Engine::set_cursor_trail(bool active, const std::array<float, 8> &corners) 
   TrailCorners t;
   for (int i = 0; i < 8; ++i) t.xy[i] = corners[i];
   cursor_trail_kernel<<<1, 1>>>(p->d, active, t);
+  ck(cudaGetLastError());
+}
+__global__ void view_shift_kernel(DeviceState *s, int pixels) { s->view_shift = pixels; }
+void Engine::set_view_shift(int pixels) {
+  view_shift_kernel<<<1, 1>>>(p->d, pixels);
   ck(cudaGetLastError());
 }
 __global__ void cursor_phase_kernel(DeviceState *s, int visible, int focused) {

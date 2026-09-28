@@ -244,7 +244,7 @@ Options options(int argc, char **argv) {
                 "[--font-family FAMILY] [--font-size PIXELS] [--line-height 0.5..3] [--font-file PATH] [--font-fallback FAMILY|file:PATH] "
                 "[--padding-x N] [--padding-y N] [--cursor-style block|bar|underline] "
                 "[--cursor-blink true|false] [--cursor-animation 0..0.5] [--cursor-trail 0..1] "
-                "[--scroll-multiplier N] -e "
+                "[--smooth-scroll 0..0.5] [--scroll-multiplier N] -e "
                 "command [args...]\n\n"
                 "Configuration: $XDG_CONFIG_HOME/cudaterm/config (or ~/.config/cudaterm/config)\n"
                 "Themes: midnight, light, classic, or a theme file path.\n"
@@ -260,7 +260,7 @@ Options options(int argc, char **argv) {
               !std::strcmp(argv[i], "--line-height") || !std::strcmp(argv[i], "--padding-x") ||
               !std::strcmp(argv[i], "--padding-y") || !std::strcmp(argv[i], "--cursor-style") ||
               !std::strcmp(argv[i], "--cursor-blink") || !std::strcmp(argv[i], "--cursor-animation") ||
-              !std::strcmp(argv[i], "--cursor-trail") ||
+              !std::strcmp(argv[i], "--cursor-trail") || !std::strcmp(argv[i], "--smooth-scroll") ||
               !std::strcmp(argv[i], "--scroll-multiplier")) && i + 1 < argc) {
       std::string key = argv[i] + 2; setting(key, argv[++i]);
     } else if (!std::strcmp(argv[i], "--cols") && i + 1 < argc)
@@ -371,6 +371,8 @@ struct App {
   double last_input = 0;
   ct::CursorMotion cursor_motion;
   ct::CursorTrail cursor_trail;
+  ct::ScrollMotion scroll_motion;
+  int view_shift = 0;
   bool cursor_last_alternate = false;
 
 };
@@ -384,6 +386,14 @@ void flush_input(App *a) {
     else if (n < 0 && errno == EINTR) continue;
     else if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) break;
     else a->input_closed = true;
+  }
+}
+void scroll_view(App *a, int rows) {
+  int before = a->engine->snapshot().view_offset;
+  a->engine->scroll_view(rows);
+  if (a->settings.smooth_scroll > 0) {
+    auto state = a->engine->snapshot();
+    a->scroll_motion.moved(before, state.view_offset, state.rows, float(state.cell_height));
   }
 }
 void follow_output(App *a) {
@@ -698,7 +708,8 @@ void key_impl(GLFWwindow *w, int key, int scancode, int action, int mods) {
     int rows = key == GLFW_KEY_HOME ? state.history_rows :
                key == GLFW_KEY_END ? -state.view_offset :
                key == GLFW_KEY_PAGE_UP ? page : -page;
-    a->engine->scroll_view(rows);
+    a->scroll_motion.stop();
+    scroll_view(a, rows);
     a->selecting = false;
     a->dirty = true;
     return;
@@ -1218,6 +1229,10 @@ void wheel(GLFWwindow *w, double x, double y) {
     }
     a->wheel_ticks = 0;
     a->wheel_horizontal = 0;
+    if (y != 0 && std::fabs(y) < 1 && !state.alternate_screen && a->settings.smooth_scroll > 0)
+      a->scroll_motion.touch(y * a->settings.scroll_multiplier, glfwGetTime());
+    else
+      a->scroll_motion.stop();
     a->wheel_rows = std::max(-4096.0, std::min(4096.0, a->wheel_rows + y * a->settings.scroll_multiplier));
     int rows = static_cast<int>(a->wheel_rows);
     if (rows) {
@@ -1227,7 +1242,7 @@ void wheel(GLFWwindow *w, double x, double y) {
                                          0, state.application_cursor);
         for (int i = 0; i < std::abs(rows); ++i)
           queue(a, (const unsigned char *)arrow.data(), arrow.size());
-      } else a->engine->scroll_view(rows);
+      } else scroll_view(a, rows);
       a->selecting = false;
       a->dirty = true;
     }
@@ -1265,6 +1280,7 @@ void resized(GLFWwindow *w, int width, int height) {
     a->engine->clear_selection(); a->link_click = false;
     a->cursor_motion.initialized = false;
     a->cursor_trail.initialized = false;
+    a->scroll_motion = {};
     float scale_x, scale_y;
     glfwGetWindowContentScale(w, &scale_x, &scale_y);
     float zoom = 1.0f + a->zoom_step * 0.1f;
@@ -1663,9 +1679,30 @@ int main(int argc, char **argv) {
           app.selection_deadline = glfwGetTime() + 0.04;
         }
       }
+      bool scroll_animating = false;
+      if (app.settings.smooth_scroll > 0 || app.view_shift) {
+        double now = glfwGetTime();
+        int coast = app.scroll_motion.coast(now);
+        if (coast && !cursor_state.alternate_screen && !app.selecting) {
+          int before = cursor_state.view_offset;
+          engine.scroll_view(coast);
+          cursor_state = engine.snapshot();
+          if (cursor_state.view_offset == before) app.scroll_motion.stop();
+          app.scroll_motion.moved(before, cursor_state.view_offset, cursor_state.rows,
+                                  float(cursor_state.cell_height));
+        }
+        if (cursor_state.alternate_screen) app.scroll_motion = {};
+        scroll_animating = app.scroll_motion.update(now, app.settings.smooth_scroll);
+        int shift = int(std::lround(app.scroll_motion.offset.position));
+        if (shift != app.view_shift) {
+          engine.set_view_shift(shift);
+          app.view_shift = shift;
+          app.dirty = true;
+        }
+      }
       float previous_x = app.cursor_motion.x, previous_y = app.cursor_motion.y;
       bool cursor_snap = !app.focused || !cursor_state.cursor_visible || app.searching ||
-        cursor_state.view_offset || app.cursor_last_alternate != cursor_state.alternate_screen ||
+        cursor_state.view_offset || app.view_shift || app.cursor_last_alternate != cursor_state.alternate_screen ||
         glfwGetTime() - app.last_input > ct::kUserInputWindow;
       bool trail = app.settings.cursor_trail > 0;
       bool cursor_animating = app.cursor_motion.update(cursor_state.col, cursor_state.row, glfwGetTime(),
@@ -1789,11 +1826,11 @@ int main(int argc, char **argv) {
           if (settling) deadline = std::max(deadline, std::min(output_quiet, output_deadline));
           double timeout = std::chrono::duration<double>(deadline - now).count();
           glfwWaitEventsTimeout(std::max(0.0001, timeout));
-        } else if (blinking || autoscroll || cursor_animating || app.copy_flash_deadline) {
+        } else if (blinking || autoscroll || cursor_animating || scroll_animating || app.copy_flash_deadline) {
           double deadline = blinking ? app.cursor_deadline : glfwGetTime() + 1;
           if (app.copy_flash_deadline) deadline = std::min(deadline, app.copy_flash_deadline);
           if (autoscroll) deadline = std::min(deadline, app.selection_deadline);
-          if (cursor_animating) deadline = std::min(deadline, glfwGetTime() + 1.0 / 120);
+          if (cursor_animating || scroll_animating) deadline = std::min(deadline, glfwGetTime() + 1.0 / 120);
           glfwWaitEventsTimeout(std::max(0.0001, deadline - glfwGetTime()));
         } else {
           glfwWaitEvents();

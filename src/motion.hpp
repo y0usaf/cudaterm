@@ -101,4 +101,37 @@ struct CursorTrail {
     return moving;
   }
 };
+struct ScrollMotion {
+  Spring offset;
+  float velocity = 0, carried = 0;
+  double last = 0, last_touch = -1;
+  void moved(int before, int after, int rows, float cell_h) {
+    offset.position = std::clamp(offset.position + (before - after) * cell_h, -rows * cell_h, rows * cell_h);
+  }
+  void touch(double y, double now) {
+    double dt = std::clamp(now - last_touch, 0.004, 0.1);
+    velocity = last_touch < 0 || now - last_touch > 0.1 ? float(y / dt) : 0.7f * velocity + 0.3f * float(y / dt);
+    last_touch = now;
+  }
+  void stop() { velocity = 0; carried = 0; last_touch = -1; }
+  int coast(double now) {
+    double dt = std::clamp(now - last, 0.0, 0.05);
+    if (last_touch < 0 || now - last_touch < 0.06 || velocity == 0) return 0;
+    carried += velocity * float(dt);
+    velocity *= float(std::exp(-dt / 0.3));
+    if (std::fabs(velocity) < 3) {
+      velocity = 0;
+      last_touch = -1;
+    }
+    int rows = int(carried);
+    carried -= rows;
+    return rows;
+  }
+  bool update(double now, double duration) {
+    double dt = std::clamp(now - last, 0.0, 0.05);
+    last = now;
+    bool coasting = last_touch >= 0 && velocity != 0;
+    return offset.update(float(dt), float(duration)) || coasting;
+  }
+};
 }

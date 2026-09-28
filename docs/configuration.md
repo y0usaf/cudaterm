@@ -15,6 +15,7 @@ cursor-style = block
 cursor-blink = false
 cursor-animation = 0.08
 cursor-trail = 0
+smooth-scroll = 0
 scroll-multiplier = 3
 ```
 
@@ -49,6 +50,14 @@ settles. With a trail, jumps of any length that follow your input animate;
 moves of at most two cells along a row, such as typing, keep the plain motion.
 Set it to `0` for no trail; `cursor-trail = 1` with `cursor-animation = 0.15`
 matches Neovide's defaults.
+
+`smooth-scroll` is the time in seconds (0–0.5) the history view takes to
+settle when you scroll it: the wheel, the touchpad and
+Shift-PageUp/PageDown/Home/End move it by pixels and ease into place, and a
+touchpad flick keeps coasting after your fingers lift, slowing over about a
+second. Output that arrives while you are scrolled back leaves the view where
+it is, as it does without smooth scrolling. Set it to `0` for row-by-row
+scrolling. Both effects draw frames only while something moves.
 
 Each setting also accepts a CLI flag, for example:
 
@@ -137,9 +146,10 @@ are rejected before inserting any paths.
 Native Wayland text-input-v3 supports IME preedit, committed text, and local
 search composition when the compositor and input method provide the protocol.
 Preedit uses the existing cell renderer, clips at the right edge, and does not
-render a separate composition caret or selection. Inertial touchpad scrolling
-remains a gap relative to Monstar. Cudaterm also has no tabs or splits. The cursor trail follows
-Neovide's cursor; Neovide's smooth scrolling and shaped-text rendering are not implemented.
+render a separate composition caret or selection. Cudaterm has no tabs or splits.
+`cursor-trail` and `smooth-scroll` follow Neovide's cursor and scrolling; GLFW
+reports no touchpad axis source or stop, so inertia starts when scroll events
+with fractional steps stop for 60 ms. Shaped-text rendering is not implemented.
 
 Applications can negotiate Kitty keyboard disambiguation (flag 1), including
 independent primary/alternate mode stacks and CSI-u modified keys. Unmodified

@@ -83,6 +83,7 @@ public:
   void set_cursor_phase(bool visible, bool focused);
   void set_cursor_position(float col, float row);
   void set_cursor_trail(bool active, const std::array<float, 8> &corners);
+  void set_view_shift(int pixels);
   void set_background_opacity(float opacity);
   bool take_title(std::string &title);
   bool take_bell();
