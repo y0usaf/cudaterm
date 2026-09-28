@@ -75,9 +75,6 @@ struct DeviceState {
   int padding_x, padding_y, cursor_style, default_cursor_style;
   int cursor_phase, window_focused;
   float cursor_x, cursor_y;
-  float trail[8];
-  int trail_active;
-  int view_shift;
   int face_width, face_height;
   int osc_kind, osc_len;
   char osc_text[512];
@@ -130,6 +127,9 @@ struct DeviceState {
   int selection_end_row, selection_end_col, selection_rectangle;
   unsigned char *selection_output;
   size_t selection_output_len;
+  float trail[8];
+  int trail_active;
+  int view_shift;
 };
 
 __device__ void rotate_rowmap(DeviceState *s, int shift) {
