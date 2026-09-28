@@ -364,7 +364,9 @@ struct App {
   Options *options = nullptr;
   ct::Settings settings;
   float font_pixels = 0, font_line_height = 0;
-  std::string loaded_family, loaded_face, loaded_emoji;
+  std::string loaded_family, loaded_face;
+  ct::EmojiFont emoji;
+  std::future<std::pair<ct::EmojiFont, ct::EmojiAtlas>> emoji_task;
   int emoji_width = 0, emoji_height = 0;
   bool reload_pending = false, focused = true, cursor_phase = true;
   bool link_click = false;
@@ -1323,12 +1325,18 @@ void resized(GLFWwindow *w, int width, int height) {
       CellW = cw; CellH = ch;
       a->engine->set_cell_size(CellW, CellH);
     }
-    if (a->loaded_emoji != a->settings.emoji_font ||
-        (!a->loaded_emoji.empty() && (a->emoji_width != CellW || a->emoji_height != CellH))) {
-      a->engine->load_emoji(a->settings.emoji_font.empty() ? ct::EmojiAtlas{} :
-                            ct::rasterize_emoji(a->settings.emoji_font, CellW, CellH));
-      a->loaded_emoji = a->settings.emoji_font;
+    if (a->emoji_task.valid() || a->emoji.path != a->settings.emoji_font ||
+        (!a->emoji.path.empty() && (a->emoji_width != CellW || a->emoji_height != CellH))) {
+      uint64_t start = a->trace ? a->trace->begin() : 0;
+      ct::EmojiAtlas atlas;
+      if (a->emoji_task.valid()) std::tie(a->emoji, atlas) = a->emoji_task.get();
+      if (a->emoji.path != a->settings.emoji_font)
+        a->emoji = a->settings.emoji_font.empty() ? ct::EmojiFont{} : ct::map_emoji(a->settings.emoji_font);
+      if (!a->emoji.path.empty() && (atlas.width != 2 * CellW || atlas.height != CellH))
+        atlas = ct::rasterize_emoji(a->emoji, CellW, CellH);
+      a->engine->load_emoji(atlas);
       a->emoji_width = CellW; a->emoji_height = CellH;
+      if (a->trace) a->trace->record(start, "emoji_load", atlas.pixels.size() * 4);
     }
     int c = clamp_cols((width - 2 * PaddingX) / CellW),
         r = clamp_rows((height - 2 * PaddingY) / CellH);
@@ -1361,7 +1369,7 @@ void reload_settings(App *a) {
       ct::read_settings(a->options->config_path, a->options->config_required);
     for (const auto &entry : a->options->overrides) ct::set_setting(candidate, entry.first, entry.second);
     auto theme = ct::settings_theme(candidate);
-    if (!candidate.emoji_font.empty() && candidate.emoji_font != a->loaded_emoji)
+    if (!candidate.emoji_font.empty() && candidate.emoji_font != a->emoji.path)
       ct::EmojiFace check(candidate.emoji_font);
     ct::FontAtlas font;
     float sx, sy; glfwGetWindowContentScale(a->window, &sx, &sy);
@@ -1471,6 +1479,17 @@ int main(int argc, char **argv) {
           trace.record(start, "startup_upload_worker", 0);
           return engine;
         });
+    std::future<std::pair<ct::EmojiFont, ct::EmojiAtlas>> emoji_task;
+    if (!o.settings.emoji_font.empty())
+      emoji_task = std::async(std::launch::async, [&trace, path = o.settings.emoji_font, w = CellW, h = CellH] {
+        auto start = trace.begin();
+        auto font = ct::map_emoji(path);
+        trace.record(start, "startup_emoji_map", font.glyphs.size());
+        start = trace.begin();
+        auto atlas = ct::rasterize_emoji(font, w, h);
+        trace.record(start, "startup_emoji_draw", atlas.pixels.size() * 4);
+        return std::make_pair(std::move(font), std::move(atlas));
+      });
     startup_checkpoint("startup_engine_dispatch");
     glfwInitHint(GLFW_WAYLAND_LIBDECOR, GLFW_WAYLAND_DISABLE_LIBDECOR);
     if (!glfwInit())
@@ -1503,6 +1522,7 @@ int main(int argc, char **argv) {
     App app{&engine, p.fd};
     app.window = win;
     app.options = &o; app.settings = o.settings;
+    app.emoji_task = std::move(emoji_task);
     app.loaded_face = o.settings.font_face;
     if (o.settings.font_family != "bitmap") {
       app.loaded_family = o.settings.font_family;

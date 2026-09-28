@@ -67,9 +67,11 @@ VS16 sequences, skin-tone modifiers, keycaps and the Unicode RGI ZWJ sequences
 fill the two cells of their cluster; text-presentation characters and VS15 keep
 the text glyph, and a sequence the font lacks shows its first emoji. HarfBuzz,
 loaded only while the setting is on, shapes the sequences once, and every RGI
-emoji is rasterized at the cell size on load and zoom. Regional-indicator pairs
-are not joined into clusters, so flags stay as letters. Unset, rendering is
-unchanged.
+emoji is rasterized at the cell size on load and zoom: for Noto Color Emoji at
+10×21-pixel cells, 3,945 glyphs, about 50 ms across threads and 6.3 MiB of
+VRAM. Startup builds the atlas while the window is created. Regional-indicator
+pairs are not joined into clusters, so flags stay as letters. Unset, rendering
+is unchanged.
 
 ```sh
 cudaterm --font-family 'DejaVu Sans Mono' --font-size 16 --theme light

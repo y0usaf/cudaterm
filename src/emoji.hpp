@@ -65,7 +65,7 @@ struct EmojiFace {
   EmojiFace(const EmojiFace &) = delete;
   EmojiFace &operator=(const EmojiFace &) = delete;
 };
-inline void draw_emoji(const FT_Bitmap &bitmap, int width, int height, uint32_t *out) {
+inline void scale_emoji(const FT_Bitmap &bitmap, int width, int height, uint32_t *out) {
   float scale = std::min(float(width) / bitmap.width, float(height) / bitmap.rows);
   float left = (width - bitmap.width * scale) / 2, top = (height - bitmap.rows * scale) / 2;
   for (int y = 0; y < height; ++y)
@@ -88,7 +88,12 @@ inline void draw_emoji(const FT_Bitmap &bitmap, int width, int height, uint32_t 
       out[y * width + x] = pixel;
     }
 }
-inline EmojiAtlas rasterize_emoji(const std::string &path, int cell_width, int cell_height) {
+struct EmojiFont {
+  std::string path;
+  std::vector<uint32_t> sequences;
+  std::vector<FT_UInt> glyphs;
+};
+inline EmojiFont map_emoji(const std::string &path) {
   EmojiFace font(path);
   auto sequences = read_emoji_sequences(CUDATERM_EMOJI_SEQUENCES);
   auto joined = read_emoji_sequences(CUDATERM_EMOJI_ZWJ_SEQUENCES);
@@ -112,8 +117,7 @@ inline EmojiAtlas rasterize_emoji(const std::string &path, int cell_width, int c
   hb_face_t *face = face_create(blob, 0);
   hb_font_t *shaper = font_create(face);
   hb_buffer_t *buffer = buffer_create();
-  EmojiAtlas atlas;
-  atlas.width = 2 * cell_width; atlas.height = cell_height;
+  EmojiFont mapped{path};
   std::map<FT_UInt, uint32_t> slots;
   for (const auto &sequence : sequences) {
     std::vector<uint32_t> key;
@@ -135,21 +139,26 @@ inline EmojiAtlas rasterize_emoji(const std::string &path, int cell_width, int c
     }
     if (!glyph) continue;
     uint32_t slot = slots.emplace(glyph, slots.size()).first->second;
-    atlas.sequences.push_back(key.size());
-    atlas.sequences.push_back(slot | (sequence.size() == 2 && sequence[1] == 0xfe0f ? 0x80000000u : 0));
-    atlas.sequences.insert(atlas.sequences.end(), key.begin(), key.end());
+    mapped.sequences.push_back(key.size());
+    mapped.sequences.push_back(slot | (sequence.size() == 2 && sequence[1] == 0xfe0f ? 0x80000000u : 0));
+    mapped.sequences.insert(mapped.sequences.end(), key.begin(), key.end());
   }
   buffer_destroy(buffer); font_destroy(shaper); face_destroy(face); blob_destroy(blob);
   if (slots.empty()) throw std::runtime_error("emoji font has no emoji glyphs: " + path);
-  std::vector<FT_UInt> glyphs(slots.size());
-  for (const auto &entry : slots) glyphs[entry.second] = entry.first;
+  mapped.glyphs.resize(slots.size());
+  for (const auto &entry : slots) mapped.glyphs[entry.second] = entry.first;
+  return mapped;
+}
+inline EmojiAtlas rasterize_emoji(const EmojiFont &font, int cell_width, int cell_height) {
+  EmojiAtlas atlas{2 * cell_width, cell_height, font.sequences};
+  const auto &glyphs = font.glyphs;
   size_t stride = size_t(atlas.width) * atlas.height;
   atlas.pixels.assign(glyphs.size() * stride, 0);
   unsigned threads = std::clamp(std::thread::hardware_concurrency(), 1u, 16u);
   std::vector<std::future<void>> work;
   for (unsigned t = 0; t < threads; ++t)
     work.push_back(std::async(std::launch::async, [&, t] {
-      EmojiFace local(path);
+      EmojiFace local(font.path);
       FT_Face f = local.face;
       if (FT_HAS_FIXED_SIZES(f) && !FT_IS_SCALABLE(f)) {
         int best = 0;
@@ -157,15 +166,15 @@ inline EmojiAtlas rasterize_emoji(const std::string &path, int cell_width, int c
           int h = f->available_sizes[i].height, b = f->available_sizes[best].height;
           if (b < cell_height ? h > b : h >= cell_height && h < b) best = i;
         }
-        if (FT_Select_Size(f, best)) throw std::runtime_error("cannot select emoji strike: " + path);
+        if (FT_Select_Size(f, best)) throw std::runtime_error("cannot select emoji strike: " + font.path);
       } else if (FT_Set_Pixel_Sizes(f, 0, cell_height))
-        throw std::runtime_error("cannot size emoji font: " + path);
+        throw std::runtime_error("cannot size emoji font: " + font.path);
       for (size_t i = t; i < glyphs.size(); i += threads) {
         if (FT_Load_Glyph(f, glyphs[i], FT_LOAD_COLOR)) continue;
         if (f->glyph->format != FT_GLYPH_FORMAT_BITMAP && FT_Render_Glyph(f->glyph, FT_RENDER_MODE_NORMAL)) continue;
         const auto &bitmap = f->glyph->bitmap;
         if (bitmap.pixel_mode != FT_PIXEL_MODE_BGRA || !bitmap.width || !bitmap.rows) continue;
-        draw_emoji(bitmap, atlas.width, atlas.height, atlas.pixels.data() + i * stride);
+        scale_emoji(bitmap, atlas.width, atlas.height, atlas.pixels.data() + i * stride);
       }
     }));
   for (auto &task : work) task.get();
