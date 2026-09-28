@@ -1524,6 +1524,8 @@ int main(int argc, char **argv) {
     bool sync_active = false;
     bool coalescing = false;
     auto coalesce_until = next_frame;
+    auto output_quiet = next_frame, output_deadline = next_frame;
+    bool output_waiting = false;
     unsigned char buf[65536];
     size_t pending = 0;
     auto reap_child = [&] {
@@ -1593,6 +1595,10 @@ int main(int argc, char **argv) {
         sync_active = syncing;
         trace.record(trace_start, "pty_engine_feed", drained);
         app.dirty = true;
+        auto fed = std::chrono::steady_clock::now();
+        if (!output_waiting) output_deadline = fed + std::chrono::microseconds(8333);
+        output_quiet = fed + std::chrono::microseconds(500);
+        output_waiting = true;
         app.selecting = false; app.link_click = false;
         if (!replies.empty())
           queue(&app, (const unsigned char *)replies.data(), replies.size());
@@ -1660,7 +1666,10 @@ int main(int argc, char **argv) {
                                                    cudaGraphicsRegisterFlagsWriteDiscard),
                    "cudaGraphicsGLRegisterImage");
       }
-      if (app.dirty && wsx > 0 && wsy > 0 &&
+      bool settling = output_waiting && !frame_complete && !(eof && !pending) &&
+                      glfwGetTime() - app.last_input > ct::kUserInputWindow &&
+                      std::chrono::steady_clock::now() < std::min(output_quiet, output_deadline);
+      if (app.dirty && wsx > 0 && wsy > 0 && !settling &&
           (!sync_active || (eof && !pending) || std::chrono::steady_clock::now() - sync_started >=
                                    std::chrono::seconds(1)) &&
           (frame_complete || std::chrono::steady_clock::now() >= next_frame)) {
@@ -1712,6 +1721,7 @@ int main(int argc, char **argv) {
         trace.record(trace_start, "gl_texture_swap", needed);
         app.dirty = false;
         coalescing = false;
+        output_waiting = false;
         next_frame =
             std::chrono::steady_clock::now() + std::chrono::microseconds(8333);
       }
@@ -1730,6 +1740,7 @@ int main(int argc, char **argv) {
           auto deadline = next_frame;
           if (sync_active && !(eof && !pending))
             deadline = std::max(deadline, sync_started + std::chrono::seconds(1));
+          if (settling) deadline = std::max(deadline, std::min(output_quiet, output_deadline));
           double timeout = std::chrono::duration<double>(deadline - now).count();
           glfwWaitEventsTimeout(std::max(0.0001, timeout));
         } else if (blinking || autoscroll || cursor_animating || app.copy_flash_deadline) {
