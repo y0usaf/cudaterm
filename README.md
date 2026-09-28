@@ -70,13 +70,11 @@ processing. The CPU reads classifier results and consumed counts to select launc
 Screen parsing and terminal state stay on the GPU; a host observer handles OSC 52
 desktop clipboard writes.
 
-A 2026-09-06 PTY parser-barrier [comparison](docs/current-pty-comparison.md)
-with Foot and Monstar at 80×24 and 318×89 cells gave cudaterm the lowest median
-on every workload except 80×24 tabs, where Foot led. At 318×89 its p90 was also
-lowest; at 80×24 its p90 was not the lowest on text, ANSI, Unicode or DEC graphics.
-Those runs used a harness whose startup redraw overlapped each launch's first
-sample; the harness is fixed, but the comparison has not been re-measured. The barrier is
-not a display measurement, and overall performance parity is not established.
+A 2026-09-28 PTY parser-barrier [comparison](docs/current-pty-comparison.md)
+with Foot and Monstar at 80×24 and 318×89 cells gave cudaterm the lowest pooled
+median and p90 on every workload, including 80×24 tabs. Two 80×24 p90s missed
+Foot's in one of the two rounds. The barrier is not a display measurement, and
+overall performance parity is not established.
 
 The built-in fallback uses GNU Unifont 17.0.05, converted to a static atlas during
 the Nix build and rasterized in CUDA. The explicit `bitmap` font uses 8×16 cells;
