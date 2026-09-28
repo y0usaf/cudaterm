@@ -13,10 +13,12 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_EGL
 #include "primary_selection.hpp"
 #include "activation.hpp"
 #include "ime.hpp"
-#include <cuda_gl_interop.h>
+#include <EGL/eglext.h>
+#include <cuda_egl_interop.h>
 #include <cuda_runtime.h>
 
 #include <algorithm>
@@ -84,10 +86,33 @@ struct Pty {
 struct Graphics {
   GLFWwindow *window = nullptr;
   GLuint texture = 0;
+  EGLImageKHR image = EGL_NO_IMAGE_KHR;
   cudaGraphicsResource *resource = nullptr;
-  ~Graphics() {
+  cudaSurfaceObject_t surface = 0;
+  PFNEGLCREATEIMAGEKHRPROC create_image = nullptr;
+  PFNEGLDESTROYIMAGEKHRPROC destroy_image = nullptr;
+  GLsync drawn = nullptr;
+  void wait_drawn() {
+    if (!drawn)
+      return;
+    glClientWaitSync(drawn, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+    glDeleteSync(drawn);
+    drawn = nullptr;
+  }
+  void release() {
+    wait_drawn();
+    if (surface)
+      cudaDestroySurfaceObject(surface);
+    surface = 0;
     if (resource)
       cudaGraphicsUnregisterResource(resource);
+    resource = nullptr;
+    if (image != EGL_NO_IMAGE_KHR)
+      destroy_image(glfwGetEGLDisplay(), image);
+    image = EGL_NO_IMAGE_KHR;
+  }
+  ~Graphics() {
+    release();
     if (texture)
       glDeleteTextures(1, &texture);
     if (window)
@@ -1418,6 +1443,7 @@ int main(int argc, char **argv) {
     if (!glfwInit())
       throw std::runtime_error("glfwInit failed");
     startup_checkpoint("startup_glfw");
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_DEPTH_BITS, 0);
@@ -1433,6 +1459,10 @@ int main(int argc, char **argv) {
     if (!win)
       throw std::runtime_error("glfwCreateWindow failed");
     glfwMakeContextCurrent(win);
+    graphics.create_image = (PFNEGLCREATEIMAGEKHRPROC)glfwGetProcAddress("eglCreateImageKHR");
+    graphics.destroy_image = (PFNEGLDESTROYIMAGEKHRPROC)glfwGetProcAddress("eglDestroyImageKHR");
+    if (!graphics.create_image || !graphics.destroy_image)
+      throw std::runtime_error("EGL image functions unavailable");
     startup_checkpoint("startup_gl_context");
     engine_owner = engine_task.get();
     Engine &engine = *engine_owner;
@@ -1475,7 +1505,6 @@ int main(int argc, char **argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    cudaGraphicsResource *&resource = graphics.resource;
     startup_checkpoint("startup_interop");
     bool eof = false;
     int status = 0;
@@ -1652,19 +1681,28 @@ int main(int argc, char **argv) {
       size_t needed = (size_t)wsx * wsy * 4;
       if (wsx > 0 && wsy > 0 && (wsx > texture_w || wsy > texture_h ||
                                  needed < (size_t)texture_w * texture_h * 2)) {
-        if (resource)
-          check_cuda(cudaGraphicsUnregisterResource(resource),
-                     "cudaGraphicsUnregisterResource");
-        resource = nullptr;
+        graphics.release();
         glBindTexture(GL_TEXTURE_2D, graphics.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, wsx, wsy, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE, nullptr);
         texture_w = wsx;
         texture_h = wsy;
-        check_cuda(cudaGraphicsGLRegisterImage(&resource, graphics.texture, GL_TEXTURE_2D,
-                                               cudaGraphicsRegisterFlagsSurfaceLoadStore |
-                                                   cudaGraphicsRegisterFlagsWriteDiscard),
-                   "cudaGraphicsGLRegisterImage");
+        const EGLint level[] = {EGL_GL_TEXTURE_LEVEL_KHR, 0, EGL_NONE};
+        graphics.image = graphics.create_image(glfwGetEGLDisplay(), glfwGetEGLContext(win),
+                                               EGL_GL_TEXTURE_2D_KHR,
+                                               (EGLClientBuffer)(uintptr_t)graphics.texture, level);
+        if (graphics.image == EGL_NO_IMAGE_KHR)
+          throw std::runtime_error("eglCreateImageKHR failed");
+        check_cuda(cudaGraphicsEGLRegisterImage(&graphics.resource, graphics.image,
+                                                cudaGraphicsRegisterFlagsWriteDiscard),
+                   "cudaGraphicsEGLRegisterImage");
+        cudaEglFrame frame;
+        check_cuda(cudaGraphicsResourceGetMappedEglFrame(&frame, graphics.resource, 0, 0),
+                   "cudaGraphicsResourceGetMappedEglFrame");
+        cudaResourceDesc target{};
+        target.resType = cudaResourceTypeArray;
+        target.res.array.array = frame.frame.pArray[0];
+        check_cuda(cudaCreateSurfaceObject(&graphics.surface, &target), "cudaCreateSurfaceObject");
       }
       bool settling = output_waiting && !frame_complete && !(eof && !pending) &&
                       glfwGetTime() - app.last_input > ct::kUserInputWindow &&
@@ -1684,24 +1722,11 @@ int main(int argc, char **argv) {
           }
         }
         glViewport(0, 0, wsx, wsy);
-        cudaArray_t array = nullptr;
-        cudaSurfaceObject_t surface = 0;
         uint64_t trace_start = trace.begin();
-        check_cuda(cudaGraphicsMapResources(1, &resource),
-                   "cudaGraphicsMapResources");
-        check_cuda(cudaGraphicsSubResourceGetMappedArray(&array, resource, 0, 0),
-                   "cudaGraphicsSubResourceGetMappedArray");
-        cudaResourceDesc target{};
-        target.resType = cudaResourceTypeArray;
-        target.res.array.array = array;
-        check_cuda(cudaCreateSurfaceObject(&surface, &target), "cudaCreateSurfaceObject");
-        trace.record(trace_start, "graphics_map_pointer", needed);
-        trace_start = trace.begin();
-        engine.render(surface, wsx, wsy);
-        check_cuda(cudaDestroySurfaceObject(surface), "cudaDestroySurfaceObject");
-        check_cuda(cudaGraphicsUnmapResources(1, &resource),
-                   "cudaGraphicsUnmapResources");
-        trace.record(trace_start, "engine_render_unmap", needed);
+        graphics.wait_drawn();
+        engine.render(graphics.surface, wsx, wsy);
+        check_cuda(cudaStreamSynchronize(nullptr), "cudaStreamSynchronize");
+        trace.record(trace_start, "engine_render", needed);
         trace_start = trace.begin();
         const float u = float(wsx) / texture_w, v = float(wsy) / texture_h;
         glBindTexture(GL_TEXTURE_2D, graphics.texture);
@@ -1717,6 +1742,7 @@ int main(int argc, char **argv) {
         glVertex2f(-1.0f, 1.0f);
         glEnd();
         glDisable(GL_TEXTURE_2D);
+        graphics.drawn = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
         glfwSwapBuffers(win);
         trace.record(trace_start, "gl_texture_swap", needed);
         app.dirty = false;
