@@ -14,6 +14,7 @@ background-opacity = 1
 cursor-style = block
 cursor-blink = false
 cursor-animation = 0.08
+cursor-trail = 0
 scroll-multiplier = 3
 ```
 
@@ -39,6 +40,15 @@ soon as the cursor settles. Moves within a quarter second of your last
 keystroke or pointer event animate; positions an application picks on its own
 — output, repaints — and single jumps longer than eight cells land immediately,
 so the block tracks the text instead of drifting over it.
+
+`cursor-trail` (0–1) stretches the moving cursor along its path, as Neovide
+does. Each corner follows its own spring: the corners facing the move arrive
+in `cursor-animation × (1 − cursor-trail)` seconds and the one furthest behind
+in `cursor-animation` seconds, so the cursor smears toward its target and
+settles. With a trail, jumps of any length that follow your input animate;
+moves of at most two cells along a row, such as typing, keep the plain motion.
+Set it to `0` for no trail; `cursor-trail = 1` with `cursor-animation = 0.15`
+matches Neovide's defaults.
 
 Each setting also accepts a CLI flag, for example:
 
@@ -128,8 +138,8 @@ Native Wayland text-input-v3 supports IME preedit, committed text, and local
 search composition when the compositor and input method provide the protocol.
 Preedit uses the existing cell renderer, clips at the right edge, and does not
 render a separate composition caret or selection. Inertial touchpad scrolling
-remains a gap relative to Monstar. Cudaterm also has no tabs or splits. Cursor easing does not establish
-Neovide's smooth scrolling or shaped-text rendering.
+remains a gap relative to Monstar. Cudaterm also has no tabs or splits. The cursor trail follows
+Neovide's cursor; Neovide's smooth scrolling and shaped-text rendering are not implemented.
 
 Applications can negotiate Kitty keyboard disambiguation (flag 1), including
 independent primary/alternate mode stacks and CSI-u modified keys. Unmodified

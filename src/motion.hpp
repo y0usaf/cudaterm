@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 namespace ct {
@@ -35,6 +36,69 @@ struct CursorMotion {
       x = target_x; y = target_y; return false;
     }
     return true;
+  }
+};
+struct Spring {
+  float position = 0, velocity = 0;
+  bool update(float dt, float length) {
+    if (position == 0) return false;
+    if (length <= dt) {
+      position = velocity = 0;
+      return false;
+    }
+    float omega = 4 / length, a = position, b = position * omega + velocity, c = std::exp(-omega * dt);
+    position = (a + b * dt) * c;
+    velocity = c * (b - a * omega - b * dt * omega);
+    if (std::fabs(position) < 0.25f && std::fabs(velocity) < 4) {
+      position = velocity = 0;
+      return false;
+    }
+    return true;
+  }
+};
+struct CursorTrail {
+  std::array<float, 8> corners{}, target{};
+  std::array<Spring, 8> springs{};
+  std::array<float, 4> length{};
+  double last = 0, last_move = 0, glue_until = 0;
+  bool initialized = false, active = false;
+  bool update(const std::array<float, 8> &next, float cell_w, double now, double duration, float trail, bool snap) {
+    double dt = std::clamp(now - last, 0.0, 0.05);
+    last = now;
+    if (!initialized || next != target) {
+      if (initialized && now - last_move < CursorMotion::kRapidMove) glue_until = now + CursorMotion::kGlueHold;
+      last_move = now;
+      bool land = !initialized || snap || duration <= 0 || now < glue_until;
+      initialized = true;
+      float dx = (next[0] + next[4] - target[0] - target[4]) / 2, dy = (next[1] + next[5] - target[1] - target[5]) / 2;
+      bool typing = dy == 0 && std::fabs(dx) <= 2.001f * cell_w;
+      std::array<float, 4> alignment{};
+      for (int i = 0; i < 4; ++i) {
+        float cx = next[2 * i] - (next[0] + next[4]) / 2, cy = next[2 * i + 1] - (next[1] + next[5]) / 2;
+        float tx = next[2 * i] - corners[2 * i], ty = next[2 * i + 1] - corners[2 * i + 1];
+        float cn = std::hypot(cx, cy), tn = std::hypot(tx, ty);
+        alignment[i] = cn > 0 && tn > 0 ? (cx * tx + cy * ty) / (cn * tn) : 0;
+      }
+      float leading = float(duration) * std::clamp(1 - trail, 0.0f, 1.0f);
+      for (int i = 0; i < 4; ++i) {
+        int rank = 0;
+        for (int j = 0; j < 4; ++j)
+          rank += alignment[j] < alignment[i] || (alignment[j] == alignment[i] && j < i);
+        length[i] = typing ? float(duration) : rank >= 2 ? leading : rank == 1 ? (leading + float(duration)) / 2 : float(duration);
+      }
+      for (int i = 0; i < 8; ++i) {
+        springs[i].position = land ? 0 : next[i] - corners[i];
+        if (land) springs[i].velocity = 0;
+      }
+      target = next;
+    }
+    bool moving = false;
+    for (int i = 0; i < 8; ++i) {
+      moving |= springs[i].update(float(dt), length[i / 2]);
+      corners[i] = target[i] - springs[i].position;
+    }
+    active = moving;
+    return moving;
   }
 };
 }

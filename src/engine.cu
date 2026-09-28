@@ -75,6 +75,8 @@ struct DeviceState {
   int padding_x, padding_y, cursor_style, default_cursor_style;
   int cursor_phase, window_focused;
   float cursor_x, cursor_y;
+  float trail[8];
+  int trail_active;
   int face_width, face_height;
   int osc_kind, osc_len;
   char osc_text[512];
@@ -1807,6 +1809,14 @@ __device__ unsigned face_alpha(const DeviceState *s, uint32_t cp, int x, int y, 
   if (slot == 0xffffffffu) return 256;
   return s->face_pixels[style][(size_t(slot) * s->face_height + y) * s->face_width * 2 + x];
 }
+__device__ bool inside_trail(const float *q, float px, float py) {
+  bool in = false;
+  for (int i = 0, j = 3; i < 4; j = i++) {
+    float xi = q[2 * i], yi = q[2 * i + 1], xj = q[2 * j], yj = q[2 * j + 1];
+    if ((yi > py) != (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) in = !in;
+  }
+  return in;
+}
 __device__ void selection_columns(const DeviceState &s, int row, int &first, int &last) {
   first = s.selection_rectangle || row == s.selection_start_row ? s.selection_start_col : 0;
   last = s.selection_rectangle || row == s.selection_end_row ? s.selection_end_col : s.cols - 1;
@@ -1876,13 +1886,15 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
     float cy = (s->cursor_y < 0 ? float(s->row) : s->cursor_y) * s->cell_height;
     float cursor_local_x = x - cx, cursor_local_y = y - cy;
     bool cursor = !overlay && !s->view_offset && s->cursor_visible &&
-                  cursor_local_x >= 0 && cursor_local_x < s->cell_width &&
-                  cursor_local_y >= 0 && cursor_local_y < s->cell_height;
+                  (s->trail_active ? inside_trail(s->trail, x + 0.5f, y + 0.5f) :
+                   cursor_local_x >= 0 && cursor_local_x < s->cell_width &&
+                   cursor_local_y >= 0 && cursor_local_y < s->cell_height);
     int style = s->cursor_style ? s->cursor_style : s->default_cursor_style;
     bool blink_on = !(style & 1) || s->cursor_phase;
     int local_x = x % s->cell_width, local_y = y % s->cell_height;
     bool cursor_pixel = cursor && (s->window_focused ? blink_on : true);
-    if (!s->window_focused)
+    if (s->trail_active) {
+    } else if (!s->window_focused)
       cursor_pixel &= cursor_local_x < 1 || cursor_local_x >= s->cell_width - 1 ||
                       cursor_local_y < 1 || cursor_local_y >= s->cell_height - 1;
     else if (style == 3 || style == 4) cursor_pixel &= cursor_local_y >= s->cell_height - 2;
@@ -3372,6 +3384,19 @@ void Engine::set_cursor_position(float col, float row) {
   if (!(col >= 0 && col < MAX_COLS && row >= 0 && row < MAX_ROWS))
     throw std::runtime_error("invalid visual cursor position");
   cursor_position_kernel<<<1,1>>>(p->d, col, row);
+  ck(cudaGetLastError());
+}
+struct TrailCorners {
+  float xy[8];
+};
+__global__ void cursor_trail_kernel(DeviceState *s, int active, TrailCorners corners) {
+  s->trail_active = active;
+  for (int i = 0; i < 8; ++i) s->trail[i] = corners.xy[i];
+}
+void Engine::set_cursor_trail(bool active, const std::array<float, 8> &corners) {
+  TrailCorners t;
+  for (int i = 0; i < 8; ++i) t.xy[i] = corners[i];
+  cursor_trail_kernel<<<1, 1>>>(p->d, active, t);
   ck(cudaGetLastError());
 }
 __global__ void cursor_phase_kernel(DeviceState *s, int visible, int focused) {

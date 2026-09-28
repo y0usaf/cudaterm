@@ -243,7 +243,8 @@ Options options(int argc, char **argv) {
                 "[--background-opacity 0..1] [--config PATH | --no-config] "
                 "[--font-family FAMILY] [--font-size PIXELS] [--line-height 0.5..3] [--font-file PATH] [--font-fallback FAMILY|file:PATH] "
                 "[--padding-x N] [--padding-y N] [--cursor-style block|bar|underline] "
-                "[--cursor-blink true|false] [--scroll-multiplier N] -e "
+                "[--cursor-blink true|false] [--cursor-animation 0..0.5] [--cursor-trail 0..1] "
+                "[--scroll-multiplier N] -e "
                 "command [args...]\n\n"
                 "Configuration: $XDG_CONFIG_HOME/cudaterm/config (or ~/.config/cudaterm/config)\n"
                 "Themes: midnight, light, classic, or a theme file path.\n"
@@ -258,7 +259,9 @@ Options options(int argc, char **argv) {
               !std::strcmp(argv[i], "--font-fallback") || !std::strcmp(argv[i], "--font-size") ||
               !std::strcmp(argv[i], "--line-height") || !std::strcmp(argv[i], "--padding-x") ||
               !std::strcmp(argv[i], "--padding-y") || !std::strcmp(argv[i], "--cursor-style") ||
-              !std::strcmp(argv[i], "--cursor-blink") || !std::strcmp(argv[i], "--cursor-animation") || !std::strcmp(argv[i], "--scroll-multiplier")) && i + 1 < argc) {
+              !std::strcmp(argv[i], "--cursor-blink") || !std::strcmp(argv[i], "--cursor-animation") ||
+              !std::strcmp(argv[i], "--cursor-trail") ||
+              !std::strcmp(argv[i], "--scroll-multiplier")) && i + 1 < argc) {
       std::string key = argv[i] + 2; setting(key, argv[++i]);
     } else if (!std::strcmp(argv[i], "--cols") && i + 1 < argc)
       o.cols = dimension(argv[++i], MaxCols);
@@ -367,6 +370,7 @@ struct App {
   double cursor_deadline = 0, selection_deadline = 0, copy_flash_deadline = 0;
   double last_input = 0;
   ct::CursorMotion cursor_motion;
+  ct::CursorTrail cursor_trail;
   bool cursor_last_alternate = false;
 
 };
@@ -1260,6 +1264,7 @@ void resized(GLFWwindow *w, int width, int height) {
     a->selecting = false;
     a->engine->clear_selection(); a->link_click = false;
     a->cursor_motion.initialized = false;
+    a->cursor_trail.initialized = false;
     float scale_x, scale_y;
     glfwGetWindowContentScale(w, &scale_x, &scale_y);
     float zoom = 1.0f + a->zoom_step * 0.1f;
@@ -1659,10 +1664,25 @@ int main(int argc, char **argv) {
         }
       }
       float previous_x = app.cursor_motion.x, previous_y = app.cursor_motion.y;
-      bool cursor_animating = app.cursor_motion.update(cursor_state.col, cursor_state.row, glfwGetTime(),
-        app.settings.cursor_animation, !app.focused || !cursor_state.cursor_visible || app.searching ||
+      bool cursor_snap = !app.focused || !cursor_state.cursor_visible || app.searching ||
         cursor_state.view_offset || app.cursor_last_alternate != cursor_state.alternate_screen ||
-        glfwGetTime() - app.last_input > ct::kUserInputWindow);
+        glfwGetTime() - app.last_input > ct::kUserInputWindow;
+      bool trail = app.settings.cursor_trail > 0;
+      bool cursor_animating = app.cursor_motion.update(cursor_state.col, cursor_state.row, glfwGetTime(),
+        app.settings.cursor_animation, cursor_snap || trail);
+      if (trail || app.cursor_trail.active) {
+        float cw = float(cursor_state.cell_width), ch = float(cursor_state.cell_height);
+        float x0 = cursor_state.col * cw, y0 = cursor_state.row * ch, x1 = x0 + cw, y1 = y0 + ch;
+        if (cursor_state.cursor_style == 3 || cursor_state.cursor_style == 4) y0 = y1 - 2;
+        else if (cursor_state.cursor_style == 5 || cursor_state.cursor_style == 6) x1 = x0 + 2;
+        bool was = app.cursor_trail.active;
+        cursor_animating = app.cursor_trail.update({x0, y0, x1, y0, x1, y1, x0, y1}, cw, glfwGetTime(),
+          app.settings.cursor_animation, app.settings.cursor_trail, cursor_snap || !trail);
+        if (cursor_animating || was) {
+          engine.set_cursor_trail(cursor_animating, app.cursor_trail.corners);
+          app.dirty = true;
+        }
+      }
       app.cursor_last_alternate = cursor_state.alternate_screen;
       if (app.cursor_motion.x != previous_x || app.cursor_motion.y != previous_y || app.dirty) {
         engine.set_cursor_position(app.cursor_motion.x, app.cursor_motion.y);
