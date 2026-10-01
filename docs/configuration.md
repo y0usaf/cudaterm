@@ -28,7 +28,11 @@ selection, graphics and the cursor. Missing glyphs use the existing Unifont
 fallback. This is scalar font rendering: ligature shaping and full grapheme
 shaping are not implemented; color emoji need `emoji-font`.
 
-`line-height` is a multiplier from 0.5 to 3. Padding is in logical pixels.
+`line-height` is a multiplier from 0.5 to 3. Padding is in logical pixels; the
+pixels left over after whole cells go to the right and bottom edges. On the
+alternate screen, where full-screen programs run, the cells along each edge
+extend their background through the padding and leftover pixels to the window
+edge.
 `background-opacity` changes the default background; explicit cell backgrounds
 stay opaque. `theme` accepts `midnight`, `light`, `classic`, or a Wallust/Monstar
 color-file path. File paths in the config resolve relative to its directory.

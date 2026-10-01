@@ -2038,6 +2038,13 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
         color |= ((((fg >> shift) & 255) * alpha * 255 +
           ((bg >> shift) & 255) * base_alpha * (255 - alpha) + 32512) / 65025) << shift;
     }
+  } else if (s->alt_active && s->cols > 0 && s->rows > 0) {
+    Cell z = viewed_cell(*s, dmin(dmax(floor_div(y, s->cell_height), 0), s->rows - 1),
+                         dmin(dmax(floor_div(x, s->cell_width), 0), s->cols - 1));
+    if (z.bg != DEFAULT_BG || (z.flags & INVERSE)) {
+      color = resolved(*s, z.flags & INVERSE ? z.fg : z.bg);
+      opacity = 255;
+    }
   }
   if (!overlay && x >= 0 && y >= 0 && c < s->cols && r < s->rows)
     color = graphic_pixel(*s, x, view_y, color, opacity, 2);
