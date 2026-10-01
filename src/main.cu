@@ -17,6 +17,7 @@
 #define GLFW_EXPOSE_NATIVE_EGL
 #include "primary_selection.hpp"
 #include "activation.hpp"
+#include "frame_clock.hpp"
 #include "ime.hpp"
 #include <EGL/eglext.h>
 #include <cuda_egl_interop.h>
@@ -1545,6 +1546,7 @@ int main(int argc, char **argv) {
     glfwSetFramebufferSizeCallback(win, resized);
     glfwSetWindowContentScaleCallback(win, scale_changed);
     glfwSwapInterval(0);
+    ct::FrameClock frames(win);
     int initial_w, initial_h;
     glfwGetFramebufferSize(win, &initial_w, &initial_h);
     resized(win, initial_w, initial_h);
@@ -1601,12 +1603,12 @@ int main(int argc, char **argv) {
         }
       }
     });
-    auto next_frame = std::chrono::steady_clock::now();
-    auto sync_started = next_frame;
+    auto started = std::chrono::steady_clock::now();
+    auto sync_started = started;
     bool sync_active = false;
     bool coalescing = false;
-    auto coalesce_until = next_frame;
-    auto output_quiet = next_frame, output_deadline = next_frame;
+    auto coalesce_until = started;
+    auto output_quiet = started, output_deadline = started;
     bool output_waiting = false;
     unsigned char buf[65536];
     size_t pending = 0;
@@ -1753,6 +1755,7 @@ int main(int argc, char **argv) {
         }
       }
       app.cursor_last_alternate = cursor_state.alternate_screen;
+      if (cursor_animating || scroll_animating) app.dirty = true;
       if (app.cursor_motion.x != previous_x || app.cursor_motion.y != previous_y || app.dirty) {
         engine.set_cursor_position(app.cursor_motion.x, app.cursor_motion.y);
         app.dirty = true;
@@ -1799,7 +1802,7 @@ int main(int argc, char **argv) {
       if (app.dirty && wsx > 0 && wsy > 0 && !settling &&
           (!sync_active || (eof && !pending) || std::chrono::steady_clock::now() - sync_started >=
                                    std::chrono::seconds(1)) &&
-          (frame_complete || std::chrono::steady_clock::now() >= next_frame)) {
+          !frames.waiting() && glfwGetTime() >= frames.ready_at()) {
         if (coalescing && !frame_complete && !eof &&
             std::chrono::steady_clock::now() < coalesce_until) {
           pollfd more{p.fd, POLLIN, 0};
@@ -1832,13 +1835,12 @@ int main(int argc, char **argv) {
         glEnd();
         glDisable(GL_TEXTURE_2D);
         graphics.drawn = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        frames.request(glfwGetTime());
         glfwSwapBuffers(win);
         trace.record(trace_start, "gl_texture_swap", needed);
         app.dirty = false;
         coalescing = false;
         output_waiting = false;
-        next_frame =
-            std::chrono::steady_clock::now() + std::chrono::microseconds(8333);
       }
       if (drained)
         glfwPollEvents();
@@ -1851,18 +1853,20 @@ int main(int argc, char **argv) {
           throw std::runtime_error(std::string("PTY waiter: ") + std::strerror(arm_error));
         auto now = std::chrono::steady_clock::now();
         uint64_t trace_start = trace.begin();
-        if (app.dirty && wsx > 0 && wsy > 0) {
-          auto deadline = next_frame;
+        if (app.dirty && wsx > 0 && wsy > 0 && frames.waiting()) {
+          glfwWaitEvents();
+        } else if (app.dirty && wsx > 0 && wsy > 0) {
+          auto deadline = now;
           if (sync_active && !(eof && !pending))
             deadline = std::max(deadline, sync_started + std::chrono::seconds(1));
           if (settling) deadline = std::max(deadline, std::min(output_quiet, output_deadline));
-          double timeout = std::chrono::duration<double>(deadline - now).count();
+          double timeout = std::max(std::chrono::duration<double>(deadline - now).count(),
+                                    frames.ready_at() - glfwGetTime());
           glfwWaitEventsTimeout(std::max(0.0001, timeout));
-        } else if (blinking || autoscroll || cursor_animating || scroll_animating || app.copy_flash_deadline) {
+        } else if (blinking || autoscroll || app.copy_flash_deadline) {
           double deadline = blinking ? app.cursor_deadline : glfwGetTime() + 1;
           if (app.copy_flash_deadline) deadline = std::min(deadline, app.copy_flash_deadline);
           if (autoscroll) deadline = std::min(deadline, app.selection_deadline);
-          if (cursor_animating || scroll_animating) deadline = std::min(deadline, glfwGetTime() + 1.0 / 120);
           glfwWaitEventsTimeout(std::max(0.0001, deadline - glfwGetTime()));
         } else {
           glfwWaitEvents();

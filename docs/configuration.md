@@ -36,11 +36,12 @@ Use `cursor-style = block`, `underline`, or `bar`. Applications can override it
 with DECSCUSR. `cursor-blink` controls the default; blinking stops when the cursor
 is hidden or the window is unfocused. An unfocused cursor is an outline.
 `cursor-animation` is the time in seconds the cursor takes to settle after a
-move (0–0.5); set it to `0` for no motion. Motion stops scheduling frames as
-soon as the cursor settles. Moves within a quarter second of your last
-keystroke or pointer event animate; positions an application picks on its own
-— output, repaints — and single jumps longer than eight cells land immediately,
-so the block tracks the text instead of drifting over it.
+move (0–0.5); set it to `0` for no motion. Motion draws one frame per refresh
+of the display showing the window and stops as soon as the cursor settles.
+Moves within a quarter second of your last keystroke or pointer event animate;
+positions an application picks on its own — output, repaints — and single jumps
+longer than eight cells land immediately, so the block tracks the text instead
+of drifting over it.
 
 `cursor-trail` (0–1) stretches the moving cursor along its path, as Neovide
 does. Each corner follows its own spring: the corners facing the move arrive
