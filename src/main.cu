@@ -1327,6 +1327,10 @@ void resized(GLFWwindow *w, int width, int height) {
       CellW = cw; CellH = ch;
       a->engine->set_cell_size(CellW, CellH);
     }
+    if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
+      glfwSetWaylandSizeIncrements(w, CellW, CellH, 2 * PaddingX, 2 * PaddingY);
+      glfwGetFramebufferSize(w, &width, &height);
+    }
     if (a->emoji_task.valid() || a->emoji.path != a->settings.emoji_font ||
         (!a->emoji.path.empty() && (a->emoji_width != CellW || a->emoji_height != CellH))) {
       uint64_t start = a->trace ? a->trace->begin() : 0;

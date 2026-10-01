@@ -1,0 +1,172 @@
+--- a/include/GLFW/glfw3native.h
++++ b/include/GLFW/glfw3native.h
+@@ -573,6 +573,12 @@ GLFWAPI void glfwWaylandTextInputSetCursorRectangle(GLFWwindow* window,
+                                                     int width,
+                                                     int height);
+ 
++GLFWAPI void glfwSetWaylandSizeIncrements(GLFWwindow* window,
++                                          int width,
++                                          int height,
++                                          int baseWidth,
++                                          int baseHeight);
++
+ #endif
+ 
+ #if defined(GLFW_EXPOSE_NATIVE_EGL)
+--- a/src/wl_init.c
++++ b/src/wl_init.c
+@@ -181,7 +181,8 @@ static void registryHandleGlobal(void* userData,
+     else if (strcmp(interface, "xdg_wm_base") == 0)
+     {
+         _glfw.wl.wmBase =
+-            wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
++            wl_registry_bind(registry, name, &xdg_wm_base_interface,
++                             _glfw_min(2, version));
+         xdg_wm_base_add_listener(_glfw.wl.wmBase, &wmBaseListener, NULL);
+     }
+     else if (strcmp(interface, "zxdg_decoration_manager_v1") == 0)
+--- a/src/wl_platform.h
++++ b/src/wl_platform.h
+@@ -379,6 +379,7 @@ typedef struct _GLFWwindowWayland
+     GLFWbool                    maximized;
+     GLFWbool                    activated;
+     GLFWbool                    fullscreen;
++    GLFWbool                    tiled;
+     GLFWbool                    hovered;
+     GLFWbool                    transparent;
+     GLFWbool                    scaleFramebuffer;
+@@ -395,8 +396,15 @@ typedef struct _GLFWwindowWayland
+         GLFWbool                iconified;
+         GLFWbool                activated;
+         GLFWbool                fullscreen;
++        GLFWbool                tiled;
++        GLFWbool                sized;
+     } pending;
+ 
++    struct {
++        int                     width, height;
++        int                     baseWidth, baseHeight;
++    } increment;
++
+     struct {
+         struct xdg_surface*     surface;
+         struct xdg_toplevel*    toplevel;
+--- a/src/wl_window.c
++++ b/src/wl_window.c
+@@ -392,6 +392,35 @@ static GLFWbool resizeWindow(_GLFWwindow* window, int width, int height)
+     return GLFW_TRUE;
+ }
+ 
++static int snapToIncrement(_GLFWwindow* window, int size, int increment, int base)
++{
++    const int scale = window->wl.fractionalScale ?
++        (int) window->wl.scalingNumerator : window->wl.bufferScale * 120;
++    const int pixels = size * scale / 120;
++
++    if (increment <= 0 || pixels - base < increment)
++        return size;
++
++    const int snapped = base + (pixels - base) / increment * increment;
++    return (snapped * 120 + scale - 1) / scale;
++}
++
++static void snapToIncrements(_GLFWwindow* window, int* width, int* height)
++{
++    if (!window->wl.pending.sized || window->wl.maximized ||
++        window->wl.fullscreen || window->wl.tiled)
++    {
++        return;
++    }
++
++    *width = snapToIncrement(window, *width,
++                             window->wl.increment.width,
++                             window->wl.increment.baseWidth);
++    *height = snapToIncrement(window, *height,
++                              window->wl.increment.height,
++                              window->wl.increment.baseHeight);
++}
++
+ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
+ {
+     if (wl_compositor_get_version(_glfw.wl.compositor) <
+@@ -571,6 +600,8 @@ static void xdgToplevelHandleConfigure(void* userData,
+     window->wl.pending.activated  = GLFW_FALSE;
+     window->wl.pending.maximized  = GLFW_FALSE;
+     window->wl.pending.fullscreen = GLFW_FALSE;
++    window->wl.pending.tiled      = GLFW_FALSE;
++    window->wl.pending.sized      = width && height;
+ 
+     wl_array_for_each(state, states)
+     {
+@@ -587,6 +618,12 @@ static void xdgToplevelHandleConfigure(void* userData,
+             case XDG_TOPLEVEL_STATE_ACTIVATED:
+                 window->wl.pending.activated = GLFW_TRUE;
+                 break;
++            case XDG_TOPLEVEL_STATE_TILED_LEFT:
++            case XDG_TOPLEVEL_STATE_TILED_RIGHT:
++            case XDG_TOPLEVEL_STATE_TILED_TOP:
++            case XDG_TOPLEVEL_STATE_TILED_BOTTOM:
++                window->wl.pending.tiled = GLFW_TRUE;
++                break;
+         }
+     }
+ 
+@@ -649,6 +686,7 @@ static void xdgSurfaceHandleConfigure(void* userData,
+     }
+ 
+     window->wl.fullscreen = window->wl.pending.fullscreen;
++    window->wl.tiled = window->wl.pending.tiled;
+ 
+     int width  = window->wl.pending.width;
+     int height = window->wl.pending.height;
+@@ -666,6 +704,8 @@ static void xdgSurfaceHandleConfigure(void* userData,
+         }
+     }
+ 
++    snapToIncrements(window, &width, &height);
++
+     if (resizeWindow(window, width, height))
+     {
+         _glfwInputWindowSize(window, window->wl.width, window->wl.height);
+@@ -4124,4 +4164,41 @@ GLFWAPI void glfwWaylandTextInputSetCursorRectangle(GLFWwindow* handle,
+                                             x, y, width, height);
+ }
+ 
++GLFWAPI void glfwSetWaylandSizeIncrements(GLFWwindow* handle,
++                                          int width,
++                                          int height,
++                                          int baseWidth,
++                                          int baseHeight)
++{
++    _GLFWwindow* window = (_GLFWwindow*) handle;
++    _GLFW_REQUIRE_INIT();
++
++    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
++    {
++        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
++                        "Wayland: Platform not initialized");
++        return;
++    }
++
++    window->wl.increment.width = width;
++    window->wl.increment.height = height;
++    window->wl.increment.baseWidth = baseWidth;
++    window->wl.increment.baseHeight = baseHeight;
++
++    if (!window->wl.xdg.toplevel || !window->wl.pending.sized)
++        return;
++
++    width = window->wl.pending.width;
++    height = window->wl.pending.height;
++    snapToIncrements(window, &width, &height);
++
++    if (resizeWindow(window, width, height))
++    {
++        _glfwInputWindowSize(window, window->wl.width, window->wl.height);
++
++        if (window->wl.visible)
++            _glfwInputWindowDamage(window);
++    }
++}
++
+ #endif // _GLFW_WAYLAND
