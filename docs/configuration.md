@@ -17,6 +17,7 @@ cursor-animation = 0.08
 cursor-trail = 0
 smooth-scroll = 0
 scroll-multiplier = 3
+max-fps = 0
 ```
 
 `font-size` is in logical pixels; monitor scaling and zoom are applied before
@@ -59,6 +60,11 @@ touchpad flick keeps coasting after your fingers lift, slowing over about a
 second. Output that arrives while you are scrolled back leaves the view where
 it is, as it does without smooth scrolling. Set it to `0` for row-by-row
 scrolling. Both effects draw frames only while something moves.
+
+`max-fps` caps the frames the window draws each second. At `0`, the default,
+it draws at most one frame per refresh of the display showing it, when the
+compositor asks for one. A positive value can lower that rate but never
+raise it.
 
 Each setting also accepts a CLI flag, for example:
 

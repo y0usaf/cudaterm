@@ -246,7 +246,7 @@ Options options(int argc, char **argv) {
                 "[--font-family FAMILY] [--font-size PIXELS] [--line-height 0.5..3] [--font-file PATH] [--font-fallback FAMILY|file:PATH] [--emoji-font PATH] "
                 "[--padding-x N] [--padding-y N] [--cursor-style block|bar|underline] "
                 "[--cursor-blink true|false] [--cursor-animation 0..0.5] [--cursor-trail 0..1] "
-                "[--smooth-scroll 0..0.5] [--scroll-multiplier N] -e "
+                "[--smooth-scroll 0..0.5] [--scroll-multiplier N] [--max-fps N] -e "
                 "command [args...]\n\n"
                 "Configuration: $XDG_CONFIG_HOME/cudaterm/config (or ~/.config/cudaterm/config)\n"
                 "Themes: midnight, light, classic, or a theme file path.\n"
@@ -264,7 +264,8 @@ Options options(int argc, char **argv) {
               !std::strcmp(argv[i], "--padding-y") || !std::strcmp(argv[i], "--cursor-style") ||
               !std::strcmp(argv[i], "--cursor-blink") || !std::strcmp(argv[i], "--cursor-animation") ||
               !std::strcmp(argv[i], "--cursor-trail") || !std::strcmp(argv[i], "--smooth-scroll") ||
-              !std::strcmp(argv[i], "--scroll-multiplier")) && i + 1 < argc) {
+              !std::strcmp(argv[i], "--scroll-multiplier") || !std::strcmp(argv[i], "--max-fps")) &&
+             i + 1 < argc) {
       std::string key = argv[i] + 2; setting(key, argv[++i]);
     } else if (!std::strcmp(argv[i], "--cols") && i + 1 < argc)
       o.cols = dimension(argv[++i], MaxCols);
@@ -1802,7 +1803,7 @@ int main(int argc, char **argv) {
       if (app.dirty && wsx > 0 && wsy > 0 && !settling &&
           (!sync_active || (eof && !pending) || std::chrono::steady_clock::now() - sync_started >=
                                    std::chrono::seconds(1)) &&
-          !frames.waiting() && glfwGetTime() >= frames.ready_at()) {
+          !frames.waiting() && glfwGetTime() >= frames.ready_at(app.settings.max_fps)) {
         if (coalescing && !frame_complete && !eof &&
             std::chrono::steady_clock::now() < coalesce_until) {
           pollfd more{p.fd, POLLIN, 0};
@@ -1861,7 +1862,7 @@ int main(int argc, char **argv) {
             deadline = std::max(deadline, sync_started + std::chrono::seconds(1));
           if (settling) deadline = std::max(deadline, std::min(output_quiet, output_deadline));
           double timeout = std::max(std::chrono::duration<double>(deadline - now).count(),
-                                    frames.ready_at() - glfwGetTime());
+                                    frames.ready_at(app.settings.max_fps) - glfwGetTime());
           glfwWaitEventsTimeout(std::max(0.0001, timeout));
         } else if (blinking || autoscroll || app.copy_flash_deadline) {
           double deadline = blinking ? app.cursor_deadline : glfwGetTime() + 1;

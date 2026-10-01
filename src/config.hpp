@@ -53,7 +53,7 @@ struct Settings {
   int padding_x = 12, padding_y = 10;
   int cursor_style = 2;
   bool cursor_blink = false;
-  float cursor_animation = 0.08f, cursor_trail = 0, smooth_scroll = 0;
+  float cursor_animation = 0.08f, cursor_trail = 0, smooth_scroll = 0, max_fps = 0;
 };
 inline std::string trim_setting(const std::string &s) {
   auto a = s.find_first_not_of(" \t\r"), b = s.find_last_not_of(" \t\r");
@@ -81,6 +81,7 @@ inline void set_setting(Settings &s, const std::string &key, const std::string &
   else if (key == "cursor-trail") s.cursor_trail = setting_number(value, 0, 1);
   else if (key == "smooth-scroll") s.smooth_scroll = setting_number(value, 0, 0.5f);
   else if (key == "scroll-multiplier") s.scroll_multiplier = setting_number(value, 0.1f, 20);
+  else if (key == "max-fps") s.max_fps = setting_number(value, 0, 1000);
   else if (key == "padding-x" || key == "padding-y") {
     float n = setting_number(value, 0, 100);
     if (n != int(n)) throw std::runtime_error("padding must be an integer");

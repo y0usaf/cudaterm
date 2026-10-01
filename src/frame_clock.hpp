@@ -5,6 +5,7 @@
 #define GLFW_EXPOSE_NATIVE_WAYLAND
 #endif
 #include <GLFW/glfw3native.h>
+#include <algorithm>
 #include <wayland-client.h>
 
 namespace ct {
@@ -30,7 +31,9 @@ struct FrameClock {
       wl_callback_destroy(callback);
   }
   bool waiting() const { return callback != nullptr; }
-  double ready_at() const { return last + interval; }
+  double ready_at(double max_fps) const {
+    return last + std::max(interval, max_fps > 0 ? 1 / max_fps : 0.0);
+  }
   void request(double now);
 };
 
