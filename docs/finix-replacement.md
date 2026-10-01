@@ -20,6 +20,8 @@ nix build --impure --file nix/finix-preview.nix --out-link result-finix
 The preview reads the actual desktop font package, point size and pixel line
 height from `~/finix`. It currently produces 10×24 logical cells: Departure Mono
 Ultra Condensed at 16 pt, rasterized at 21 pixels, with Nerd Font symbols.
+Like Monstar, it has no padding; `mkFinixPackage` takes `paddingX` and
+`paddingY` in logical pixels.
 Python,
 Pillow and fonttools do not run in the terminal process. Unifont supplies missing
 glyphs and combining marks. The configured background opacity is 0.82; explicit

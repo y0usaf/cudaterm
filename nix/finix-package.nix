@@ -1,4 +1,4 @@
-{ pkgs, terminal, widths, fontCacheBuilder, fontFile, fontSize ? 16, lineHeight ? 24 }:
+{ pkgs, terminal, widths, fontCacheBuilder, fontFile, fontSize ? 16, lineHeight ? 24, paddingX ? 0, paddingY ? 0 }:
 let
   pixels = builtins.floor (fontSize * 96.0 / 72.0 + 0.5);
   fontCache = if !(builtins.hasContext "${fontFile}") then null else pkgs.runCommand "cudaterm-finix-font-cache" {} ''
@@ -27,6 +27,7 @@ let
     exec ${terminal}/bin/cudaterm --font-file ${pkgs.lib.escapeShellArg "${fontFile}"} \
       --font-fallback file:${pkgs.nerd-fonts.symbols-only}/share/fonts/truetype/NerdFonts/Symbols/SymbolsNerdFontMono-Regular.ttf \
       --font-size ${toString pixels} --line-height ${toString (lineHeight * 1.0 / pixels)} \
+      --padding-x ${toString paddingX} --padding-y ${toString paddingY} \
       --background-opacity 0.82 "$@"
   '';
   desktop = pkgs.makeDesktopItem {
