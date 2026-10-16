@@ -18,6 +18,7 @@ cursor-trail = 0
 smooth-scroll = 0
 scroll-multiplier = 3
 max-fps = 0
+contrast-floor = 4.5
 ```
 
 `font-size` is in logical pixels; monitor scaling and zoom are applied before
@@ -68,6 +69,13 @@ scrolling. Both effects draw frames only while something moves.
 it draws at most one frame per refresh of the display showing it, when the
 compositor asks for one. A positive value can lower that rate but never
 raise it.
+
+`contrast-floor` is the least WCAG 2.1 contrast ratio (0–21) between text and
+its background. Text below it is drawn lighter or darker, keeping its OKLab hue
+and chroma, so colors chosen for a dark theme stay readable on a light one.
+Cell colors, copies and search keep the application's values. Cursor and
+selection colors set by the theme, text over graphics, and the desktop behind a
+translucent background are left alone. Set it to `0` to draw colors as sent.
 
 Each setting also accepts a CLI flag, for example:
 

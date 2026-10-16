@@ -48,7 +48,7 @@ constexpr uint32_t COLOR_INDEX = 0x01000000;
 constexpr uint32_t DEFAULT_FG = COLOR_INDEX + 256, DEFAULT_BG = COLOR_INDEX + 257;
 constexpr uint32_t BOLD = 1, UNDERLINE = 2, INVERSE = 4, DIM = 8;
 constexpr uint32_t WIDE = 16, TAIL = 32, ITALIC = 64, STRIKE = 128, HIDDEN = 256;
-constexpr int MAX_COLS = 512, MAX_ROWS = 256, REPLY_CAP = 4096;
+constexpr int MAX_COLS = 512, MAX_ROWS = 256, REPLY_CAP = 4096, ACC_SLOTS = 4096;
 constexpr int HISTORY_CAP = 4096;
 
 struct ReplyBuffer {
@@ -89,6 +89,7 @@ struct DeviceState {
   const unsigned char *text_widths;
   const signed char *mark_offsets;
   uint32_t *repair_flags;
+  uint64_t *acc;
   int complex_cells, repair_row;
   FillJob *jobs;
   int job_count;
@@ -2020,7 +2021,9 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
       if (!plain) { base = bg; under = 255; }
       base = graphic_pixel(*s, x, view_y, base, under, 1);
       bg = unpremultiply(base, under); base_alpha = under;
-    }
+    } else if (alpha && s->theme.contrast_floor > 0 && !(selected && (s->theme.customized & 12)) &&
+               !(cursor && (s->theme.customized & 3)))
+      fg = acc_correct(*s, fg, bg);
     opacity = alpha + (base_alpha * (255 - alpha) + 127) / 255;
     if (alpha == 255) color = fg;
     else if (emoji >> 24) {
@@ -2325,6 +2328,7 @@ struct Engine::Impl {
   DeviceState *d = nullptr;
   Hyperlinks *hyperlinks = nullptr;
   uint32_t *repair_flags = nullptr;
+  uint64_t *acc = nullptr;
   uint16_t *font_rows = nullptr;
   uint32_t *font_pages = nullptr, *font_map = nullptr;
   unsigned char *font_widths = nullptr, *text_widths = nullptr;
@@ -2381,6 +2385,7 @@ struct Engine::Impl {
     cudaFree(graphics_input);
     for (auto *image : images) cudaFree(image);
     cudaFree(repair_flags);
+    cudaFree(acc);
     cudaFree(font_rows);
     cudaFree(font_pages);
     cudaFree(font_map);
@@ -2674,6 +2679,8 @@ Engine::Engine(int c, int r) : p(nullptr) {
     ck(cudaMemset(p->alt_row_wrap, 0, MAX_ROWS * sizeof(int)));
     ck(cudaMemset(p->history_wrap, 0, HISTORY_CAP * sizeof(int)));
     ck(cudaMalloc(&p->repair_flags, MAX_ROWS * MAX_COLS * sizeof(uint32_t)));
+    ck(cudaMalloc(&p->acc, ACC_SLOTS * sizeof(uint64_t)));
+    ck(cudaMemset(p->acc, 0, ACC_SLOTS * sizeof(uint64_t)));
     ck(cudaMalloc(&p->rejected, sizeof(int)));
     ck(cudaMalloc(&p->plain, sizeof(PlainMeta)));
     ck(cudaMalloc(&p->styled_meta, sizeof(StyledMeta)));
@@ -2742,6 +2749,7 @@ Engine::Engine(int c, int r) : p(nullptr) {
     s.graphics = p->graphics;
     s.marks = {p->mark_nodes, p->mark_used, p->mark_capacity, p->mark_status};
     s.repair_flags = p->repair_flags;
+    s.acc = p->acc;
     s.font_rows = p->font_rows;
     s.font_pages = p->font_pages;
     s.font_map = p->font_map;
@@ -3032,7 +3040,7 @@ MemoryUsage Engine::memory_usage() const {
   ck(cudaMemcpy(&mark_nodes, p->mark_used, sizeof(mark_nodes), cudaMemcpyDeviceToHost));
   size_t bytes = sizeof(DeviceState) + sizeof(GraphicsState) + sizeof(ReplyBuffer) +
     sizeof(int) * (3 + 2 * MAX_ROWS + HISTORY_CAP) + sizeof(PlainMeta) + sizeof(StyledMeta) +
-    MAX_ROWS * MAX_COLS * sizeof(uint32_t) + p->font_bytes + p->face_bytes + p->emoji_bytes + p->grid_bytes +
+    MAX_ROWS * MAX_COLS * sizeof(uint32_t) + ACC_SLOTS * sizeof(uint64_t) + p->font_bytes + p->face_bytes + p->emoji_bytes + p->grid_bytes +
     size_t(p->history_capacity) * p->history_cols * sizeof(Cell) +
     p->input_capacity + size_t(p->scan_capacity) * (sizeof(int) * 2 + sizeof(LineScan)) +
     p->scan_bytes + p->selection_output_capacity + p->graphics_capacity + images +
@@ -3329,6 +3337,7 @@ void Engine::set_theme(const Theme &theme) {
     if (color > 0xffffff) throw std::runtime_error("invalid theme color");
   theme_kernel<<<1, 1>>>(p->d, theme);
   ck(cudaGetLastError());
+  ck(cudaMemset(p->acc, 0, ACC_SLOTS * sizeof(uint64_t)));
 }
 bool Engine::take_title(std::string &title) {
   if (!p->title_changed) return false;

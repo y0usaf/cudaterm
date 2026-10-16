@@ -63,7 +63,7 @@
       version = "0.1.0";
       src = pkgs.lib.fileset.toSource {
         root = ./.;
-        fileset = pkgs.lib.fileset.unions [ ./src ./bench/engine_bench.cu ];
+        fileset = pkgs.lib.fileset.unions [ ./src ./bench/engine_bench.cu ./bench/contrast_check.cu ];
       };
       nativeBuildInputs = [ cuda.cuda_nvcc pkgs.pkg-config pkgs.patchelf pkgs.wayland-scanner pkgs.removeReferencesTo ];
       buildInputs = [ cuda.cuda_cudart glfw pkgs.libGL pkgs.freetype pkgs.fontconfig pkgs.xxhash pkgs.wayland pkgs.libx11 pkgs.libxrandr pkgs.harfbuzz ];
@@ -80,6 +80,7 @@
           src/main.cu engine.o xdg-activation-v1.o $(pkg-config --cflags harfbuzz) \
           $(pkg-config --cflags --libs glfw3 gl freetype2 fontconfig libxxhash wayland-client x11) -lutil -o cudaterm
         nvcc -O3 -std=c++17 -arch=sm_89 -I src bench/engine_bench.cu engine.o -o engine-bench
+        nvcc -O3 -std=c++17 -arch=sm_89 -I src bench/contrast_check.cu engine.o -o contrast-check
         runHook postBuild
       '';
       installPhase = ''
@@ -87,6 +88,7 @@
         ln -s ${fontData} $out/share/cudaterm
         install -Dm755 cudaterm $out/bin/cudaterm
         install -Dm755 engine-bench $out/bin/cudaterm-engine-bench
+        install -Dm755 contrast-check $out/bin/cudaterm-contrast-check
       '';
       postFixup = ''
         for exe in $out/bin/*; do
@@ -113,6 +115,7 @@
       exec ${pkgs.python3.withPackages (p: [ p.pillow p.fonttools ])}/bin/python3 ${./tools/build_face.py} "$@"
     ''}"; };
     bench = { type = "app"; program = "${package}/bin/cudaterm-engine-bench"; };
+    contrast-check = { type = "app"; program = "${package}/bin/cudaterm-contrast-check"; };
     };
     checks.${system} = { build = package; };
     devShells.${system}.default = pkgs.mkShell.override { inherit stdenv; } {

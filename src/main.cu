@@ -246,7 +246,7 @@ Options options(int argc, char **argv) {
                 "[--font-family FAMILY] [--font-size PIXELS] [--line-height 0.5..3] [--font-file PATH] [--font-fallback FAMILY|file:PATH] [--emoji-font PATH] "
                 "[--padding-x N] [--padding-y N] [--cursor-style block|bar|underline] "
                 "[--cursor-blink true|false] [--cursor-animation 0..0.5] [--cursor-trail 0..1] "
-                "[--smooth-scroll 0..0.5] [--scroll-multiplier N] [--max-fps N] -e "
+                "[--smooth-scroll 0..0.5] [--scroll-multiplier N] [--max-fps N] [--contrast-floor 0..21] -e "
                 "command [args...]\n\n"
                 "Configuration: $XDG_CONFIG_HOME/cudaterm/config (or ~/.config/cudaterm/config)\n"
                 "Themes: midnight, light, classic, or a theme file path.\n"
@@ -264,7 +264,8 @@ Options options(int argc, char **argv) {
               !std::strcmp(argv[i], "--padding-y") || !std::strcmp(argv[i], "--cursor-style") ||
               !std::strcmp(argv[i], "--cursor-blink") || !std::strcmp(argv[i], "--cursor-animation") ||
               !std::strcmp(argv[i], "--cursor-trail") || !std::strcmp(argv[i], "--smooth-scroll") ||
-              !std::strcmp(argv[i], "--scroll-multiplier") || !std::strcmp(argv[i], "--max-fps")) &&
+              !std::strcmp(argv[i], "--scroll-multiplier") || !std::strcmp(argv[i], "--max-fps") ||
+              !std::strcmp(argv[i], "--contrast-floor")) &&
              i + 1 < argc) {
       std::string key = argv[i] + 2; setting(key, argv[++i]);
     } else if (!std::strcmp(argv[i], "--cols") && i + 1 < argc)

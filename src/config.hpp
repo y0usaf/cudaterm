@@ -54,6 +54,7 @@ struct Settings {
   int cursor_style = 2;
   bool cursor_blink = false;
   float cursor_animation = 0.08f, cursor_trail = 0, smooth_scroll = 0, max_fps = 0;
+  float contrast_floor = default_theme().contrast_floor;
 };
 inline std::string trim_setting(const std::string &s) {
   auto a = s.find_first_not_of(" \t\r"), b = s.find_last_not_of(" \t\r");
@@ -82,6 +83,7 @@ inline void set_setting(Settings &s, const std::string &key, const std::string &
   else if (key == "smooth-scroll") s.smooth_scroll = setting_number(value, 0, 0.5f);
   else if (key == "scroll-multiplier") s.scroll_multiplier = setting_number(value, 0.1f, 20);
   else if (key == "max-fps") s.max_fps = setting_number(value, 0, 1000);
+  else if (key == "contrast-floor") s.contrast_floor = setting_number(value, 0, 21);
   else if (key == "padding-x" || key == "padding-y") {
     float n = setting_number(value, 0, 100);
     if (n != int(n)) throw std::runtime_error("padding must be an integer");
@@ -127,9 +129,9 @@ inline Settings read_settings(const std::string &path, bool required) {
   return settings;
 }
 inline Theme settings_theme(const Settings &s) {
-  if (s.theme == "classic") return default_theme();
-  if (s.theme != "midnight" && s.theme != "light") return read_theme(s.theme);
-  Theme theme = default_theme();
+  Theme theme = s.theme == "classic" || s.theme == "midnight" || s.theme == "light" ? default_theme() : read_theme(s.theme);
+  theme.contrast_floor = s.contrast_floor;
+  if (s.theme != "midnight" && s.theme != "light") return theme;
   bool light = s.theme == "light";
   const uint32_t dark[] = {0x1b2030,0xf07882,0x9dcc8b,0xeac58b,0x91b9f4,0xc6a0ed,0x85cccf,0xd5dbea,
                           0x68738c,0xff929b,0xb2dfa1,0xffdaa0,0xa9ccff,0xdbb7ff,0x9fe3e5,0xf0f3fa};

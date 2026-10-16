@@ -158,3 +158,58 @@ __device__ void finish_osc(DeviceState &s, bool bell) {
     }
   }
 }
+__device__ float acc_linear(uint32_t color, int shift) {
+  float v = (color >> shift & 255) / 255.0f;
+  return v <= 0.04045f ? v / 12.92f : __powf((v + 0.055f) / 1.055f, 2.4f);
+}
+__device__ float acc_luminance(float r, float g, float b) { return 0.2126f * r + 0.7152f * g + 0.0722f * b; }
+__device__ float acc_luminance(uint32_t color) {
+  return acc_luminance(acc_linear(color, 16), acc_linear(color, 8), acc_linear(color, 0));
+}
+__device__ float acc_ratio(float y, float z) { return (fmaxf(y, z) + 0.05f) / (fminf(y, z) + 0.05f); }
+__device__ void acc_oklab(uint32_t color, float &L, float &a, float &b) {
+  float r = acc_linear(color, 16), g = acc_linear(color, 8), u = acc_linear(color, 0);
+  float l = cbrtf(0.4122214708f * r + 0.5363325363f * g + 0.0514459929f * u);
+  float m = cbrtf(0.2119034982f * r + 0.6806995451f * g + 0.1073969566f * u);
+  float s = cbrtf(0.0883024619f * r + 0.2817188376f * g + 0.6299787005f * u);
+  L = 0.2104542553f * l + 0.7936177850f * m - 0.0040720468f * s;
+  a = 1.9779984951f * l - 2.4285922050f * m + 0.4505937099f * s;
+  b = 0.0259040371f * l + 0.7827717662f * m - 0.8086757660f * s;
+}
+__device__ float3 acc_rgb(float L, float a, float b) {
+  float l = L + 0.3963377774f * a + 0.2158037573f * b;
+  float m = L - 0.1055613458f * a - 0.0638541728f * b;
+  float s = L - 0.0894841775f * a - 1.2914855480f * b;
+  l *= l * l; m *= m * m; s *= s * s;
+  return {__saturatef(4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s),
+          __saturatef(-1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s),
+          __saturatef(-0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s)};
+}
+__device__ float acc_luminance(float3 c) { return acc_luminance(c.x, c.y, c.z); }
+__device__ uint32_t acc_encode(float v, float round) {
+  return (v <= 0.0031308f ? 12.92f * v : 1.055f * __powf(v, 1 / 2.4f) - 0.055f) * 255 + round;
+}
+__device__ __noinline__ uint32_t acc_fit(float target, uint32_t fg, uint32_t bg) {
+  float y = acc_luminance(bg), L, a, b;
+  if (acc_ratio(acc_luminance(fg), y) >= target) return fg;
+  acc_oklab(fg, L, a, b);
+  float end = acc_luminance(fg) > y ? 1 : 0, reach = acc_ratio(acc_luminance(acc_rgb(end, a, b)), y);
+  if (reach < target && acc_ratio(acc_luminance(acc_rgb(1 - end, a, b)), y) > reach) end = 1 - end;
+  for (int i = 0; i < 16; ++i) {
+    float mid = (L + end) / 2;
+    if (acc_ratio(acc_luminance(acc_rgb(mid, a, b)), y) < target) L = mid;
+    else end = mid;
+  }
+  float3 c = acc_rgb(end, a, b);
+  float round = end > L ? 0.999f : 0;
+  return acc_encode(c.x, round) << 16 | acc_encode(c.y, round) << 8 | acc_encode(c.z, round);
+}
+__device__ uint32_t acc_correct(const DeviceState &s, uint32_t fg, uint32_t bg) {
+  const uint64_t span = (1ull << 48) / ACC_SLOTS;
+  uint64_t key = ((uint64_t(fg) << 24 | bg) * 0x9e3779b97f4a7c15ull) & ((1ull << 48) - 1);
+  uint64_t tag = 1ull << 63 | key % span << 24, entry = s.acc[key / span];
+  if ((entry & ~0xffffffull) == tag) return entry & 0xffffff;
+  uint32_t out = acc_fit(s.theme.contrast_floor, fg, bg);
+  s.acc[key / span] = tag | out;
+  return out;
+}

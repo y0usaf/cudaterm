@@ -5,6 +5,7 @@ namespace ct {
 struct Theme {
   uint32_t colors[262];
   uint32_t customized;
+  float contrast_floor;
 };
 inline Theme default_theme() {
   Theme theme{};
@@ -21,6 +22,7 @@ inline Theme default_theme() {
     }
   }
   theme.colors[256] = theme.colors[258] = theme.colors[261] = 0xffffff;
+  theme.contrast_floor = 4.5f;
   return theme;
 }
 }
