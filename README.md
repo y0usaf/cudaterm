@@ -24,9 +24,7 @@ nix build --impure --file nix/finix-preview.nix --out-link result-finix
 ./result-finix/bin/cudaterm-finix
 ```
 
-It uses the desktop font, line height and Wallust colors. See
-[Finix replacement and integration](docs/finix-replacement.md) for workflows,
-memory measurements, enablement and remaining differences.
+It uses the desktop font, line height and Wallust colors.
 
 Ekko v2's shell/browser workspace is supported. From this checkout:
 
@@ -55,7 +53,7 @@ process GPU memory from 484 to 316 MiB. CUDA driver/GL resources still require
 host RAM; these totals exclude Ekko and browser processes. Queue sizing, EGL
 vendor selection and avoiding libdecor's GTK dependency cut RAM; a smaller CUDA
 stack and lazy buffers cut VRAM. Alternate-screen redraws do not grow main
-scrollback. See [Ekko measurements and integration](docs/ekko.md).
+scrollback.
 
 The current build targets NVIDIA Ada (`sm_89`) and is being developed on an RTX
 4090. A working NVIDIA driver and graphical session are needed for the app;
@@ -70,7 +68,7 @@ processing. The CPU reads classifier results and consumed counts to select launc
 Screen parsing and terminal state stay on the GPU; a host observer handles OSC 52
 desktop clipboard writes.
 
-A 2026-09-28 PTY parser-barrier [comparison](docs/current-pty-comparison.md)
+A 2026-09-28 PTY parser-barrier comparison
 with Foot and Monstar at 80×24 and 318×89 cells gave cudaterm the lowest pooled
 median and p90 on every workload, including 80×24 tabs. Two 80×24 p90s missed
 Foot's in one of the two rounds. The barrier is not a display measurement, and
@@ -88,11 +86,10 @@ monochrome bitmaps unless `emoji-font` names a color emoji font; text shaping
 remains unfinished.
 Font copyright and license files are installed in `result/share/cudaterm`.
 
-The [Finix desktop candidate](docs/finix-replacement.md) adds configured fonts and
+The Finix desktop candidate adds configured fonts and
 colors, responsive input during image decoding, Wayland clipboard verification,
 and terminal/launcher integration. Broader VT compatibility, full grapheme
 handling, and physical display-latency measurements remain open. See the
-[Monstar parity matrix](docs/monstar-parity.md) and the
 [benchmark procedure](bench/README.md).
 
 Drag with the left mouse button to select visible cells; release to copy automatically.

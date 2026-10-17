@@ -19,7 +19,6 @@ and clean exit/reattach. Full Foot/Monstar feature parity is a separate target.
 
 Use `nix run . -- -e /home/y0usaf/dev/maintaining/ekko_v2/result/bin/ekko
 attach cuda-workspace` to attach the existing session with the current build.
-See [Ekko compatibility](ekko.md) for the measured memory baseline.
 
 ## Hardening build
 
