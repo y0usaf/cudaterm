@@ -2021,7 +2021,7 @@ __global__ void render_kernel(const DeviceState *s, cudaSurfaceObject_t out, int
       if (!plain) { base = bg; under = 255; }
       base = graphic_pixel(*s, x, view_y, base, under, 1);
       bg = unpremultiply(base, under); base_alpha = under;
-    } else if (alpha && s->theme.contrast_floor > 0 && !(selected && (s->theme.customized & 12)) &&
+    } else if (alpha && s->theme.contrast_floor > 0 && !acc_graphic(z.cp) && !(selected && (s->theme.customized & 12)) &&
                !(cursor && (s->theme.customized & 3)))
       fg = acc_correct(*s, fg, bg);
     opacity = alpha + (base_alpha * (255 - alpha) + 127) / 255;

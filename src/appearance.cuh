@@ -204,6 +204,9 @@ __device__ __noinline__ uint32_t acc_fit(float target, uint32_t fg, uint32_t bg)
   float round = end > L ? 0.999f : 0;
   return acc_encode(c.x, round) << 16 | acc_encode(c.y, round) << 8 | acc_encode(c.z, round);
 }
+__device__ bool acc_graphic(uint32_t cp) {
+  return (cp >= 0x2500 && cp <= 0x259f) || (cp >= 0x1fb00 && cp <= 0x1fbff) || (cp >= 0xe0b0 && cp <= 0xe0d7);
+}
 __device__ uint32_t acc_correct(const DeviceState &s, uint32_t fg, uint32_t bg) {
   const uint64_t span = (1ull << 48) / ACC_SLOTS;
   uint64_t key = ((uint64_t(fg) << 24 | bg) * 0x9e3779b97f4a7c15ull) & ((1ull << 48) - 1);

@@ -24,7 +24,7 @@ double ratio(const uchar4 &a, const uchar4 &b) {
   double x = luminance(a) + 0.05, y = luminance(b) + 0.05;
   return x > y ? x / y : y / x;
 }
-double rendered_ratio(ct::Engine &engine, float floor) {
+void render(ct::Engine &engine, float floor, uchar4 (&image)[16][32]) {
   ct::Theme theme = ct::default_theme();
   theme.colors[256] = 0x1b1f27;
   theme.colors[257] = 0xf5f6fa;
@@ -39,11 +39,14 @@ double rendered_ratio(ct::Engine &engine, float floor) {
   target.res.array.array = pixels;
   ck(cudaCreateSurfaceObject(&surface, &target));
   engine.render(surface, 32, 16);
-  uchar4 image[16][32];
   ck(cudaMemcpy2DFromArray(image, sizeof(image[0]), pixels, 0, 0, sizeof(image[0]), 16,
                            cudaMemcpyDeviceToHost));
   cudaDestroySurfaceObject(surface);
   cudaFreeArray(pixels);
+}
+double rendered_ratio(ct::Engine &engine, float floor) {
+  uchar4 image[16][32];
+  render(engine, floor, image);
   const uchar4 paper = image[0][31];
   double ink = 0;
   for (int y = 0; y < 16; ++y)
@@ -59,8 +62,17 @@ int main() {
     const char text[] = "\033[38;2;128;128;128mX";
     engine.feed(reinterpret_cast<const unsigned char *>(text), sizeof(text) - 1);
     double off = rendered_ratio(engine, 0), on = rendered_ratio(engine, 4.5f);
-    std::printf("{\"floor_0\":%.3f,\"floor_4_5\":%.3f}\n", off, on);
-    return off < 4.5 && on >= 4.5 ? 0 : 1;
+    ct::Engine block(4, 1);
+    block.set_cell_size(8, 16);
+    const char half[] = "\033[38;2;92;42;104;48;2;184;71;110m\xe2\x96\x80";
+    block.feed(reinterpret_cast<const unsigned char *>(half), sizeof(half) - 1);
+    uchar4 image[16][32];
+    render(block, 4.5f, image);
+    const uchar4 top = image[2][4];
+    bool kept = top.x == 92 && top.y == 42 && top.z == 104;
+    std::printf("{\"floor_0\":%.3f,\"floor_4_5\":%.3f,\"half_block_top\":\"%02x%02x%02x\",\"half_block_kept\":%s}\n",
+                off, on, top.x, top.y, top.z, kept ? "true" : "false");
+    return off < 4.5 && on >= 4.5 && kept ? 0 : 1;
   } catch (const std::exception &e) {
     std::fprintf(stderr, "contrast-check: %s\n", e.what());
     return 2;

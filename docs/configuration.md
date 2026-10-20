@@ -73,9 +73,10 @@ raise it.
 `contrast-floor` is the least WCAG 2.1 contrast ratio (0–21) between text and
 its background. Text below it is drawn lighter or darker, keeping its OKLab hue
 and chroma, so colors chosen for a dark theme stay readable on a light one.
-Cell colors, copies and search keep the application's values. Cursor and
-selection colors set by the theme, text over graphics, and the desktop behind a
-translucent background are left alone. Set it to `0` to draw colors as sent.
+Cell colors, copies and search keep the application's values. Box-drawing,
+block, legacy-computing and powerline glyphs are pixels rather than ink, so
+they keep their colors; so do cursor and selection colors set by the theme,
+text over graphics, and the desktop behind a translucent background. Set it to `0` to draw colors as sent.
 
 Each setting also accepts a CLI flag, for example:
 
