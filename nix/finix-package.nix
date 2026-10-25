@@ -27,8 +27,7 @@ let
     exec ${terminal}/bin/cudaterm --font-file ${pkgs.lib.escapeShellArg "${fontFile}"} \
       --font-fallback file:${pkgs.nerd-fonts.symbols-only}/share/fonts/truetype/NerdFonts/Symbols/SymbolsNerdFontMono-Regular.ttf \
       --font-size ${toString pixels} --line-height ${toString (lineHeight * 1.0 / pixels)} \
-      --padding-x ${toString paddingX} --padding-y ${toString paddingY} \
-      --background-opacity 0.82 "$@"
+      --padding-x ${toString paddingX} --padding-y ${toString paddingY} "$@"
   '';
   desktop = pkgs.makeDesktopItem {
     name = "cudaterm-finix";
