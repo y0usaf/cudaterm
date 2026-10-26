@@ -10,6 +10,7 @@ struct GraphicsParams {
 struct GraphicsRequest {
   int ready, consumed, slot, committed, keep_upload, reset;
   int barrier, alternate, history_rows, history_growth;
+  int medium;
   size_t input_bytes, output_bytes;
   uint32_t release[IMAGE_SLOTS / 32];
   int pool_wait, pool_gc;

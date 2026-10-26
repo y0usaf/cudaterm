@@ -35,15 +35,20 @@ nix run . -- -e nix run path:$HOME/dev/maintaining/ekko_v2#workspace -- \
 
 The Kitty graphics subset used by Ekko runs entirely in CUDA: streaming APC and
 base64 parsing, RGB/RGBA uploads, zlib decompression, native-size and cell-sized
-placements, cropping, alpha blending, queries, and image deletion. Multiple
+placements, cropping, alpha blending, queries, and image deletion. Transfers
+arrive inline or named: `t=f` reads a regular file the client names, `t=t` reads
+and deletes a client temp file, and `t=s` reads a POSIX shared-memory object and
+unlinks it, so pixels never cross the PTY. Only regular files are read: `/proc`,
+`/sys` and `/dev` are refused except `/dev/shm`, and data whose length differs
+from the declared size is rejected. Multiple
 placements share one decoded image; `c`/`r` scale the source crop, preserving its
 aspect ratio when only one dimension is given. Decoded images stay in
 VRAM; transient upload storage is freed after each completed transfer. Limits
 are 128 images, 256 placements, 32 MiB per image and 64 MiB retained image data.
 Scaling uses nearest-neighbor sampling. Placements stack by `z` as in Kitty:
 negative z draws under text, and below -1073741824 also under non-default cell
-backgrounds. PNG, file/shared-memory transport, animation, and Unicode/relative
-placements are not implemented.
+backgrounds. PNG, animation, Unicode/relative placements, and the `S`/`O`
+subrange keys are not implemented.
 This is a bounded Kitty implementation, not full
 Kitty/Foot/Monstar feature parity.
 

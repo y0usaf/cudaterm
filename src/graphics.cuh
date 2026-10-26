@@ -147,8 +147,10 @@ __device__ void graphic_plan(DeviceState &s) {
   if (g.active) {
     const auto &u = g.upload;
     unsigned f = graphic_value(u, 'f', 32), compression = graphic_value(u, 'o');
+    unsigned source = graphic_value(u, 't', 'd');
     size_t width = graphic_value(u, 's'), height = graphic_value(u, 'v');
-    if ((f != 24 && f != 32) || graphic_value(u, 't', 'd') != 'd' ||
+    if ((f != 24 && f != 32) ||
+        (source != 'd' && source != 'f' && source != 't' && source != 's') ||
         (compression && compression != 'z') || !width || !height ||
         width > 8192 || height > 8192 || width * height * (f / 8) > IMAGE_LIMIT ||
         g.chunk_size % 4) g.invalid = 1;
@@ -168,6 +170,8 @@ __device__ void graphic_plan(DeviceState &s) {
     }
     if (!graphic_value(p, 'm') && !g.invalid) {
       uint32_t id = graphic_value(u, 'i');
+      unsigned medium = graphic_value(u, 't', 'd');
+      g.request.medium = medium == 'd' ? 0 : int(medium);
       if (!id) {
         do { ++g.next_id; } while (!g.next_id || image_slot(g, g.next_id) >= 0);
         g.upload.seen['i'] = 1; g.upload.value['i'] = id = g.next_id;
@@ -335,17 +339,18 @@ __device__ void graphic_cursor(DeviceState &s, const GraphicPlacement &placement
   s.wrap_pending = 0; s.jobs = nullptr;
 }
 __global__ void graphics_decode(DeviceState *s, unsigned char *input,
-                                 unsigned char *output, size_t capacity, bool allocation_failed) {
+                                 unsigned char *output, size_t capacity, bool allocation_failed,
+                                 size_t loaded) {
   __shared__ ct::inflate::Workspace workspace;
   auto &g = *s->graphics;
   int lane = threadIdx.x;
   if (g.request.reset || g.request.barrier || !g.active) return;
   if (!lane) {
-    g.input = input; g.input_capacity = capacity;
+    g.input = input; g.input_capacity = capacity; g.used = loaded;
     if (allocation_failed) g.invalid = 1;
   }
   __syncthreads();
-  if (!g.invalid) {
+  if (!g.invalid && !loaded) {
     bool ok = graphic_decode(g, input);
     if (!lane && !ok) g.invalid = 1;
   }
@@ -357,7 +362,14 @@ __global__ void graphics_decode(DeviceState *s, unsigned char *input,
   } else {
     if (g.used != g.request.output_bytes) {
       if (!lane) g.invalid = 1;
-    } else for (size_t i = lane; i < g.used; i += blockDim.x) output[i] = input[i];
+    } else {
+      const size_t whole = g.used / sizeof(uint4);
+      const uint4 *source = (const uint4 *)input;
+      uint4 *target = (uint4 *)output;
+      for (size_t i = lane; i < whole; i += blockDim.x) target[i] = source[i];
+      for (size_t i = whole * sizeof(uint4) + lane; i < g.used; i += blockDim.x)
+        output[i] = input[i];
+    }
   }
 }
 __global__ void graphics_execute(DeviceState *s, unsigned char *input,

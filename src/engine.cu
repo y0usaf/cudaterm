@@ -9,6 +9,7 @@
 #include "mark_compaction.cuh"
 #include "hyperlinks.cuh"
 #include "keyboard_protocol.cuh"
+#include "graphics_source.hpp"
 
 #include <algorithm>
 #include <cstring>
@@ -2321,6 +2322,7 @@ struct Engine::Impl {
   GraphicsState *graphics = nullptr;
   unsigned char *graphics_input = nullptr;
   size_t graphics_capacity = 0;
+  std::vector<unsigned char> graphic_chunk, graphic_source;
   unsigned char *images[IMAGE_SLOTS]{};
   size_t image_sizes[IMAGE_SLOTS]{};
   size_t font_bytes = 0, grid_bytes = 0;
@@ -2441,25 +2443,47 @@ void Engine::Impl::service_graphics(GraphicsRequest &request) {
   }
   unsigned char *output = nullptr;
   bool failed = false;
+  auto reserve_input = [&](size_t bytes) {
+    if (bytes <= graphics_capacity) return true;
+    size_t capacity = 4096;
+    while (capacity < bytes) capacity *= 2;
+    unsigned char *next = nullptr;
+    auto error = cudaMalloc(&next, capacity);
+    if (error == cudaErrorMemoryAllocation) return false;
+    ck(error);
+    if (graphics_capacity)
+      ck(cudaMemcpy(next, graphics_input, graphics_capacity, cudaMemcpyDeviceToDevice));
+    ck(cudaFree(graphics_input));
+    graphics_input = next; graphics_capacity = capacity;
+    return true;
+  };
   if (request.history_growth) {
     alternate = request.alternate;
     history_rows = request.history_rows;
     reserve_history((request.history_growth + 1) / 2);
   }
-  if (request.input_bytes > graphics_capacity) {
-    size_t capacity = 4096;
-    while (capacity < request.input_bytes) capacity *= 2;
-    unsigned char *next = nullptr;
-    auto error = cudaMalloc(&next, capacity);
-    if (error == cudaErrorMemoryAllocation) failed = true;
+  if (!reserve_input(request.input_bytes)) failed = true;
+  size_t loaded = 0;
+  if (request.medium && !failed) {
+    int chunk_size = 0;
+    ck(cudaMemcpy(&chunk_size, &graphics->chunk_size, sizeof chunk_size, cudaMemcpyDeviceToHost));
+    if (chunk_size <= 0 || chunk_size > 4096) failed = true;
     else {
-      ck(error);
-      if (graphics_capacity)
-        ck(cudaMemcpy(next, graphics_input, graphics_capacity, cudaMemcpyDeviceToDevice));
-      ck(cudaFree(graphics_input));
-      graphics_input = next; graphics_capacity = capacity;
+      graphic_chunk.resize(chunk_size);
+      ck(cudaMemcpy(graphic_chunk.data(), graphics->chunk, chunk_size, cudaMemcpyDeviceToHost));
+      std::string name;
+      if (!base64_text(graphic_chunk, name) ||
+          !graphics_read_source(unsigned(request.medium), name, graphic_source) ||
+          !reserve_input(graphic_source.size()))
+        failed = true;
+      else {
+        ck(cudaMemcpy(graphics_input, graphic_source.data(), graphic_source.size(),
+                      cudaMemcpyHostToDevice));
+        loaded = graphic_source.size();
+      }
     }
   }
+
   if (request.output_bytes && !failed) {
     auto error = cudaMalloc(&output, request.output_bytes);
     if (error == cudaErrorMemoryAllocation) failed = true;
@@ -2471,8 +2495,9 @@ void Engine::Impl::service_graphics(GraphicsRequest &request) {
     ck(cudaStreamSynchronize(nullptr));
   }
   graphics_decode<<<1, 128, 0, interactive ? decode_stream : nullptr>>>(
-      d, graphics_input, output, graphics_capacity, failed);
+      d, graphics_input, output, graphics_capacity, failed, loaded);
   ck(cudaGetLastError());
+
   if (interactive) {
     decoding = true;
     try {
@@ -2494,6 +2519,7 @@ void Engine::Impl::service_graphics(GraphicsRequest &request) {
   graphics_execute<<<1, 1>>>(d, graphics_input, output, failed);
   ck(cudaGetLastError());
   ck(cudaMemcpy(&request, &graphics->request, sizeof(request), cudaMemcpyDeviceToHost));
+
   if (request.committed) {
     ck(cudaFree(images[request.slot]));
     images[request.slot] = output;
