@@ -97,5 +97,5 @@ bool graphics_read_source(unsigned medium, const std::string &name,
   return ok;
 }
 
-}  // namespace
-}  // namespace ct
+}
+}
